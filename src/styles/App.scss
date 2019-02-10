@@ -8,11 +8,13 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-.container {
+.sdcontainer {
   flex-wrap: wrap;
+  padding: 20px 40px;
+  border-bottom: 1px solid #eeeeee;
 }
 
-.mychart {
+.chart {
   max-width: 100%;
   max-height: 100%;
   margin: 0 auto;
@@ -30,8 +32,15 @@ body {
 }
 
 .stockButton {
-  margin-right: 20px;
-  margin-bottom: 20px;
+  margin-left: 20px;
+}
+
+.results {
+  .stockButton {
+    margin-right: 20px;
+    margin-left: 0px;
+    margin-top: 20px;
+  }
 }
 
 .nav-item {

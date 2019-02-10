@@ -1,13 +1,5 @@
 import React from 'react';
-import {
-  Nav,
-  Navbar,
-  NavDropdown,
-  FormControl,
-  Form,
-  Button,
-  NavItem,
-} from 'react-bootstrap';
+import { Nav, Navbar, NavItem } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 
 export default () => (

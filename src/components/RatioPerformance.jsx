@@ -3,6 +3,7 @@ import { Bar } from 'react-chartjs-2';
 import axios from 'axios';
 import { Button, ButtonGroup } from 'react-bootstrap';
 import '../styles/App.scss';
+import PropTypes from 'prop-types';
 import { getRandomColor } from '../utils/getRandomColor';
 
 class RatioPerformance extends Component {
@@ -10,59 +11,73 @@ class RatioPerformance extends Component {
 
   period = '1y';
 
-  state = {
+  static propTypes = {
+    symbols: PropTypes.arrayOf(PropTypes.string),
+  };
+
+  static defaultProps = {
     symbols: ['AAPL', 'FB', 'TSLA', 'GOOGL', 'AMZN', 'MSFT'],
-    options: {
-      responsive: true,
-      maintainAspectRatio: true,
-      tooltips: {
-        mode: 'label',
-      },
-      elements: {
-        line: {
-          fill: false,
+  };
+
+  constructor(props) {
+    super(props);
+
+    const { symbols } = this.props;
+    this.state = {
+      symbols,
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        tooltips: {
+          mode: 'label',
+        },
+        elements: {
+          line: {
+            fill: false,
+          },
+        },
+        scales: {
+          xAxes: [
+            {
+              display: true,
+              gridLines: { display: false },
+              labels: [],
+            },
+          ],
+          yAxes: [
+            {
+              type: 'linear',
+              display: true,
+              position: 'left',
+              id: 'y-axis-1',
+              ticks: {
+                beginAtZero: false,
+              },
+              gridLines: {
+                display: true,
+              },
+              labels: {
+                show: true,
+              },
+            },
+          ],
         },
       },
-      scales: {
-        xAxes: [
-          {
-            display: true,
-            gridLines: { display: false },
-            labels: [],
-          },
-        ],
-        yAxes: [
-          {
-            type: 'linear',
-            display: true,
-            position: 'left',
-            id: 'y-axis-1',
-            ticks: {
-              beginAtZero: false,
-            },
-            gridLines: {
-              display: true,
-            },
-            labels: {
-              show: true,
-            },
-          },
-        ],
+      data: {
+        labels: [],
+        datasets: [],
       },
-    },
-    data: {
-      labels: [],
-      datasets: [],
-    },
-  };
+    };
+  }
 
   componentDidMount() {
     this.runQuery();
   }
 
   runQuery() {
-    const { symbols } = this.state;
+    const { symbols } = this.props;
     const allsymbols = symbols.join(',');
+    console.log(allsymbols);
     const url = `https://api.iextrading.com/1.0/stock/market/batch?symbols=${allsymbols}&types=chart&range=${
       this.period
     }`;
@@ -118,22 +133,6 @@ class RatioPerformance extends Component {
     this.setState({ data, options });
   }
 
-  addSymbol(evt) {
-    const { symbols } = this.state;
-    if (symbols.indexOf(evt.target.value) < 0) {
-      symbols.push(evt.target.value);
-      this.runQuery();
-    }
-  }
-
-  removeSymbol(evt) {
-    const { symbols } = this.state;
-    if (symbols.indexOf(evt.target.value) > -1) {
-      symbols.splice(symbols.indexOf(evt.target.value), 1);
-      this.runQuery();
-    }
-  }
-
   handlePeriodChange(period) {
     this.period = period;
     this.runQuery();
@@ -178,7 +177,7 @@ class RatioPerformance extends Component {
     }
     return (
       <div className="container">
-        <div className="mychart">{<Bar data={data} options={options} />}</div>
+        <div className="chart">{<Bar data={data} options={options} />}</div>
         <div className="periodButtons">
           <ButtonGroup aria-label="Period">
             <Button
