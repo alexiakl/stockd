@@ -11,6 +11,8 @@ class RatioPerformance extends Component {
 
   period = '1y';
 
+  allsymbols = '';
+
   static propTypes = {
     symbols: PropTypes.arrayOf(PropTypes.string),
   };
@@ -76,11 +78,10 @@ class RatioPerformance extends Component {
 
   runQuery() {
     const { symbols } = this.props;
-    const allsymbols = symbols.join(',');
-    console.log(allsymbols);
-    const url = `https://api.iextrading.com/1.0/stock/market/batch?symbols=${allsymbols}&types=chart&range=${
-      this.period
-    }`;
+    this.allsymbols = symbols.join(',');
+    const url = `https://api.iextrading.com/1.0/stock/market/batch?symbols=${
+      this.allsymbols
+    }&types=chart&range=${this.period}`;
     axios.get(url).then(res => {
       this.result = res;
       this.runProcessing();
@@ -139,7 +140,12 @@ class RatioPerformance extends Component {
   }
 
   render() {
-    const { data, options } = this.state;
+    const { data, options, symbols } = this.state;
+    const oldsymbols = this.allsymbols;
+    this.allsymbols = symbols.join(',');
+    if (this.allsymbols !== oldsymbols) {
+      this.runQuery();
+    }
     let [onem, threem, sixm, ytd, oney, twoy, fivey] = [
       'outline-secondary',
       'outline-secondary',
