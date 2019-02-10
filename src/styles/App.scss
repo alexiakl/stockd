@@ -13,8 +13,39 @@ body {
 }
 
 .mychart {
-  max-width: 70%;
-  max-height: 70%;
+  max-width: 100%;
+  max-height: 100%;
   margin: 0 auto;
   padding: 40px 0;
+}
+
+.stockButtons {
+  display: flex;
+  flex-wrap: wrap;
+  text-align: center;
+}
+
+.periodButtons {
+  text-align: center;
+}
+
+.stockButton {
+  margin-right: 20px;
+  margin-bottom: 20px;
+}
+
+.nav-item {
+  padding: 10px 20px;
+  cursor: pointer;
+}
+
+.navbar {
+  padding: 0rem 1rem;
+}
+
+.navbar-collapse {
+  color: #444444;
+  .active {
+    background-color: #bdd8e6;
+  }
 }
