@@ -6,10 +6,10 @@ import '../styles/App.scss';
 import PropTypes from 'prop-types';
 import { getRandomColor } from '../utils/getRandomColor';
 
-class RatioPerformance extends Component {
+class LiveChart extends Component {
   result = null;
 
-  period = '1y';
+  period = 'dynamic';
 
   allsymbols = '';
 
@@ -53,9 +53,14 @@ class RatioPerformance extends Component {
               position: 'left',
               id: 'y-axis-1',
               ticks: {
-                beginAtZero: false,
+                beginAtZero: true,
+                callback(value) {
+                  return `${value}%`;
+                },
               },
               gridLines: {
+                zeroLineColor: '#888',
+                zeroLineWidth: 2,
                 display: true,
               },
               labels: {
@@ -73,15 +78,20 @@ class RatioPerformance extends Component {
   }
 
   componentDidMount() {
-    this.runQuery();
+    this.interval = setInterval(() => this.runQuery(), 60000);
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.interval);
   }
 
   runQuery() {
+    console.log('Running query');
     const { symbols } = this.props;
     this.allsymbols = symbols.join(',');
     const url = `https://api.iextrading.com/1.0/stock/market/batch?symbols=${
       this.allsymbols
-    }&types=chart&range=${this.period}`;
+    }&types=quote,chart&range=${this.period}`;
     axios.get(url).then(res => {
       this.result = res;
       this.runProcessing();
@@ -98,7 +108,8 @@ class RatioPerformance extends Component {
     const finalLabels = [];
     symbols.forEach((symbol, index) => {
       const { chart } = this.result.data[symbol];
-      chart.forEach(entry => {
+      const chartData = chart.data;
+      chartData.forEach(entry => {
         if (!labels[entry.label]) {
           labels[entry.label] = 0;
         }
@@ -112,7 +123,9 @@ class RatioPerformance extends Component {
     });
 
     symbols.forEach((symbol, index) => {
-      const { chart } = this.result.data[symbol];
+      const { chart, quote } = this.result.data[symbol];
+      const { previousClose } = quote;
+      const chartData = chart.data;
       const symbolColor = getRandomColor(symbols.length, index);
       const dataset = {
         label: symbol,
@@ -127,31 +140,32 @@ class RatioPerformance extends Component {
         pointHoverBorderColor: symbolColor,
         yAxisID: 'y-axis-1',
       };
-      let previousAverage = 0;
+      let previousValue = 0;
       let skip = 0;
-      if (chart.length > 50) {
-        skip = parseInt(chart.length / 50, 10);
+      if (chartData.length > 50) {
+        skip = parseInt(chartData.length / 50, 10);
       }
-      let startingPoint = -1;
-
-      chart.forEach((entry, entryindex) => {
+      chartData.forEach((entry, entryindex) => {
         if (finalLabels[entry.label] === 1) {
-          if (startingPoint < 0) {
-            startingPoint = entry.close;
-          }
           let value = 0;
           if (entry.close > 0) {
-            previousAverage = entry.close;
-            value = previousAverage;
+            previousValue = entry.close;
+            value = previousValue;
+          } else if (entry.marketClose > 0) {
+            previousValue = entry.marketClose;
+            value = previousValue;
           } else {
-            value = previousAverage;
+            value = previousValue;
           }
+
           if (
             skip === 0 ||
             entryindex % skip === 0 ||
             entryindex === chart.length - 1
           ) {
-            dataset.data.push((value / startingPoint).toFixed(2));
+            dataset.data.push(
+              ((100 * (value - previousClose)) / previousClose).toFixed(3),
+            );
             if (index === 0) {
               options.scales.xAxes[0].labels.push(entry.label);
             }
@@ -175,7 +189,8 @@ class RatioPerformance extends Component {
     if (this.allsymbols !== oldsymbols) {
       this.runQuery();
     }
-    let [onem, threem, sixm, ytd, oney, twoy, fivey] = [
+    let [dynamic, onem, threem, sixm, ytd, oney, twoy, fivey] = [
+      'outline-secondary',
       'outline-secondary',
       'outline-secondary',
       'outline-secondary',
@@ -185,6 +200,9 @@ class RatioPerformance extends Component {
       'outline-secondary',
     ];
     switch (this.period) {
+      case 'dynamic':
+        dynamic = 'secondary';
+        break;
       case '1m':
         onem = 'secondary';
         break;
@@ -215,6 +233,13 @@ class RatioPerformance extends Component {
         <div className="chart">{<Bar data={data} options={options} />}</div>
         <div className="periodButtons">
           <ButtonGroup aria-label="Period">
+            <Button
+              variant={dynamic}
+              size="sm"
+              onClick={() => this.handlePeriodChange('dynamic')}
+            >
+              Live
+            </Button>
             <Button
               variant={onem}
               size="sm"
@@ -271,4 +296,4 @@ class RatioPerformance extends Component {
   }
 }
 
-export default RatioPerformance;
+export default LiveChart;

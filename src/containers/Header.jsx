@@ -5,7 +5,7 @@ import { LinkContainer } from 'react-router-bootstrap';
 export default () => (
   <Navbar bg="light" expand="lg">
     <LinkContainer to="/">
-      <NavItem>StockD</NavItem>
+      <NavItem>stockd</NavItem>
     </LinkContainer>
     <Navbar.Toggle aria-controls="basic-navbar-nav" />
     <Navbar.Collapse id="basic-navbar-nav">
