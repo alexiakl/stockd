@@ -58,6 +58,7 @@ class Live extends Component {
 
   runQuery() {
     const url = `https://api.iextrading.com/1.0/stock/market/batch?symbols=GOOGL&types=chart&range=dynamic`;
+    console.log(`RQ: Live ${url}`);
     axios.get(url).then(res => {
       this.result = res;
       this.runProcessing();
@@ -122,9 +123,9 @@ class Live extends Component {
                 </p>
               </Alert>
             </div>
-            <StandardCharts symbols={symbols} />
           </div>
         )}
+        <StandardCharts symbols={symbols} />
       </div>
     );
   }

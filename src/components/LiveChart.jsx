@@ -86,12 +86,12 @@ class LiveChart extends Component {
   }
 
   runQuery() {
-    console.log('Running query');
     const { symbols } = this.props;
     this.allsymbols = symbols.join(',');
     const url = `https://api.iextrading.com/1.0/stock/market/batch?symbols=${
       this.allsymbols
     }&types=quote,chart&range=${this.period}`;
+    console.log(`RQ: LiveChart ${url}`);
     axios.get(url).then(res => {
       this.result = res;
       this.runProcessing();

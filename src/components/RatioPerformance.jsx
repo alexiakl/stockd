@@ -82,6 +82,7 @@ class RatioPerformance extends Component {
     const url = `https://api.iextrading.com/1.0/stock/market/batch?symbols=${
       this.allsymbols
     }&types=chart&range=${this.period}`;
+    console.log(`RQ: RatioPerformance ${url}`);
     axios.get(url).then(res => {
       this.result = res;
       this.runProcessing();

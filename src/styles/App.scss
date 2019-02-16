@@ -25,6 +25,16 @@ body {
   padding: 10px 0;
 }
 
+.flex {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.two {
+  flex: 50%;
+  max-width: 50%;
+}
+
 .stockButtons {
   display: flex;
   flex-wrap: wrap;

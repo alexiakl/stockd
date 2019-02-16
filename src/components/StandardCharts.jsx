@@ -10,7 +10,13 @@ class StandardCharts extends Component {
 
   period = '1y';
 
+  newData = true;
+
   allsymbols = '';
+
+  standardCharts = [];
+
+  finalLabels = [];
 
   static propTypes = {
     symbols: PropTypes.arrayOf(PropTypes.string),
@@ -22,16 +28,30 @@ class StandardCharts extends Component {
 
   state = {
     result: {},
-    labels: [],
   };
 
+  componentDidMount() {
+    this.runProcessing();
+  }
+
+  componentDidUpdate() {
+    const { symbols } = this.props;
+    const oldsymbols = this.allsymbols;
+    this.allsymbols = symbols.join(',');
+    if (this.allsymbols !== oldsymbols) {
+      this.runQuery();
+    }
+  }
+
+  component;
+
   runQuery() {
-    console.log('RUNNING QUERY');
     const { symbols } = this.props;
     this.allsymbols = symbols.join(',');
     const url = `https://api.iextrading.com/1.0/stock/market/batch?symbols=${
       this.allsymbols
     }&types=chart&range=${this.period}`;
+    console.log(`RQ: StandardCharts ${url}`);
     axios.get(url).then(res => {
       this.result = res;
       this.runProcessing();
@@ -39,26 +59,34 @@ class StandardCharts extends Component {
   }
 
   runProcessing() {
-    const { labels } = this.state;
     const { symbols } = this.props;
 
-    const finalLabels = [];
+    const oldsymbols = this.allsymbols;
+    this.allsymbols = symbols.join(',');
+    if (this.allsymbols !== oldsymbols) {
+      this.runQuery();
+      return;
+    }
+
+    this.newData = true;
+
+    this.finalLabels = [];
     symbols.forEach((symbol, index) => {
       const { chart } = this.result.data[symbol];
       chart.forEach(entry => {
-        if (!labels[entry.label]) {
-          labels[entry.label] = 0;
+        if (!this.finalLabels[entry.label]) {
+          this.finalLabels[entry.label] = 0;
         }
-        labels[entry.label] += 1;
+        this.finalLabels[entry.label] += 1;
         if (index === symbols.length - 1) {
-          if (labels[entry.label] === symbols.length) {
-            finalLabels[entry.label] = 1;
+          if (this.finalLabels[entry.label] === symbols.length) {
+            this.finalLabels[entry.label] = 1;
           }
         }
       });
     });
 
-    this.setState({ labels: finalLabels, result: this.result });
+    this.setState({ result: this.result });
   }
 
   handlePeriodChange(period) {
@@ -67,13 +95,26 @@ class StandardCharts extends Component {
   }
 
   render() {
-    const { labels, result } = this.state;
+    const { result } = this.state;
     const { symbols } = this.props;
-    const oldsymbols = this.allsymbols;
-    this.allsymbols = symbols.join(',');
-    if (this.allsymbols !== oldsymbols) {
-      this.runQuery();
+
+    if (this.newData === true) {
+      this.newData = false;
+      if (result.data) {
+        this.standardCharts = [];
+        symbols.forEach(symbol => {
+          this.standardCharts.push(
+            <StandardChart
+              key={symbol}
+              symbol={symbol}
+              labels={this.finalLabels}
+              chart={result.data[symbol].chart}
+            />,
+          );
+        });
+      }
     }
+
     let [onem, threem, sixm, ytd, oney, twoy, fivey] = [
       'outline-secondary',
       'outline-secondary',
@@ -110,19 +151,6 @@ class StandardCharts extends Component {
         break;
     }
 
-    const standardCharts = [];
-    if (result.data) {
-      symbols.forEach(symbol => {
-        standardCharts.push(
-          <StandardChart
-            key={symbol}
-            symbol={symbol}
-            labels={labels}
-            result={result}
-          />,
-        );
-      });
-    }
     return (
       <div className="container">
         <div className="periodButtons">
@@ -178,7 +206,7 @@ class StandardCharts extends Component {
             </Button>
           </ButtonGroup>
         </div>
-        {standardCharts}
+        <div className="flex">{this.standardCharts}</div>
       </div>
     );
   }

@@ -8,13 +8,13 @@ class StandardCharts extends Component {
   static propTypes = {
     symbol: PropTypes.string,
     labels: PropTypes.array,
-    result: PropTypes.object,
+    chart: PropTypes.array,
   };
 
   static defaultProps = {
     symbol: '',
     labels: [],
-    result: {},
+    chart: [],
   };
 
   constructor(props) {
@@ -71,13 +71,12 @@ class StandardCharts extends Component {
   }
 
   runProcessing() {
-    const { result, labels, symbol } = this.props;
+    const { chart, labels, symbol } = this.props;
     const { options, data } = this.state;
     options.scales.xAxes[0].labels = [];
     data.labels = [];
     data.datasets = [];
 
-    const { chart } = result.data[symbol];
     const symbolColor = getRandomColor(1, 0);
     const dataset = {
       label: symbol,
@@ -129,9 +128,7 @@ class StandardCharts extends Component {
   render() {
     const { data, options } = this.state;
     return (
-      <div className="container">
-        <div className="chart">{<Bar data={data} options={options} />}</div>
-      </div>
+      <div className="chart two">{<Bar data={data} options={options} />}</div>
     );
   }
 }
