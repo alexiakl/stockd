@@ -1,12 +1,11 @@
 import React, { Component } from 'react';
-import { Bar } from 'react-chartjs-2';
 import axios from 'axios';
-import { Button, ButtonGroup, Alert } from 'react-bootstrap';
+import { Button, ButtonGroup } from 'react-bootstrap';
 import '../styles/App.scss';
 import PropTypes from 'prop-types';
-import { getRandomColor } from '../utils/getRandomColor';
+import StandardChart from './StandardChart';
 
-class RatioPerformance extends Component {
+class StandardCharts extends Component {
   result = null;
 
   period = '1y';
@@ -21,62 +20,13 @@ class RatioPerformance extends Component {
     symbols: ['AAPL', 'FB', 'TSLA', 'GOOGL', 'AMZN', 'MSFT'],
   };
 
-  constructor(props) {
-    super(props);
-
-    const { symbols } = this.props;
-    this.state = {
-      symbols,
-      options: {
-        responsive: true,
-        maintainAspectRatio: true,
-        tooltips: {
-          mode: 'label',
-        },
-        elements: {
-          line: {
-            fill: false,
-          },
-        },
-        scales: {
-          xAxes: [
-            {
-              display: true,
-              gridLines: { display: false },
-              labels: [],
-            },
-          ],
-          yAxes: [
-            {
-              type: 'linear',
-              display: true,
-              position: 'left',
-              id: 'y-axis-1',
-              ticks: {
-                beginAtZero: false,
-              },
-              gridLines: {
-                display: true,
-              },
-              labels: {
-                show: true,
-              },
-            },
-          ],
-        },
-      },
-      data: {
-        labels: [],
-        datasets: [],
-      },
-    };
-  }
-
-  componentDidMount() {
-    this.runQuery();
-  }
+  state = {
+    result: {},
+    labels: [],
+  };
 
   runQuery() {
+    console.log('RUNNING QUERY');
     const { symbols } = this.props;
     this.allsymbols = symbols.join(',');
     const url = `https://api.iextrading.com/1.0/stock/market/batch?symbols=${
@@ -89,12 +39,9 @@ class RatioPerformance extends Component {
   }
 
   runProcessing() {
-    const { symbols, options, data } = this.state;
-    options.scales.xAxes[0].labels = [];
-    data.labels = [];
-    data.datasets = [];
+    const { labels } = this.state;
+    const { symbols } = this.props;
 
-    const labels = [];
     const finalLabels = [];
     symbols.forEach((symbol, index) => {
       const { chart } = this.result.data[symbol];
@@ -111,56 +58,7 @@ class RatioPerformance extends Component {
       });
     });
 
-    symbols.forEach((symbol, index) => {
-      const { chart } = this.result.data[symbol];
-      const symbolColor = getRandomColor(symbols.length, index);
-      const dataset = {
-        label: symbol,
-        type: 'line',
-        data: [],
-        fill: false,
-        borderColor: symbolColor,
-        backgroundColor: symbolColor,
-        pointBorderColor: symbolColor,
-        pointBackgroundColor: symbolColor,
-        pointHoverBackgroundColor: symbolColor,
-        pointHoverBorderColor: symbolColor,
-        yAxisID: 'y-axis-1',
-      };
-      let previousAverage = 0;
-      let skip = 0;
-      if (chart.length > 50) {
-        skip = parseInt(chart.length / 50, 10);
-      }
-      let startingPoint = -1;
-
-      chart.forEach((entry, entryindex) => {
-        if (finalLabels[entry.label] === 1) {
-          if (startingPoint < 0) {
-            startingPoint = entry.close;
-          }
-          let value = 0;
-          if (entry.close > 0) {
-            previousAverage = entry.close;
-            value = previousAverage;
-          } else {
-            value = previousAverage;
-          }
-          if (
-            skip === 0 ||
-            entryindex % skip === 0 ||
-            entryindex === chart.length - 1
-          ) {
-            dataset.data.push(((value * 1000) / startingPoint).toFixed(3));
-            if (index === 0) {
-              options.scales.xAxes[0].labels.push(entry.label);
-            }
-          }
-        }
-      });
-      data.datasets.push(dataset);
-    });
-    this.setState({ data, options });
+    this.setState({ labels: finalLabels, result: this.result });
   }
 
   handlePeriodChange(period) {
@@ -169,7 +67,8 @@ class RatioPerformance extends Component {
   }
 
   render() {
-    const { data, options, symbols } = this.state;
+    const { labels, result } = this.state;
+    const { symbols } = this.props;
     const oldsymbols = this.allsymbols;
     this.allsymbols = symbols.join(',');
     if (this.allsymbols !== oldsymbols) {
@@ -210,22 +109,22 @@ class RatioPerformance extends Component {
         // code block
         break;
     }
+
+    const standardCharts = [];
+    if (result.data) {
+      symbols.forEach(symbol => {
+        standardCharts.push(
+          <StandardChart
+            key={symbol}
+            symbol={symbol}
+            labels={labels}
+            result={result}
+          />,
+        );
+      });
+    }
     return (
       <div className="container">
-        <Alert dismissible variant="success">
-          <Alert.Heading>
-            If you bought 1000$ worth of stock a year ago, how much would it be
-            worth now?
-          </Alert.Heading>
-          <hr />
-          <p className="mb-0">
-            <ul>
-              <li>Compare by adding more symbols</li>
-              <li>Adjust the period below the chart</li>
-            </ul>
-          </p>
-        </Alert>
-        <div className="chart">{<Bar data={data} options={options} />}</div>
         <div className="periodButtons">
           <ButtonGroup aria-label="Period">
             <Button
@@ -279,9 +178,10 @@ class RatioPerformance extends Component {
             </Button>
           </ButtonGroup>
         </div>
+        {standardCharts}
       </div>
     );
   }
 }
 
-export default RatioPerformance;
+export default StandardCharts;

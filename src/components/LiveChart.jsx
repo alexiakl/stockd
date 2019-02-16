@@ -108,7 +108,8 @@ class LiveChart extends Component {
     const finalLabels = [];
     symbols.forEach((symbol, index) => {
       const { chart } = this.result.data[symbol];
-      const chartData = chart.data;
+      const { data: chartData } = chart;
+
       chartData.forEach(entry => {
         if (!labels[entry.label]) {
           labels[entry.label] = 0;
@@ -125,7 +126,7 @@ class LiveChart extends Component {
     symbols.forEach((symbol, index) => {
       const { chart, quote } = this.result.data[symbol];
       const { previousClose } = quote;
-      const chartData = chart.data;
+      const { data: chartData } = chart;
       const symbolColor = getRandomColor(symbols.length, index);
       const dataset = {
         label: symbol,
@@ -163,9 +164,11 @@ class LiveChart extends Component {
             entryindex % skip === 0 ||
             entryindex === chart.length - 1
           ) {
-            dataset.data.push(
-              ((100 * (value - previousClose)) / previousClose).toFixed(3),
-            );
+            const valueToPush = (
+              (100 * (value - previousClose)) /
+              previousClose
+            ).toFixed(3);
+            dataset.data.push(valueToPush);
             if (index === 0) {
               options.scales.xAxes[0].labels.push(entry.label);
             }

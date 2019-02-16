@@ -1,15 +1,22 @@
 import React, { Component } from 'react';
 import '../styles/App.scss';
-import { Form, FormControl, Button } from 'react-bootstrap';
+import { Form, FormControl, Button, Alert } from 'react-bootstrap';
+import axios from 'axios';
 import LiveChart from '../components/LiveChart';
+import StandardCharts from '../components/StandardCharts';
 
 class Live extends Component {
   map = null;
 
   state = {
+    isMarketOpen: undefined,
     filtered: [],
     symbols: ['GOOGL', 'AMZN', 'MSFT'],
   };
+
+  componentWillMount() {
+    this.runQuery();
+  }
 
   componentDidMount() {
     this.map = JSON.parse(localStorage.getItem('symbolsMap'));
@@ -49,8 +56,23 @@ class Live extends Component {
     }
   }
 
+  runQuery() {
+    const url = `https://api.iextrading.com/1.0/stock/market/batch?symbols=GOOGL&types=chart&range=dynamic`;
+    axios.get(url).then(res => {
+      this.result = res;
+      this.runProcessing();
+    });
+  }
+
+  runProcessing() {
+    const { chart } = this.result.data.GOOGL;
+    const { range } = chart;
+    const isMarketOpen = range === 'today';
+    this.setState({ isMarketOpen });
+  }
+
   render() {
-    const { filtered, symbols } = this.state;
+    const { filtered, symbols, isMarketOpen } = this.state;
     return (
       <div>
         <div className="sdcontainer">
@@ -88,7 +110,21 @@ class Live extends Component {
             ))}
           </div>
         </div>
-        <LiveChart symbols={symbols} />
+        {isMarketOpen && <LiveChart symbols={symbols} />}
+        {!isMarketOpen && (
+          <div>
+            <div className="container">
+              <Alert dismissible variant="info">
+                <Alert.Heading>The market is currently closed!</Alert.Heading>
+                <hr />
+                <p className="mb-0">
+                  In the meantime, take a look at the following charts!
+                </p>
+              </Alert>
+            </div>
+            <StandardCharts symbols={symbols} />
+          </div>
+        )}
       </div>
     );
   }
