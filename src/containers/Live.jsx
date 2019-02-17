@@ -4,6 +4,7 @@ import { Form, FormControl, Button, Alert } from 'react-bootstrap';
 import axios from 'axios';
 import LiveChart from '../components/LiveChart';
 import StandardCharts from '../components/StandardCharts';
+import { MY_SYMBOLS, SYMBOLS_MAP, DEFAULT_SYMBOLS } from '../constants';
 
 class Live extends Component {
   map = null;
@@ -11,15 +12,16 @@ class Live extends Component {
   state = {
     isMarketOpen: undefined,
     filtered: [],
-    symbols: ['GOOGL', 'AMZN', 'MSFT'],
+    symbols: JSON.parse(localStorage.getItem(MY_SYMBOLS)),
   };
 
   componentWillMount() {
+    this.map = JSON.parse(localStorage.getItem(SYMBOLS_MAP));
+    const { symbols } = this.state;
+    if (!symbols || symbols.length === 0) {
+      this.setState({ symbols: DEFAULT_SYMBOLS.split(',') });
+    }
     this.runQuery();
-  }
-
-  componentDidMount() {
-    this.map = JSON.parse(localStorage.getItem('symbolsMap'));
   }
 
   filterSymbols(evt) {
@@ -44,6 +46,7 @@ class Live extends Component {
     const symbol = evt.target.innerHTML.split(' ')[0];
     if (symbols.indexOf(symbol) < 0) {
       symbols.push(symbol);
+      localStorage.setItem(MY_SYMBOLS, JSON.stringify(symbols));
       this.setState({ symbols });
     }
   }
@@ -52,6 +55,7 @@ class Live extends Component {
     const { symbols } = this.state;
     if (symbols.indexOf(evt.target.innerHTML) > -1) {
       symbols.splice(symbols.indexOf(evt.target.innerHTML), 1);
+      localStorage.setItem(MY_SYMBOLS, JSON.stringify(symbols));
       this.setState({ symbols });
     }
   }
@@ -73,7 +77,7 @@ class Live extends Component {
   }
 
   render() {
-    const { filtered, symbols, isMarketOpen } = this.state;
+    const { filtered, isMarketOpen, symbols } = this.state;
     return (
       <div>
         <div className="sdcontainer">

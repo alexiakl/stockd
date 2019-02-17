@@ -23,7 +23,7 @@ class StandardCharts extends Component {
   };
 
   static defaultProps = {
-    symbols: ['AAPL', 'FB', 'TSLA', 'GOOGL', 'AMZN', 'MSFT'],
+    symbols: [],
   };
 
   state = {
