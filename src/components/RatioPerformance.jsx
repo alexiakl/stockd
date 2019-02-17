@@ -4,7 +4,10 @@ import axios from 'axios';
 import { Button, ButtonGroup, Alert } from 'react-bootstrap';
 import '../styles/App.scss';
 import PropTypes from 'prop-types';
+import DatePicker from 'react-datepicker';
 import { getRandomColor } from '../utils/getRandomColor';
+
+import 'react-datepicker/dist/react-datepicker.css';
 
 class RatioPerformance extends Component {
   result = null;
@@ -69,11 +72,18 @@ class RatioPerformance extends Component {
         labels: [],
         datasets: [],
       },
+      startDate: new Date(),
     };
+
+    this.handleDateChange = this.handleDateChange.bind(this);
   }
 
   componentDidMount() {
     this.runQuery();
+  }
+
+  handleDateChange(date) {
+    this.runProcessing(date);
   }
 
   runQuery() {
@@ -89,7 +99,7 @@ class RatioPerformance extends Component {
     });
   }
 
-  runProcessing() {
+  runProcessing(date) {
     const { symbols, options, data } = this.state;
     options.scales.xAxes[0].labels = [];
     data.labels = [];
@@ -100,18 +110,39 @@ class RatioPerformance extends Component {
     symbols.forEach((symbol, index) => {
       const { chart } = this.result.data[symbol];
       chart.forEach(entry => {
-        if (!labels[entry.label]) {
-          labels[entry.label] = 0;
+        let skip = false;
+        if (date && this.period === '5y') {
+          const entryDateArr = entry.date.split('-');
+          const entryDate = new Date(
+            entryDateArr[0],
+            entryDateArr[1] - 1,
+            entryDateArr[2],
+          );
+
+          if (entryDate < date) {
+            skip = true;
+          }
         }
-        labels[entry.label] += 1;
-        if (index === symbols.length - 1) {
-          if (labels[entry.label] === symbols.length) {
-            finalLabels[entry.label] = 1;
+        if (!skip) {
+          if (!labels[entry.label]) {
+            labels[entry.label] = 0;
+          }
+          labels[entry.label] += 1;
+          if (index === symbols.length - 1) {
+            if (labels[entry.label] === symbols.length) {
+              finalLabels[entry.label] = 1;
+            }
           }
         }
       });
     });
 
+    let multiplier = 0;
+    if (date && this.period === '5y') {
+      const today = new Date();
+      const days = (today - date) / (1000 * 60 * 60 * 24);
+      multiplier = days / (5 * 365);
+    }
     symbols.forEach((symbol, index) => {
       const { chart } = this.result.data[symbol];
       const symbolColor = getRandomColor(symbols.length, index);
@@ -130,8 +161,12 @@ class RatioPerformance extends Component {
       };
       let previousAverage = 0;
       let skip = 0;
-      if (chart.length > 50) {
-        skip = parseInt(chart.length / 50, 10);
+      let count = chart.length;
+      if (multiplier > 0) {
+        count *= multiplier;
+      }
+      if (count > 50) {
+        skip = parseInt(count / 50, 10);
       }
       let startingPoint = -1;
 
@@ -161,7 +196,7 @@ class RatioPerformance extends Component {
       });
       data.datasets.push(dataset);
     });
-    this.setState({ data, options });
+    this.setState({ data, options, startDate: date });
   }
 
   handlePeriodChange(period) {
@@ -170,9 +205,13 @@ class RatioPerformance extends Component {
   }
 
   render() {
-    const { data, options, symbols } = this.state;
+    const { data, options, symbols, startDate } = this.state;
     const oldsymbols = this.allsymbols;
     this.allsymbols = symbols.join(',');
+    const today = new Date();
+    const minDate = new Date();
+    minDate.setDate(-1800); // around 5 years in the past
+
     if (this.allsymbols !== oldsymbols) {
       this.runQuery();
     }
@@ -215,8 +254,8 @@ class RatioPerformance extends Component {
       <div className="container">
         <Alert dismissible variant="success">
           <Alert.Heading>
-            If you bought 1000$ worth of stock a year ago, how much would it be
-            worth now?
+            If you bought 1000$ worth of stock {this.period} ago, how much would
+            it be worth now?
           </Alert.Heading>
           <hr />
           <p className="mb-0">
@@ -279,6 +318,13 @@ class RatioPerformance extends Component {
               5 years
             </Button>
           </ButtonGroup>
+          <DatePicker
+            selected={startDate}
+            onChange={this.handleDateChange}
+            minDate={minDate}
+            maxDate={today}
+            showDisabledMonthNavigation
+          />
         </div>
       </div>
     );
