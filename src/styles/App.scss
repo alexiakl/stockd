@@ -1,6 +1,9 @@
+@import 'Variables';
+
 body {
   margin: 0;
   padding: 0;
+  background-color: $backgroud;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
@@ -11,7 +14,7 @@ body {
 .sdcontainer {
   flex-wrap: wrap;
   padding: 20px 40px;
-  border-bottom: 1px solid #eeeeee;
+  border-bottom: 1px solid $seperator;
 }
 
 .container {
@@ -31,8 +34,12 @@ body {
 }
 
 .two {
-  flex: 50%;
-  max-width: 50%;
+  flex: 100%;
+  max-width: 100%;
+  @include lg {
+    flex: 50%;
+    max-width: 50%;
+  }
 }
 
 .stockButtons {
@@ -67,8 +74,7 @@ body {
 }
 
 .navbar-collapse {
-  color: #444444;
   .active {
-    background-color: #bdd8e6;
+    border-bottom: 2px solid $active;
   }
 }
