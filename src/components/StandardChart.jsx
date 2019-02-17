@@ -7,7 +7,9 @@ import { getRandomColor } from '../utils/getRandomColor';
 class StandardCharts extends Component {
   static propTypes = {
     symbol: PropTypes.string,
+    // eslint-disable-next-line react/forbid-prop-types
     labels: PropTypes.array,
+    // eslint-disable-next-line react/forbid-prop-types
     chart: PropTypes.array,
   };
 
@@ -70,6 +72,11 @@ class StandardCharts extends Component {
     this.runProcessing();
   }
 
+  componentWillReceiveProps(nextProps) {
+    this.props = nextProps;
+    this.runProcessing();
+  }
+
   runProcessing() {
     const { chart, labels, symbol } = this.props;
     const { options, data } = this.state;
@@ -96,13 +103,9 @@ class StandardCharts extends Component {
     if (chart.length > 50) {
       skip = parseInt(chart.length / 50, 10);
     }
-    let startingPoint = -1;
 
     chart.forEach((entry, entryindex) => {
       if (labels[entry.label] === 1) {
-        if (startingPoint < 0) {
-          startingPoint = entry.close;
-        }
         let value = 0;
         if (entry.close > 0) {
           previousAverage = entry.close;

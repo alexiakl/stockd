@@ -28,6 +28,7 @@ class StandardCharts extends Component {
 
   state = {
     result: {},
+    finalLabels: [],
   };
 
   componentDidMount() {
@@ -86,7 +87,7 @@ class StandardCharts extends Component {
       });
     });
 
-    this.setState({ result: this.result });
+    this.setState({ result: this.result, finalLabels: this.finalLabels });
   }
 
   handlePeriodChange(period) {
@@ -95,7 +96,7 @@ class StandardCharts extends Component {
   }
 
   render() {
-    const { result } = this.state;
+    const { result, finalLabels } = this.state;
     const { symbols } = this.props;
 
     if (this.newData === true) {
@@ -107,7 +108,7 @@ class StandardCharts extends Component {
             <StandardChart
               key={symbol}
               symbol={symbol}
-              labels={this.finalLabels}
+              labels={finalLabels}
               chart={result.data[symbol].chart}
             />,
           );
