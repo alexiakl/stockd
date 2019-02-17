@@ -42,18 +42,12 @@ body {
   }
 }
 
-.stockButtons {
-  display: flex;
-  flex-wrap: wrap;
-  text-align: center;
+.stockButton {
+  margin-left: 20px;
 }
 
 .periodButtons {
   text-align: center;
-}
-
-.stockButton {
-  margin-left: 20px;
 }
 
 .results {
