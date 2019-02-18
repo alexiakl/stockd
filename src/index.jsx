@@ -4,10 +4,23 @@ import { BrowserRouter as Router } from 'react-router-dom';
 
 import { createStore } from 'redux';
 import { Provider } from 'react-redux';
-import App from './containers/App';
+import App from './components/App';
 import rootReducer from './reducers';
 
-const store = createStore(rootReducer);
+import { SYMBOLS_ADDED, SYMBOLS_MAP, SYMBOLS_DEFAULT } from './constants';
+
+const initialState = {
+  symbolsPicker: {
+    map: JSON.parse(localStorage.getItem(SYMBOLS_MAP)),
+    symbols: JSON.parse(localStorage.getItem(SYMBOLS_ADDED)),
+    default: JSON.parse(localStorage.getItem(SYMBOLS_DEFAULT)),
+    filtered: [],
+  },
+  marketState: {
+    isMarketOpen: undefined,
+  },
+};
+const store = createStore(rootReducer, initialState);
 
 ReactDOM.render(
   <Router>

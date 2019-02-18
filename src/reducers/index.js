@@ -1,6 +1,8 @@
 import { combineReducers } from 'redux';
-import symbolPicker from './symbolPicker';
+import symbolsPicker from './symbolsPicker';
+import marketState from './marketState';
 
 export default combineReducers({
-  symbolPicker,
+  symbolsPicker,
+  marketState,
 });

@@ -10,6 +10,6 @@ export function removeSymbol(symbol) {
   return { type: REMOVE_SYMBOL, symbol };
 }
 
-export function filterSymbols(filter) {
-  return { type: FILTER_SYMBOLS, filter };
+export function filterSymbols(filtered) {
+  return { type: FILTER_SYMBOLS, filtered };
 }

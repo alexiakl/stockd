@@ -2,26 +2,20 @@ import React, { Component } from 'react';
 import '../styles/App.scss';
 import { Alert } from 'react-bootstrap';
 import axios from 'axios';
-import LiveChart from '../components/LiveChart';
-import StandardCharts from '../components/StandardCharts';
-import SymbolsPicker from '../components/SymbolsPicker';
-import { MY_SYMBOLS, SYMBOLS_MAP, DEFAULT_SYMBOLS } from '../constants';
+import LiveChart from '../containers/LiveChart';
+import StandardCharts from '../containers/StandardCharts';
+import SymbolsPicker from '../containers/SymbolsPicker';
 
 class Live extends Component {
-  map = null;
-
-  state = {
-    isMarketOpen: undefined,
-    symbols: JSON.parse(localStorage.getItem(MY_SYMBOLS)),
-  };
-
   componentWillMount() {
-    this.map = JSON.parse(localStorage.getItem(SYMBOLS_MAP));
-    const { symbols } = this.state;
-    if (!symbols || symbols.length === 0) {
-      this.setState({ symbols: DEFAULT_SYMBOLS.split(',') });
-    }
-    this.runQuery();
+    console.log(this.state);
+    console.log(this.props);
+    // this.map = JSON.parse(localStorage.getItem(SYMBOLS_MAP));
+    // const { symbols } = this.state;
+    // if (!symbols || symbols.length === 0) {
+    //   this.setState({ symbols: DEFAULT_SYMBOLS.split(',') });
+    // }
+    // this.runQuery();
   }
 
   runQuery() {
@@ -41,7 +35,8 @@ class Live extends Component {
   }
 
   render() {
-    const { isMarketOpen, symbols } = this.state;
+    const { isMarketOpen, symbols } = this.props;
+    console.log(isMarketOpen);
     return (
       <div>
         <SymbolsPicker />
