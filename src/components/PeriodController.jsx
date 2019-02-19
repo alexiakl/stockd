@@ -4,7 +4,9 @@ import { ButtonGroup, Button } from 'react-bootstrap';
 import { updatePeriod } from '../actions/periodController';
 
 const PeriodController = ({ period, dispatch }) => {
-  let [onem, threem, sixm, ytd, oney, twoy, fivey] = [
+  let [oned, fived, onem, threem, sixm, ytd, oney, twoy, fivey] = [
+    'outline-secondary',
+    'outline-secondary',
     'outline-secondary',
     'outline-secondary',
     'outline-secondary',
@@ -14,6 +16,12 @@ const PeriodController = ({ period, dispatch }) => {
     'outline-secondary',
   ];
   switch (period) {
+    case '1d':
+      oned = 'secondary';
+      break;
+    case '5d':
+      fived = 'secondary';
+      break;
     case '1m':
       onem = 'secondary';
       break;
@@ -43,6 +51,20 @@ const PeriodController = ({ period, dispatch }) => {
   return (
     <div className="periodButtons">
       <ButtonGroup aria-label="Period">
+        <Button
+          variant={oned}
+          size="sm"
+          onClick={() => dispatch(updatePeriod('1d'))}
+        >
+          1 day
+        </Button>
+        <Button
+          variant={fived}
+          size="sm"
+          onClick={() => dispatch(updatePeriod('5d'))}
+        >
+          5 days
+        </Button>
         <Button
           variant={onem}
           size="sm"

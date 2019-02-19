@@ -17,13 +17,14 @@ const initialState = {
     filtered: [],
   },
   periodController: {
-    period: '1y',
+    period: '1d',
   },
   marketState: {
     isMarketOpen: false,
     queryDone: false,
   },
   chartData: {},
+  liveChartData: {},
 };
 const store = createStore(rootReducer, initialState);
 
