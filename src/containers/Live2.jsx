@@ -1,33 +1,27 @@
 import React, { Component } from 'react';
 import '../styles/App.scss';
-import { Form, FormControl, Button } from 'react-bootstrap';
-import RatioPerformance from '../components/RatioPerformance';
+import { Form, FormControl, Button, Alert } from 'react-bootstrap';
+import axios from 'axios';
+import LiveChart from '../components/LiveChart';
+import StandardCharts from '../components/StandardCharts';
 import { SYMBOLS_ADDED, SYMBOLS_MAP, SYMBOLS_DEFAULT } from '../constants';
 
-class Performance extends Component {
+class Live extends Component {
   map = null;
 
   state = {
+    isMarketOpen: undefined,
     filtered: [],
     symbols: JSON.parse(localStorage.getItem(SYMBOLS_ADDED)),
   };
 
   componentWillMount() {
+    this.map = JSON.parse(localStorage.getItem(SYMBOLS_MAP));
     const { symbols } = this.state;
     if (!symbols || symbols.length === 0) {
       this.setState({ symbols: SYMBOLS_DEFAULT.split(',') });
     }
-    this.map = JSON.parse(localStorage.getItem(SYMBOLS_MAP));
-  }
-
-  addSymbol(evt) {
-    const { symbols } = this.state;
-    const symbol = evt.target.innerHTML.split(' ')[0];
-    if (symbols.indexOf(symbol) < 0) {
-      symbols.push(symbol);
-      localStorage.setItem(SYMBOLS_ADDED, JSON.stringify(symbols));
-      this.setState({ symbols });
-    }
+    this.runQuery();
   }
 
   filterSymbols(evt) {
@@ -47,6 +41,16 @@ class Performance extends Component {
     this.setState({ filtered });
   }
 
+  addSymbol(evt) {
+    const { symbols } = this.state;
+    const symbol = evt.target.innerHTML.split(' ')[0];
+    if (symbols.indexOf(symbol) < 0) {
+      symbols.push(symbol);
+      localStorage.setItem(SYMBOLS_ADDED, JSON.stringify(symbols));
+      this.setState({ symbols });
+    }
+  }
+
   removeSymbol(evt) {
     const { symbols } = this.state;
     if (symbols.indexOf(evt.target.innerHTML) > -1) {
@@ -56,8 +60,24 @@ class Performance extends Component {
     }
   }
 
+  runQuery() {
+    const url = `https://api.iextrading.com/1.0/stock/market/batch?symbols=GOOGL&types=chart&range=dynamic`;
+    console.log(`RQ: Live ${url}`);
+    axios.get(url).then(res => {
+      this.result = res;
+      this.runProcessing();
+    });
+  }
+
+  runProcessing() {
+    const { chart } = this.result.data.GOOGL;
+    const { range } = chart;
+    const isMarketOpen = range === 'today';
+    this.setState({ isMarketOpen });
+  }
+
   render() {
-    const { filtered, symbols } = this.state;
+    const { filtered, isMarketOpen, symbols } = this.state;
     return (
       <div>
         <div className="sdcontainer">
@@ -95,10 +115,24 @@ class Performance extends Component {
             ))}
           </div>
         </div>
-        <RatioPerformance symbols={symbols} />
+        {isMarketOpen && <LiveChart symbols={symbols} />}
+        {!isMarketOpen && (
+          <div>
+            <div className="container">
+              <Alert dismissible variant="info">
+                <Alert.Heading>The market is currently closed!</Alert.Heading>
+                <hr />
+                <p className="mb-0">
+                  In the meantime, take a look at the following charts!
+                </p>
+              </Alert>
+            </div>
+          </div>
+        )}
+        <StandardCharts symbols={symbols} />
       </div>
     );
   }
 }
 
-export default Performance;
+export default Live;
