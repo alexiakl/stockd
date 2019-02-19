@@ -3,10 +3,6 @@ import { connect } from 'react-redux';
 import { ButtonGroup, Button } from 'react-bootstrap';
 import { updatePeriod } from '../actions/periodController';
 
-const mapStateToProps = state => ({
-  period: state.periodController.period,
-});
-
 const PeriodController = ({ period, dispatch }) => {
   let [onem, threem, sixm, ytd, oney, twoy, fivey] = [
     'outline-secondary',
@@ -100,5 +96,9 @@ const PeriodController = ({ period, dispatch }) => {
     </div>
   );
 };
+
+const mapStateToProps = state => ({
+  period: state.periodController.period,
+});
 
 export default connect(mapStateToProps)(PeriodController);

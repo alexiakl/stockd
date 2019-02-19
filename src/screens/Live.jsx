@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import axios from 'axios';
 import LiveChart from '../components/LiveChart';
 import StandardCharts from '../components/StandardCharts';
-import SymbolsPicker from './SymbolsPicker';
+import SymbolsPicker from '../components/SymbolsPicker';
 import { setChartData } from '../actions/chartData';
 
 const mapStateToProps = state => ({

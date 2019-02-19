@@ -1,12 +1,13 @@
 import React from 'react';
 
-import { Switch, Route } from 'react-router-dom';
-import Header from '../containers/Header';
-import Home from '../containers/Home';
-import Live from '../containers/Live';
-import Performance from '../containers/Performance';
-import Historical from '../containers/Historical';
-import Login from '../containers/Login';
+import { Switch, Route, Redirect } from 'react-router-dom';
+import Header from './Header';
+import Home from '../screens/Home';
+import PageNotFound from '../screens/PageNotFound';
+import Live from '../screens/Live';
+import Performance from '../screens/Performance';
+import Historical from '../screens/Historical';
+import Login from '../screens/Login';
 
 const App = () => {
   return (
@@ -18,6 +19,8 @@ const App = () => {
         <Route exact path="/live" component={Live} />
         <Route exact path="/performance" component={Performance} />
         <Route exact path="/historical" component={Historical} />
+        <Route exact path="/404" component={PageNotFound} />
+        <Redirect path="/404" />
       </Switch>
     </div>
   );

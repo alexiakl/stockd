@@ -1,7 +1,7 @@
 import React from 'react';
 import axios from 'axios';
 import { connect } from 'react-redux';
-import SymbolsPicker from './SymbolsPicker';
+import SymbolsPicker from '../components/SymbolsPicker';
 import { SYMBOLS_MAP } from '../constants';
 import { setMap } from '../actions/symbolsPicker';
 

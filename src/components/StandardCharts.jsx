@@ -2,11 +2,7 @@ import React from 'react';
 import '../styles/App.scss';
 import { connect } from 'react-redux';
 import { Bar } from 'react-chartjs-2';
-import PeriodController from '../containers/PeriodController';
-
-const mapStateToProps = state => ({
-  data: state.chartData,
-});
+import PeriodController from './PeriodController';
 
 const StandardCharts = ({ data }) => {
   const standardCharts = [];
@@ -31,5 +27,9 @@ const StandardCharts = ({ data }) => {
     </div>
   );
 };
+
+const mapStateToProps = state => ({
+  data: state.chartData,
+});
 
 export default connect(mapStateToProps)(StandardCharts);

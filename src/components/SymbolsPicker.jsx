@@ -7,11 +7,6 @@ import {
   removeSymbol,
 } from '../actions/symbolsPicker';
 
-const mapStateToProps = state => ({
-  symbols: state.symbolsPicker.symbols,
-  filtered: state.symbolsPicker.filtered,
-});
-
 const SymbolsPicker = ({ symbols, filtered, dispatch }) => (
   <div>
     <div className="sdcontainer">
@@ -53,5 +48,10 @@ const SymbolsPicker = ({ symbols, filtered, dispatch }) => (
     </div>
   </div>
 );
+
+const mapStateToProps = state => ({
+  symbols: state.symbolsPicker.symbols,
+  filtered: state.symbolsPicker.filtered,
+});
 
 export default connect(mapStateToProps)(SymbolsPicker);
