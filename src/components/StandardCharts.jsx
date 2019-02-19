@@ -13,9 +13,13 @@ const StandardCharts = ({ data }) => {
   if (data && data.data && data.data.symbols) {
     const { symbols, options, datasets } = data.data;
     symbols.forEach(symbol => {
+      const fdatasets = {
+        datasets: [],
+      };
+      fdatasets.datasets.push(datasets[symbol]);
       standardCharts.push(
         <div className="chart two" key={symbol}>
-          {<Bar data={datasets[symbol]} options={options} />}
+          {<Bar data={fdatasets} options={options} />}
         </div>,
       );
     });
