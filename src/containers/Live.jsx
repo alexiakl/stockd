@@ -45,10 +45,7 @@ const process = (res, symbols, dispatch) => {
             position: 'left',
             id: 'y-axis-1',
             ticks: {
-              beginAtZero: true,
-              callback(value) {
-                return `${value}%`;
-              },
+              beginAtZero: false,
             },
             gridLines: {
               zeroLineColor: '#888',
@@ -83,8 +80,7 @@ const process = (res, symbols, dispatch) => {
   });
 
   symbols.forEach((symbol, index) => {
-    const { chart, quote } = res.data[symbol];
-    const { previousClose } = quote;
+    const { chart } = res.data[symbol];
     const symbolColor = '#456456';
     const dataset = {
       label: symbol,
@@ -110,23 +106,15 @@ const process = (res, symbols, dispatch) => {
         if (entry.close > 0) {
           previousValue = entry.close;
           value = previousValue;
-        } else if (entry.marketClose > 0) {
-          previousValue = entry.marketClose;
-          value = previousValue;
         } else {
           value = previousValue;
         }
-
         if (
           skip === 0 ||
           entryindex % skip === 0 ||
           entryindex === chart.length - 1
         ) {
-          const valueToPush = (
-            (100 * (value - previousClose)) /
-            previousClose
-          ).toFixed(3);
-          dataset.data.push(valueToPush);
+          dataset.data.push(value.toFixed(3));
           if (index === 0) {
             data.options.scales.xAxes[0].labels.push(entry.label);
           }
