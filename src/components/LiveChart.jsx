@@ -7,7 +7,7 @@ const LiveChart = ({ data }) => {
   const datasets = {
     datasets: [],
   };
-  let options = [];
+  let options = {};
   if (data && data.data && data.data.symbols) {
     options = data.data.options;
     datasets.datasets = data.data.datasets;

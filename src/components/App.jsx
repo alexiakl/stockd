@@ -20,7 +20,7 @@ const App = () => {
         <Route exact path="/performance" component={Performance} />
         <Route exact path="/historical" component={Historical} />
         <Route exact path="/404" component={PageNotFound} />
-        <Redirect path="/404" />
+        <Redirect to="/404" />
       </Switch>
     </div>
   );
