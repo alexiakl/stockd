@@ -3,6 +3,7 @@ import '../styles/App.scss';
 import { Alert } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import axios from 'axios';
+import { cloneDeep } from 'lodash';
 import LiveChart from '../components/LiveChart';
 import StandardCharts from '../components/StandardCharts';
 import SymbolsPicker from '../components/SymbolsPicker';
@@ -10,6 +11,7 @@ import { setChartData } from '../actions/chartData';
 import { setMarketOpen } from '../actions/marketState';
 import { setLiveChartData } from '../actions/liveChartData';
 import { getRandomColor } from '../utils/getRandomColor';
+import { options } from '../utils/chartVars';
 import PeriodController from '../components/PeriodController';
 
 const processLive = (res, symbols, dispatch, period) => {
@@ -17,46 +19,7 @@ const processLive = (res, symbols, dispatch, period) => {
     symbols: [],
     labels: [],
     datasets: [],
-    options: {
-      responsive: true,
-      maintainAspectRatio: true,
-      tooltips: {
-        mode: 'label',
-      },
-      elements: {
-        line: {
-          fill: false,
-        },
-      },
-      scales: {
-        xAxes: [
-          {
-            display: true,
-            gridLines: { display: false },
-            labels: [],
-          },
-        ],
-        yAxes: [
-          {
-            type: 'linear',
-            display: true,
-            position: 'left',
-            id: 'y-axis-1',
-            ticks: {
-              beginAtZero: false,
-            },
-            gridLines: {
-              zeroLineColor: '#888',
-              zeroLineWidth: 2,
-              display: true,
-            },
-            labels: {
-              show: true,
-            },
-          },
-        ],
-      },
-    },
+    options: cloneDeep(options),
   };
 
   const templabels = [];
@@ -151,46 +114,7 @@ const process = (res, symbols, dispatch) => {
     symbols: [],
     labels: [],
     datasets: [],
-    options: {
-      responsive: true,
-      maintainAspectRatio: true,
-      tooltips: {
-        mode: 'label',
-      },
-      elements: {
-        line: {
-          fill: false,
-        },
-      },
-      scales: {
-        xAxes: [
-          {
-            display: true,
-            gridLines: { display: false },
-            labels: [],
-          },
-        ],
-        yAxes: [
-          {
-            type: 'linear',
-            display: true,
-            position: 'left',
-            id: 'y-axis-1',
-            ticks: {
-              beginAtZero: false,
-            },
-            gridLines: {
-              zeroLineColor: '#888',
-              zeroLineWidth: 2,
-              display: true,
-            },
-            labels: {
-              show: true,
-            },
-          },
-        ],
-      },
-    },
+    options: cloneDeep(options),
   };
 
   const templabels = [];
