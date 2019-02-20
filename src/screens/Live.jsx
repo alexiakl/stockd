@@ -10,8 +10,9 @@ import { setChartData } from '../actions/chartData';
 import { setMarketOpen } from '../actions/marketState';
 import { setLiveChartData } from '../actions/liveChartData';
 import { getRandomColor } from '../utils/getRandomColor';
+import PeriodController from '../components/PeriodController';
 
-const processLive = (res, symbols, dispatch) => {
+const processLive = (res, symbols, dispatch, period) => {
   const liveData = {
     symbols: [],
     labels: [],
@@ -62,8 +63,12 @@ const processLive = (res, symbols, dispatch) => {
   symbols.forEach((symbol, index) => {
     liveData.symbols.push(symbol);
     const { chart } = res.data[symbol];
+    let dataArr = chart.data;
+    if (!dataArr) {
+      dataArr = chart;
+    }
 
-    chart.data.forEach(entry => {
+    dataArr.forEach(entry => {
       if (!templabels[entry.label]) {
         templabels[entry.label] = 0;
       }
@@ -78,7 +83,11 @@ const processLive = (res, symbols, dispatch) => {
 
   symbols.forEach((symbol, index) => {
     const { chart, quote } = res.data[symbol];
-    const { previousClose } = quote;
+    let { previousClose } = quote;
+    let dataArr = chart.data;
+    if (!dataArr) {
+      dataArr = chart;
+    }
     const symbolColor = getRandomColor(symbols.length, index);
     const livedataset = {
       label: symbol,
@@ -95,10 +104,10 @@ const processLive = (res, symbols, dispatch) => {
     };
     let previousValue = 0;
     let skip = 0;
-    if (chart.data.length > 50) {
-      skip = parseInt(chart.data.length / 50, 10);
+    if (dataArr.length > 50) {
+      skip = parseInt(dataArr.length / 50, 10);
     }
-    chart.data.forEach((entry, entryindex) => {
+    dataArr.forEach((entry, entryindex) => {
       if (liveData.labels[entry.label] === 1) {
         let value = 0;
         if (entry.close > 0) {
@@ -109,6 +118,10 @@ const processLive = (res, symbols, dispatch) => {
           value = previousValue;
         } else {
           value = previousValue;
+        }
+
+        if (entryindex === 0 && period !== '1d') {
+          previousClose = value;
         }
         if (
           skip === 0 ||
@@ -256,6 +269,7 @@ const runQuery = (symbols, period, dispatch) => {
   console.log(`RQ: Live ${url}`);
   axios.get(url).then(res => {
     process(res, symbols, dispatch);
+    processLive(res, symbols, dispatch, period);
   });
 
   url = `https://api.iextrading.com/1.0/stock/market/batch?symbols=GOOGL&types=chart&range=dynamic`;
@@ -266,12 +280,6 @@ const runQuery = (symbols, period, dispatch) => {
     const isMarketOpen = range === 'today';
     dispatch(setMarketOpen(isMarketOpen));
   });
-
-  url = `https://api.iextrading.com/1.0/stock/market/batch?symbols=${allsymbols}&types=chart,quote&range=dynamic`;
-  console.log(`RQ: Live ${url}`);
-  axios.get(url).then(res => {
-    processLive(res, symbols, dispatch);
-  });
 };
 
 const Live = ({ isMarketOpen, symbols, period, dispatch }) => {
@@ -279,7 +287,6 @@ const Live = ({ isMarketOpen, symbols, period, dispatch }) => {
   return (
     <div>
       <SymbolsPicker />
-      {isMarketOpen && <LiveChart />}
       {!isMarketOpen && (
         <div>
           <div className="container">
@@ -293,6 +300,8 @@ const Live = ({ isMarketOpen, symbols, period, dispatch }) => {
           </div>
         </div>
       )}
+      <PeriodController />
+      <LiveChart />
       <StandardCharts />
     </div>
   );

@@ -2,7 +2,6 @@ import React from 'react';
 import '../styles/App.scss';
 import { connect } from 'react-redux';
 import { Bar } from 'react-chartjs-2';
-import PeriodController from './PeriodController';
 
 const StandardCharts = ({ data }) => {
   const standardCharts = [];
@@ -22,7 +21,6 @@ const StandardCharts = ({ data }) => {
   }
   return (
     <div>
-      <PeriodController />
       <div className="flex">{standardCharts}</div>
     </div>
   );
