@@ -6,7 +6,6 @@ import Home from '../screens/Home';
 import PageNotFound from '../screens/PageNotFound';
 import Live from '../screens/Live';
 import Performance from '../screens/Performance';
-import Historical from '../screens/Historical';
 import Login from '../screens/Login';
 
 const App = () => {
@@ -18,7 +17,6 @@ const App = () => {
         <Route exact path="/login" component={Login} />
         <Route exact path="/live" component={Live} />
         <Route exact path="/performance" component={Performance} />
-        <Route exact path="/historical" component={Historical} />
         <Route exact path="/404" component={PageNotFound} />
         <Redirect to="/404" />
       </Switch>

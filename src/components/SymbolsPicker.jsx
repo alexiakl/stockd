@@ -41,7 +41,7 @@ const SymbolsPicker = ({ symbols, filtered, dispatch }) => (
               dispatch(addSymbol(evt.target.innerHTML.split(' ')[0]))
             }
           >
-            {symbol}
+            {symbol.length > 30 ? `${symbol.substring(0, 30)}..` : symbol}
           </Button>
         ))}
       </div>

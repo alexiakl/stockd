@@ -16,9 +16,6 @@ export default () => (
         <LinkContainer to="/live">
           <NavItem>live</NavItem>
         </LinkContainer>
-        <LinkContainer to="/historical">
-          <NavItem>historical</NavItem>
-        </LinkContainer>
         <LinkContainer to="/performance">
           <NavItem>performance</NavItem>
         </LinkContainer>
