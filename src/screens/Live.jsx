@@ -246,19 +246,9 @@ const process = (res, symbols, isMarketOpen, dispatch) => {
   dispatch(setChartData(data));
 };
 
-const runQuery = (symbols, period, dispatch, isMarketOpen) => {
-  if (!isMarketOpen && period === '1d') {
-    dispatch(updatePeriod('1m'));
-  } else {
-    const allsymbols = symbols.join(',');
-    let url = `https://api.iextrading.com/1.0/stock/market/batch?symbols=${allsymbols}&types=quote,chart&range=${period}`;
-    console.log(`RQ: Live ${url}`);
-    axios.get(url).then(res => {
-      process(res, symbols, isMarketOpen, dispatch);
-      processLive(res, symbols, dispatch, period);
-    });
-
-    url = `https://api.iextrading.com/1.0/stock/market/batch?symbols=GOOGL&types=chart&range=dynamic`;
+const runQuery = (symbols, period, isMarketOpen, dispatch) => {
+  if (isMarketOpen === undefined) {
+    const url = `https://api.iextrading.com/1.0/stock/market/batch?symbols=GOOGL&types=chart&range=dynamic`;
     console.log(`RQ: Live ${url}`);
     axios.get(url).then(res => {
       const { chart } = res.data.GOOGL;
@@ -266,11 +256,21 @@ const runQuery = (symbols, period, dispatch, isMarketOpen) => {
       const isMarketOpen = range === 'today';
       dispatch(setMarketOpen(isMarketOpen));
     });
+  } else if (!isMarketOpen && period === '1d') {
+    dispatch(updatePeriod('1m'));
+  } else {
+    const allsymbols = symbols.join(',');
+    const url = `https://api.iextrading.com/1.0/stock/market/batch?symbols=${allsymbols}&types=quote,chart&range=${period}`;
+    console.log(`RQ: Live ${url}`);
+    axios.get(url).then(res => {
+      process(res, symbols, isMarketOpen, dispatch);
+      processLive(res, symbols, dispatch, period);
+    });
   }
 };
 
-const Live = ({ isMarketOpen, symbols, period, dispatch }) => {
-  runQuery(symbols, period, dispatch, isMarketOpen);
+const Live = ({ symbols, period, isMarketOpen, dispatch }) => {
+  runQuery(symbols, period, isMarketOpen, dispatch);
   return (
     <div>
       <SymbolsPicker />

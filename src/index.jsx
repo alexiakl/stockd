@@ -20,8 +20,7 @@ const initialState = {
     period: '1d',
   },
   marketState: {
-    isMarketOpen: false,
-    queryDone: false,
+    isMarketOpen: undefined,
   },
   chartData: {},
   liveChartData: {},

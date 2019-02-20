@@ -25,6 +25,7 @@ const StandardCharts = ({ data }) => {
       } else {
         foptions.title.text = symbol;
       }
+      foptions.legend.display = false;
       foptions.annotation = data.data.annotations[symbol];
       standardCharts.push(
         <div className="chart two" key={symbol}>
