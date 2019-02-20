@@ -106,6 +106,14 @@ const processLive = (res, symbols, dispatch, period) => {
     liveData.datasets.push(livedataset);
   });
 
+  liveData.options.tooltips.callbacks = {
+    label(tooltipItem, data) {
+      let { label } = data.datasets[tooltipItem.datasetIndex];
+      label += `: ${tooltipItem.yLabel}%`;
+      return label;
+    },
+  };
+
   dispatch(setLiveChartData(liveData));
 };
 
@@ -184,6 +192,13 @@ const process = (res, symbols, dispatch) => {
     data.datasets[symbol] = dataset;
   });
 
+  data.options.tooltips.callbacks = {
+    label(tooltipItem, cdata) {
+      let { label } = cdata.datasets[tooltipItem.datasetIndex];
+      label += `: ${tooltipItem.yLabel}$`;
+      return label;
+    },
+  };
   dispatch(setChartData(data));
 };
 

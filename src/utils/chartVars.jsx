@@ -3,6 +3,7 @@ const options = {
   maintainAspectRatio: true,
   tooltips: {
     mode: 'label',
+    callbacks: {},
   },
   elements: {
     line: {
