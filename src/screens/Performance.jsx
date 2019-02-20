@@ -2,20 +2,20 @@ import React, { Component } from 'react';
 import '../styles/App.scss';
 import { Form, FormControl, Button } from 'react-bootstrap';
 import RatioPerformance from '../components/RatioPerformance';
-import { MY_SYMBOLS, SYMBOLS_MAP, DEFAULT_SYMBOLS } from '../constants';
+import { SYMBOLS_ADDED, SYMBOLS_MAP, SYMBOLS_DEFAULT } from '../constants';
 
 class Performance extends Component {
   map = null;
 
   state = {
     filtered: [],
-    symbols: JSON.parse(localStorage.getItem(MY_SYMBOLS)),
+    symbols: JSON.parse(localStorage.getItem(SYMBOLS_ADDED)),
   };
 
   componentWillMount() {
     const { symbols } = this.state;
     if (!symbols || symbols.length === 0) {
-      this.setState({ symbols: DEFAULT_SYMBOLS.split(',') });
+      this.setState({ symbols: SYMBOLS_DEFAULT.split(',') });
     }
     this.map = JSON.parse(localStorage.getItem(SYMBOLS_MAP));
   }
@@ -25,7 +25,7 @@ class Performance extends Component {
     const symbol = evt.target.innerHTML.split(' ')[0];
     if (symbols.indexOf(symbol) < 0) {
       symbols.push(symbol);
-      localStorage.setItem(MY_SYMBOLS, JSON.stringify(symbols));
+      localStorage.setItem(SYMBOLS_ADDED, JSON.stringify(symbols));
       this.setState({ symbols });
     }
   }
@@ -51,7 +51,7 @@ class Performance extends Component {
     const { symbols } = this.state;
     if (symbols.indexOf(evt.target.innerHTML) > -1) {
       symbols.splice(symbols.indexOf(evt.target.innerHTML), 1);
-      localStorage.setItem(MY_SYMBOLS, JSON.stringify(symbols));
+      localStorage.setItem(SYMBOLS_ADDED, JSON.stringify(symbols));
       this.setState({ symbols });
     }
   }
