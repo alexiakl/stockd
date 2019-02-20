@@ -13,6 +13,8 @@ import { setLiveChartData } from '../actions/liveChartData';
 import { getRandomColor } from '../utils/getRandomColor';
 import { options } from '../utils/chartVars';
 import PeriodController from '../components/PeriodController';
+import { updatePeriod } from '../actions/periodController';
+import 'chartjs-plugin-annotation';
 
 const processLive = (res, symbols, dispatch, period) => {
   const liveData = {
@@ -63,12 +65,14 @@ const processLive = (res, symbols, dispatch, period) => {
       pointBackgroundColor: symbolColor,
       pointHoverBackgroundColor: symbolColor,
       pointHoverBorderColor: symbolColor,
+      pointRadius: 3,
+      pointHoverRadius: 7,
       yAxisID: 'y-axis-1',
     };
     let previousValue = 0;
     let skip = 0;
-    if (dataArr.length > 50) {
-      skip = parseInt(dataArr.length / 50, 10);
+    if (dataArr.length > 70) {
+      skip = parseInt(dataArr.length / 70, 10);
     }
     dataArr.forEach((entry, entryindex) => {
       if (liveData.labels[entry.label] === 1) {
@@ -106,6 +110,12 @@ const processLive = (res, symbols, dispatch, period) => {
     liveData.datasets.push(livedataset);
   });
 
+  liveData.options.scales.yAxes[0].ticks.callback = value => {
+    return `${value}%`;
+  };
+
+  liveData.options.title.text = 'Comparison of performance in %';
+
   liveData.options.tooltips.callbacks = {
     label(tooltipItem, data) {
       let { label } = data.datasets[tooltipItem.datasetIndex];
@@ -117,11 +127,13 @@ const processLive = (res, symbols, dispatch, period) => {
   dispatch(setLiveChartData(liveData));
 };
 
-const process = (res, symbols, dispatch) => {
+const process = (res, symbols, isMarketOpen, dispatch) => {
   const data = {
     symbols: [],
     labels: [],
     datasets: [],
+    info: [],
+    annotations: [],
     options: cloneDeep(options),
   };
 
@@ -144,7 +156,8 @@ const process = (res, symbols, dispatch) => {
   });
 
   symbols.forEach((symbol, index) => {
-    const { chart } = res.data[symbol];
+    const { chart, quote } = res.data[symbol];
+    const { previousClose } = quote;
     const symbolColor = getRandomColor(symbols.length, index);
     const dataset = {
       label: symbol,
@@ -160,9 +173,10 @@ const process = (res, symbols, dispatch) => {
       yAxisID: 'y-axis-1',
     };
     let previousValue = 0;
+    let lastValue = 0;
     let skip = 0;
-    if (chart.length > 50) {
-      skip = parseInt(chart.length / 50, 10);
+    if (chart.length > 70) {
+      skip = parseInt(chart.length / 70, 10);
     }
     chart.forEach((entry, entryindex) => {
       if (data.labels[entry.label] === 1) {
@@ -176,6 +190,7 @@ const process = (res, symbols, dispatch) => {
         } else {
           value = previousValue;
         }
+        lastValue = value;
         if (
           skip === 0 ||
           entryindex % skip === 0 ||
@@ -190,6 +205,34 @@ const process = (res, symbols, dispatch) => {
     });
 
     data.datasets[symbol] = dataset;
+
+    data.options.scales.yAxes[0].ticks.callback = value => {
+      return `$${value}`;
+    };
+    if (isMarketOpen) {
+      data.info[symbol] = {
+        previousClose,
+        lastValue,
+      };
+      data.annotations[symbol] = {
+        annotations: [
+          {
+            type: 'line',
+            mode: 'horizontal',
+            scaleID: 'y-axis-1',
+            value: previousClose,
+            borderColor: '#888',
+            borderWidth: 2,
+            label: {
+              enabled: true,
+              content: previousClose,
+              fontSize: 8,
+              backgroundColor: 'rgba(0,0,0,0.6)',
+            },
+          },
+        ],
+      };
+    }
   });
 
   data.options.tooltips.callbacks = {
@@ -199,30 +242,35 @@ const process = (res, symbols, dispatch) => {
       return label;
     },
   };
+
   dispatch(setChartData(data));
 };
 
-const runQuery = (symbols, period, dispatch) => {
-  const allsymbols = symbols.join(',');
-  let url = `https://api.iextrading.com/1.0/stock/market/batch?symbols=${allsymbols}&types=quote,chart&range=${period}`;
-  console.log(`RQ: Live ${url}`);
-  axios.get(url).then(res => {
-    process(res, symbols, dispatch);
-    processLive(res, symbols, dispatch, period);
-  });
+const runQuery = (symbols, period, dispatch, isMarketOpen) => {
+  if (!isMarketOpen && period === '1d') {
+    dispatch(updatePeriod('1m'));
+  } else {
+    const allsymbols = symbols.join(',');
+    let url = `https://api.iextrading.com/1.0/stock/market/batch?symbols=${allsymbols}&types=quote,chart&range=${period}`;
+    console.log(`RQ: Live ${url}`);
+    axios.get(url).then(res => {
+      process(res, symbols, isMarketOpen, dispatch);
+      processLive(res, symbols, dispatch, period);
+    });
 
-  url = `https://api.iextrading.com/1.0/stock/market/batch?symbols=GOOGL&types=chart&range=dynamic`;
-  console.log(`RQ: Live ${url}`);
-  axios.get(url).then(res => {
-    const { chart } = res.data.GOOGL;
-    const { range } = chart;
-    const isMarketOpen = range === 'today';
-    dispatch(setMarketOpen(isMarketOpen));
-  });
+    url = `https://api.iextrading.com/1.0/stock/market/batch?symbols=GOOGL&types=chart&range=dynamic`;
+    console.log(`RQ: Live ${url}`);
+    axios.get(url).then(res => {
+      const { chart } = res.data.GOOGL;
+      const { range } = chart;
+      const isMarketOpen = range === 'today';
+      dispatch(setMarketOpen(isMarketOpen));
+    });
+  }
 };
 
 const Live = ({ isMarketOpen, symbols, period, dispatch }) => {
-  runQuery(symbols, period, dispatch);
+  runQuery(symbols, period, dispatch, isMarketOpen);
   return (
     <div>
       <SymbolsPicker />
