@@ -27,9 +27,11 @@ body {
 }
 
 .chartContainer {
-  margin: 10px 10px 10px 10px;
   border: 1px solid $chartBackgroud;
   border-radius: 5px;
+  max-width: 800px;
+  margin: 0 auto;
+  margin-top: 20px;
 
   .chartHeader {
     margin-left: 28px;
@@ -74,12 +76,27 @@ body {
   flex-wrap: wrap;
 }
 
-.two {
+// .responsiveCharts {
+//   @include lg {
+//     div:nth-child(2n) {
+//       padding-left: 20px;
+//     }
+//   }
+//   @include xl {
+//     div:nth-child(3n) {
+//       padding-left: 20px;
+//     }
+//   }
+// }
+
+.cols {
   flex: 100%;
   max-width: 100%;
   @include lg {
-    flex: 50%;
     max-width: 50%;
+  }
+  @include xl {
+    max-width: 33%;
   }
 }
 

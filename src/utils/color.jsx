@@ -49,6 +49,15 @@ const getRandomColor = (numOfSteps, step) => {
   )).toString(16)}`.slice(-2)}${`00${(~~(b * 255)).toString(16)}`.slice(-2)}`;
   return c;
 };
-/* eslint-enable */
 
-exports.getRandomColor = getRandomColor;
+const getPerformanceColor = value => {
+  if (value > 0) {
+    return 'green';
+  }
+  if (value < 0) {
+    return 'red';
+  }
+  return '';
+};
+
+export { getRandomColor, getPerformanceColor };

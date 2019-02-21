@@ -9,7 +9,7 @@ import SymbolsPicker from '../components/SymbolsPicker';
 import { setChartData } from '../actions/chartData';
 import { setMarketOpen } from '../actions/marketState';
 import { setLiveChartData } from '../actions/liveChartData';
-import { getRandomColor } from '../utils/getRandomColor';
+import { getRandomColor } from '../utils/color';
 import { options } from '../utils/chartVars';
 import PeriodController from '../components/PeriodController';
 import { updatePeriod } from '../actions/periodController';
@@ -114,9 +114,6 @@ const processLive = (res, symbols, dispatch, period) => {
     return `${value}%`;
   };
 
-  liveData.options.title.text = 'Comparison of performance in %';
-  liveData.options.title.display = true;
-
   liveData.options.tooltips.callbacks = {
     label(tooltipItem, data) {
       let { label } = data.datasets[tooltipItem.datasetIndex];
@@ -174,6 +171,7 @@ const process = (res, symbols, isMarketOpen, dispatch) => {
       yAxisID: 'y-axis-1',
     };
     let previousValue = 0;
+    let latestValue = 0;
     let skip = 0;
     if (chart.length > 70) {
       skip = parseInt(chart.length / 70, 10);
@@ -189,6 +187,9 @@ const process = (res, symbols, isMarketOpen, dispatch) => {
           value = previousValue;
         } else {
           value = previousValue;
+        }
+        if (isMarketOpen) {
+          latestValue = value;
         }
         if (
           skip === 0 ||
@@ -212,6 +213,7 @@ const process = (res, symbols, isMarketOpen, dispatch) => {
     data.info[symbol] = {
       isMarketOpen,
       quote,
+      latestValue,
     };
 
     if (isMarketOpen) {
@@ -277,7 +279,6 @@ const Live = ({ symbols, period, isMarketOpen, dispatch }) => {
       <SymbolsPicker />
       <PeriodController />
       <StandardCharts />
-      <LiveChart />
     </div>
   );
 };

@@ -3,6 +3,8 @@ import '../styles/App.scss';
 import { connect } from 'react-redux';
 import { Bar } from 'react-chartjs-2';
 import { cloneDeep } from 'lodash';
+import { getPerformanceColor } from '../utils/color';
+import LiveChart from "./LiveChart";
 
 const StandardCharts = ({ data }) => {
   const standardCharts = [];
@@ -15,18 +17,18 @@ const StandardCharts = ({ data }) => {
       fdatasets.datasets.push(datasets[symbol]);
       const foptions = cloneDeep(options);
 
-      const { quote } = info[symbol];
+      const { quote, latestValue } = info[symbol];
       const { close, change, changePercent } = quote;
       foptions.legend.display = false;
       foptions.annotation = data.data.annotations[symbol];
       standardCharts.push(
-        <div className="chart two" key={symbol}>
+        <div className="chart cols" key={symbol}>
           <div className="chartContainer">
             <div className="chartHeader">
               <p>
-                {symbol} {close}$ <br />
-                <span className={`chartInfo ${change > 0 ? 'green' : 'red'}`}>
-                  {change}$ {changePercent * 100}%
+                {symbol} {latestValue > 0 ? latestValue : close}$ <br />
+                <span className={`chartInfo ${getPerformanceColor(change)}`}>
+                  {change}$ {(changePercent * 100).toFixed(3)}%
                 </span>
               </p>
             </div>
@@ -37,7 +39,13 @@ const StandardCharts = ({ data }) => {
       );
     });
   }
-  return <div className="flex">{standardCharts}</div>;
+  return (
+    <div className="flex responsiveCharts">
+      {standardCharts}
+
+      <LiveChart />
+    </div>
+  );
 };
 
 const mapStateToProps = state => ({

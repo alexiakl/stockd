@@ -5,7 +5,7 @@ import { Button, ButtonGroup, Alert } from 'react-bootstrap';
 import '../styles/App.scss';
 import PropTypes from 'prop-types';
 import DatePicker from 'react-datepicker';
-import { getRandomColor } from '../utils/getRandomColor';
+import { getRandomColor } from '../utils/color';
 
 import 'react-datepicker/dist/react-datepicker.css';
 
