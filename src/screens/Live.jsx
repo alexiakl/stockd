@@ -14,6 +14,7 @@ import { getRandomColor } from '../utils/getRandomColor';
 import { options } from '../utils/chartVars';
 import PeriodController from '../components/PeriodController';
 import { updatePeriod } from '../actions/periodController';
+import { API, TOKEN } from '../constants';
 import 'chartjs-plugin-annotation';
 
 const processLive = (res, symbols, dispatch, period) => {
@@ -248,7 +249,7 @@ const process = (res, symbols, isMarketOpen, dispatch) => {
 
 const runQuery = (symbols, period, isMarketOpen, dispatch) => {
   if (isMarketOpen === undefined) {
-    const url = `https://api.iextrading.com/1.0/stock/market/batch?symbols=GOOGL&types=chart&range=dynamic`;
+    const url = `${API}stock/market/batch?symbols=GOOGL&types=chart&range=dynamic${TOKEN}`;
     console.log(`RQ: Live ${url}`);
     axios.get(url).then(res => {
       const { chart } = res.data.GOOGL;
@@ -260,7 +261,7 @@ const runQuery = (symbols, period, isMarketOpen, dispatch) => {
     dispatch(updatePeriod('1m'));
   } else {
     const allsymbols = symbols.join(',');
-    const url = `https://api.iextrading.com/1.0/stock/market/batch?symbols=${allsymbols}&types=quote,chart&range=${period}`;
+    const url = `${API}stock/market/batch?symbols=${allsymbols}&types=quote,chart&range=${period}${TOKEN}`;
     console.log(`RQ: Live ${url}`);
     axios.get(url).then(res => {
       process(res, symbols, isMarketOpen, dispatch);
