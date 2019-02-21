@@ -15,7 +15,7 @@ import { updatePeriod } from '../actions/periodController';
 import { API, TOKEN } from '../constants';
 import 'chartjs-plugin-annotation';
 
-const processLive = (res, symbols, dispatch, period) => {
+const processLive = (res, symbols, period, dispatch) => {
   const liveData = {
     symbols: [],
     labels: [],
@@ -124,7 +124,7 @@ const processLive = (res, symbols, dispatch, period) => {
   dispatch(setLiveChartData(liveData));
 };
 
-const process = (res, symbols, isMarketOpen, dispatch) => {
+const process = (res, symbols, isMarketOpen, period, dispatch) => {
   const data = {
     symbols: [],
     labels: [],
@@ -218,7 +218,7 @@ const process = (res, symbols, isMarketOpen, dispatch) => {
       latestValue,
     };
 
-    if (isMarketOpen) {
+    if (isMarketOpen && period === '1d') {
       data.annotations[symbol] = {
         annotations: [
           {
@@ -268,8 +268,8 @@ const runQuery = (symbols, period, isMarketOpen, dispatch) => {
     const url = `${API}stock/market/batch?symbols=${allsymbols}&types=quote,chart&range=${period}${TOKEN}`;
     console.log(`RQ: Live ${url}`);
     axios.get(url).then(res => {
-      process(res, symbols, isMarketOpen, dispatch);
-      processLive(res, symbols, dispatch, period);
+      process(res, symbols, isMarketOpen, period, dispatch);
+      processLive(res, symbols, period, dispatch);
     });
   }
 };
