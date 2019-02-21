@@ -15,30 +15,29 @@ const StandardCharts = ({ data }) => {
       fdatasets.datasets.push(datasets[symbol]);
       const foptions = cloneDeep(options);
 
-      if (info[symbol]) {
-        const { previousClose, lastValue } = info[symbol];
-        const percentage = (
-          (100 * (lastValue - previousClose)) /
-          previousClose
-        ).toFixed(3);
-        foptions.title.text = `${symbol} ${previousClose}$, ${lastValue}$, ${percentage}%`;
-      } else {
-        foptions.title.text = symbol;
-      }
+      const { quote } = info[symbol];
+      const { close, change, changePercent } = quote;
       foptions.legend.display = false;
       foptions.annotation = data.data.annotations[symbol];
       standardCharts.push(
         <div className="chart two" key={symbol}>
-          {<Bar data={fdatasets} options={foptions} />}
+          <div className="chartContainer">
+            <div className="chartHeader">
+              <p>
+                {symbol} {close}$ <br />
+                <span className={`chartInfo ${change > 0 ? 'green' : 'red'}`}>
+                  {change}$ {changePercent * 100}%
+                </span>
+              </p>
+            </div>
+            {<Bar data={fdatasets} options={foptions} />}
+            <div />
+          </div>
         </div>,
       );
     });
   }
-  return (
-    <div>
-      <div className="flex">{standardCharts}</div>
-    </div>
-  );
+  return <div className="flex">{standardCharts}</div>;
 };
 
 const mapStateToProps = state => ({

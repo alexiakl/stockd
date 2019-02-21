@@ -12,8 +12,9 @@ const LiveChart = ({ data }) => {
     options = data.data.options;
     datasets.datasets = data.data.datasets;
   }
+
   return (
-    <div className="container">
+    <div className="chartContainer">
       <Bar data={datasets} options={options} />
     </div>
   );

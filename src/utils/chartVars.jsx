@@ -10,7 +10,7 @@ const options = {
     },
   },
   title: {
-    display: true,
+    display: false,
     text: '',
     fontSize: 20,
     padding: 20,

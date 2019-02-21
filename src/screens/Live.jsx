@@ -1,6 +1,5 @@
 import React from 'react';
 import '../styles/App.scss';
-import { Alert } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import axios from 'axios';
 import { cloneDeep } from 'lodash';
@@ -116,6 +115,7 @@ const processLive = (res, symbols, dispatch, period) => {
   };
 
   liveData.options.title.text = 'Comparison of performance in %';
+  liveData.options.title.display = true;
 
   liveData.options.tooltips.callbacks = {
     label(tooltipItem, data) {
@@ -174,7 +174,6 @@ const process = (res, symbols, isMarketOpen, dispatch) => {
       yAxisID: 'y-axis-1',
     };
     let previousValue = 0;
-    let lastValue = 0;
     let skip = 0;
     if (chart.length > 70) {
       skip = parseInt(chart.length / 70, 10);
@@ -191,7 +190,6 @@ const process = (res, symbols, isMarketOpen, dispatch) => {
         } else {
           value = previousValue;
         }
-        lastValue = value;
         if (
           skip === 0 ||
           entryindex % skip === 0 ||
@@ -210,11 +208,13 @@ const process = (res, symbols, isMarketOpen, dispatch) => {
     data.options.scales.yAxes[0].ticks.callback = value => {
       return `$${value}`;
     };
+
+    data.info[symbol] = {
+      isMarketOpen,
+      quote,
+    };
+
     if (isMarketOpen) {
-      data.info[symbol] = {
-        previousClose,
-        lastValue,
-      };
       data.annotations[symbol] = {
         annotations: [
           {
@@ -275,22 +275,9 @@ const Live = ({ symbols, period, isMarketOpen, dispatch }) => {
   return (
     <div>
       <SymbolsPicker />
-      {!isMarketOpen && (
-        <div>
-          <div className="container">
-            <Alert dismissible variant="info">
-              <Alert.Heading>The market is currently closed!</Alert.Heading>
-              <hr />
-              <p className="mb-0">
-                In the meantime, take a look at the following charts!
-              </p>
-            </Alert>
-          </div>
-        </div>
-      )}
       <PeriodController />
-      <LiveChart />
       <StandardCharts />
+      <LiveChart />
     </div>
   );
 };
