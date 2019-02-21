@@ -70,8 +70,8 @@ const processLive = (res, symbols, dispatch, period) => {
     };
     let previousValue = 0;
     let skip = 0;
-    if (dataArr.length > 70) {
-      skip = parseInt(dataArr.length / 70, 10);
+    if (dataArr.length > 50) {
+      skip = parseInt(dataArr.length / 50, 10);
     }
     dataArr.forEach((entry, entryindex) => {
       if (liveData.labels[entry.label] === 1) {
@@ -172,8 +172,8 @@ const process = (res, symbols, isMarketOpen, dispatch) => {
     let previousValue = 0;
     let latestValue = 0;
     let skip = 0;
-    if (chart.length > 70) {
-      skip = parseInt(chart.length / 70, 10);
+    if (chart.length > 50) {
+      skip = parseInt(chart.length / 50, 10);
     }
     chart.forEach((entry, entryindex) => {
       if (data.labels[entry.label] === 1) {

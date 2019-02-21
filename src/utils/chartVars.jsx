@@ -9,6 +9,10 @@ const options = {
       bottom: 20,
     },
   },
+  hover: {
+    mode: 'x',
+    intersect: false,
+  },
   title: {
     display: false,
     text: '',
@@ -19,7 +23,8 @@ const options = {
     position: 'bottom',
   },
   tooltips: {
-    mode: 'label',
+    mode: 'x',
+    intersect: false,
     callbacks: {},
   },
   elements: {
