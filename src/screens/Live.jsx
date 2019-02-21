@@ -3,7 +3,6 @@ import '../styles/App.scss';
 import { connect } from 'react-redux';
 import axios from 'axios';
 import { cloneDeep } from 'lodash';
-import LiveChart from '../components/LiveChart';
 import StandardCharts from '../components/StandardCharts';
 import SymbolsPicker from '../components/SymbolsPicker';
 import { setChartData } from '../actions/chartData';
@@ -155,7 +154,7 @@ const process = (res, symbols, isMarketOpen, dispatch) => {
 
   symbols.forEach((symbol, index) => {
     const { chart, quote } = res.data[symbol];
-    const { previousClose } = quote;
+    const { previousClose, latestPrice } = quote;
     const symbolColor = getRandomColor(symbols.length, index);
     const dataset = {
       label: symbol,
@@ -196,6 +195,9 @@ const process = (res, symbols, isMarketOpen, dispatch) => {
           entryindex % skip === 0 ||
           entryindex === chart.length - 1
         ) {
+          if (entryindex === chart.length - 1) {
+            value = latestPrice;
+          }
           dataset.data.push(value.toFixed(3));
           if (index === 0) {
             data.options.scales.xAxes[0].labels.push(entry.label);
