@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { Bar } from 'react-chartjs-2';
 import { cloneDeep } from 'lodash';
 import { getPerformanceColor } from '../utils/color';
-import LiveChart from "./LiveChart";
+import LiveChart from './LiveChart';
 
 const StandardCharts = ({ data }) => {
   const standardCharts = [];

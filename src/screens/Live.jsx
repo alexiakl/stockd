@@ -47,7 +47,7 @@ const processLive = (res, symbols, period, dispatch) => {
 
   symbols.forEach((symbol, index) => {
     const { chart, quote } = res.data[symbol];
-    let { previousClose } = quote;
+    let { previousClose, close } = quote;
     let dataArr = chart.data;
     if (!dataArr) {
       dataArr = chart;
@@ -86,8 +86,12 @@ const processLive = (res, symbols, period, dispatch) => {
           value = previousValue;
         }
 
-        if (entryindex === 0 && period !== '1d') {
-          previousClose = value;
+        if (entryindex === 0) {
+          if (period !== '1d') {
+            previousClose = value;
+          } else if (close === previousClose) {
+            previousClose = value;
+          }
         }
         if (
           skip === 0 ||
