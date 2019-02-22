@@ -4,12 +4,11 @@ import { connect } from 'react-redux';
 import { Bar } from 'react-chartjs-2';
 import { cloneDeep } from 'lodash';
 import { getPerformanceColor } from '../utils/color';
-import LiveChart from './LiveChart';
 
 const StandardCharts = ({ data }) => {
   const standardCharts = [];
   if (data && data.data && data.data.symbols) {
-    const { symbols, options, datasets, info } = data.data;
+    const { symbols, options, datasets, labels, info } = data.data;
     symbols.forEach(symbol => {
       const fdatasets = {
         datasets: [],
@@ -21,6 +20,7 @@ const StandardCharts = ({ data }) => {
       const { close, change, changePercent } = quote;
       foptions.legend.display = false;
       foptions.annotation = data.data.annotations[symbol];
+      foptions.scales.xAxes[0].labels = labels[symbol];
       standardCharts.push(
         <div className="chart cols" key={symbol}>
           <div className="chartContainer">
@@ -39,13 +39,7 @@ const StandardCharts = ({ data }) => {
       );
     });
   }
-  return (
-    <div className="flex responsiveCharts">
-      {standardCharts}
-
-      <LiveChart />
-    </div>
-  );
+  return <div className="flex responsiveCharts">{standardCharts}</div>;
 };
 
 const mapStateToProps = state => ({

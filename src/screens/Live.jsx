@@ -7,126 +7,11 @@ import StandardCharts from '../components/StandardCharts';
 import SymbolsPicker from '../components/SymbolsPicker';
 import { setChartData } from '../actions/chartData';
 import { setMarketOpen } from '../actions/marketState';
-import { setLiveChartData } from '../actions/liveChartData';
 import { getRandomColor } from '../utils/color';
 import { options } from '../utils/chartVars';
 import PeriodController from '../components/PeriodController';
-import { updatePeriod } from '../actions/periodController';
 import { API, TOKEN } from '../constants';
 import 'chartjs-plugin-annotation';
-
-const processLive = (res, symbols, period, dispatch) => {
-  const liveData = {
-    symbols: [],
-    labels: [],
-    datasets: [],
-    options: cloneDeep(options),
-  };
-
-  const templabels = [];
-  symbols.forEach((symbol, index) => {
-    liveData.symbols.push(symbol);
-    const { chart } = res.data[symbol];
-    let dataArr = chart.data;
-    if (!dataArr) {
-      dataArr = chart;
-    }
-
-    dataArr.forEach(entry => {
-      if (!templabels[entry.label]) {
-        templabels[entry.label] = 0;
-      }
-      templabels[entry.label] += 1;
-      if (index === symbols.length - 1) {
-        if (templabels[entry.label] === symbols.length) {
-          liveData.labels[entry.label] = 1;
-        }
-      }
-    });
-  });
-
-  symbols.forEach((symbol, index) => {
-    const { chart, quote } = res.data[symbol];
-    let { previousClose, close } = quote;
-    let dataArr = chart.data;
-    if (!dataArr) {
-      dataArr = chart;
-    }
-    const symbolColor = getRandomColor(symbols.length, index);
-    const livedataset = {
-      label: symbol,
-      type: 'line',
-      data: [],
-      fill: false,
-      borderColor: symbolColor,
-      backgroundColor: symbolColor,
-      pointBorderColor: symbolColor,
-      pointBackgroundColor: symbolColor,
-      pointHoverBackgroundColor: symbolColor,
-      pointHoverBorderColor: symbolColor,
-      pointRadius: 3,
-      pointHoverRadius: 7,
-      yAxisID: 'y-axis-1',
-    };
-    let previousValue = 0;
-    let skip = 0;
-    if (dataArr.length > 50) {
-      skip = parseInt(dataArr.length / 50, 10);
-    }
-    dataArr.forEach((entry, entryindex) => {
-      if (liveData.labels[entry.label] === 1) {
-        let value = 0;
-        if (entry.close > 0) {
-          previousValue = entry.close;
-          value = previousValue;
-        } else if (entry.marketClose > 0) {
-          previousValue = entry.marketClose;
-          value = previousValue;
-        } else {
-          value = previousValue;
-        }
-
-        if (entryindex === 0) {
-          if (period !== '1d') {
-            previousClose = value;
-          } else if (close === previousClose) {
-            previousClose = value;
-          }
-        }
-        if (
-          skip === 0 ||
-          entryindex % skip === 0 ||
-          entryindex === chart.length - 1
-        ) {
-          const valueToPush = (
-            (100 * (value - previousClose)) /
-            previousClose
-          ).toFixed(3);
-          livedataset.data.push(valueToPush);
-          if (index === 0) {
-            liveData.options.scales.xAxes[0].labels.push(entry.label);
-          }
-        }
-      }
-    });
-
-    liveData.datasets.push(livedataset);
-  });
-
-  liveData.options.scales.yAxes[0].ticks.callback = value => {
-    return `${value}%`;
-  };
-
-  liveData.options.tooltips.callbacks = {
-    label(tooltipItem, data) {
-      let { label } = data.datasets[tooltipItem.datasetIndex];
-      label += `: ${tooltipItem.yLabel}%`;
-      return label;
-    },
-  };
-
-  dispatch(setLiveChartData(liveData));
-};
 
 const process = (res, symbols, isMarketOpen, period, dispatch) => {
   const data = {
@@ -138,25 +23,8 @@ const process = (res, symbols, isMarketOpen, period, dispatch) => {
     options: cloneDeep(options),
   };
 
-  const templabels = [];
   symbols.forEach((symbol, index) => {
     data.symbols.push(symbol);
-    const { chart } = res.data[symbol];
-
-    chart.forEach(entry => {
-      if (!templabels[entry.label]) {
-        templabels[entry.label] = 0;
-      }
-      templabels[entry.label] += 1;
-      if (index === symbols.length - 1) {
-        if (templabels[entry.label] === symbols.length) {
-          data.labels[entry.label] = 1;
-        }
-      }
-    });
-  });
-
-  symbols.forEach((symbol, index) => {
     const { chart, quote } = res.data[symbol];
     const { previousClose, latestPrice } = quote;
     const symbolColor = getRandomColor(symbols.length, index);
@@ -180,33 +48,32 @@ const process = (res, symbols, isMarketOpen, period, dispatch) => {
       skip = parseInt(chart.length / 50, 10);
     }
     chart.forEach((entry, entryindex) => {
-      if (data.labels[entry.label] === 1) {
-        let value = 0;
-        if (entry.close > 0) {
-          previousValue = entry.close;
-          value = previousValue;
-        } else if (entry.marketClose > 0) {
-          previousValue = entry.marketClose;
-          value = previousValue;
-        } else {
-          value = previousValue;
-        }
-        if (isMarketOpen) {
-          latestValue = value;
-        }
-        if (
-          skip === 0 ||
-          entryindex % skip === 0 ||
-          entryindex === chart.length - 1
-        ) {
-          if (entryindex === chart.length - 1) {
-            value = latestPrice;
-          }
-          dataset.data.push(value.toFixed(3));
-          if (index === 0) {
-            data.options.scales.xAxes[0].labels.push(entry.label);
+      let value = 0;
+      if (entry.close > 0) {
+        previousValue = entry.close;
+        value = previousValue;
+      } else if (entry.marketClose > 0) {
+        previousValue = entry.marketClose;
+        value = previousValue;
+      } else {
+        value = previousValue;
+      }
+      if (
+        skip === 0 ||
+        entryindex % skip === 0 ||
+        entryindex === chart.length - 1
+      ) {
+        if (entryindex === chart.length - 1) {
+          value = latestPrice;
+          if (isMarketOpen) {
+            latestValue = value;
           }
         }
+        dataset.data.push(value.toFixed(3));
+        if (!data.labels[symbol]) {
+          data.labels[symbol] = [];
+        }
+        data.labels[symbol].push(entry.label);
       }
     });
 
@@ -262,18 +129,15 @@ const runQuery = (symbols, period, isMarketOpen, dispatch) => {
     axios.get(url).then(res => {
       const { chart } = res.data.GOOGL;
       const { range } = chart;
-      const isMarketOpen = range === 'today';
-      dispatch(setMarketOpen(isMarketOpen));
+      const isOpen = range === 'today';
+      dispatch(setMarketOpen(isOpen));
     });
-    // } else if (!isMarketOpen && period === '1d') {
-    // dispatch(updatePeriod('1m'));
   } else {
     const allsymbols = symbols.join(',');
     const url = `${API}stock/market/batch?symbols=${allsymbols}&types=quote,chart&range=${period}${TOKEN}`;
     console.log(`RQ: Live ${url}`);
     axios.get(url).then(res => {
       process(res, symbols, isMarketOpen, period, dispatch);
-      processLive(res, symbols, period, dispatch);
     });
   }
 };
