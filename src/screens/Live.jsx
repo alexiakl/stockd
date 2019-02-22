@@ -12,7 +12,7 @@ import PeriodController from '../components/PeriodController';
 import { API, TOKEN } from '../constants';
 import 'chartjs-plugin-annotation';
 
-const process = (res, symbols, isMarketOpen, period, dispatch) => {
+const process = (res, symbols, period, dispatch) => {
   const data = {
     symbols: [],
     labels: [],
@@ -22,10 +22,11 @@ const process = (res, symbols, isMarketOpen, period, dispatch) => {
     options,
   };
 
+  let isMarketOpen = false;
   symbols.forEach((symbol, index) => {
     data.symbols.push(symbol);
     const { chart, quote } = res.data[symbol];
-    const { previousClose, latestPrice } = quote;
+    const { previousClose, latestPrice, latestSource } = quote;
     const symbolColor = getRandomColor(symbols.length, index);
     const dataset = {
       label: symbol,
@@ -40,6 +41,7 @@ const process = (res, symbols, isMarketOpen, period, dispatch) => {
       pointHoverBorderColor: symbolColor,
       yAxisID: 'y-axis-1',
     };
+    isMarketOpen = latestSource.includes('real time');
     let previousValue = 0;
     let latestValue = 0;
     let skip = 0;
@@ -118,31 +120,22 @@ const process = (res, symbols, isMarketOpen, period, dispatch) => {
     },
   };
 
+  dispatch(setMarketOpen(isMarketOpen));
   dispatch(setChartData(data));
 };
 
-const runQuery = (symbols, period, isMarketOpen, dispatch) => {
-  if (isMarketOpen === undefined) {
-    const url = `${API}stock/market/batch?symbols=GOOGL&types=chart&range=dynamic${TOKEN}`;
-    console.log(`RQ: Live ${url}`);
-    axios.get(url).then(res => {
-      const { chart } = res.data.GOOGL;
-      const { range } = chart;
-      const isOpen = range === 'today';
-      dispatch(setMarketOpen(isOpen));
-    });
-  } else {
-    const allsymbols = symbols.join(',');
-    const url = `${API}stock/market/batch?symbols=${allsymbols}&types=quote,chart&range=${period}${TOKEN}`;
-    console.log(`RQ: Live ${url}`);
-    axios.get(url).then(res => {
-      process(res, symbols, isMarketOpen, period, dispatch);
-    });
-  }
+const runQuery = (symbols, period, dispatch) => {
+  const allsymbols = symbols.join(',');
+  const url = `${API}stock/market/batch?symbols=${allsymbols}&types=quote,chart&range=${period}${TOKEN}`;
+  console.log(`RQ: Live ${url}`);
+  axios.get(url).then(res => {
+    process(res, symbols, period, dispatch);
+  });
 };
 
-const Live = ({ symbols, period, isMarketOpen, dispatch }) => {
-  runQuery(symbols, period, isMarketOpen, dispatch);
+const Live = ({ symbols, period, dispatch }) => {
+  runQuery(symbols, period, dispatch);
+
   return (
     <div>
       <SymbolsPicker />
@@ -153,7 +146,6 @@ const Live = ({ symbols, period, isMarketOpen, dispatch }) => {
 };
 
 const mapStateToProps = state => ({
-  isMarketOpen: state.marketState.isMarketOpen,
   period: state.periodController.period,
   symbols: state.symbolsPicker.symbols,
 });
