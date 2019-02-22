@@ -20,7 +20,7 @@ const process = (res, symbols, isMarketOpen, period, dispatch) => {
     datasets: [],
     info: [],
     annotations: [],
-    options: cloneDeep(options),
+    options,
   };
 
   symbols.forEach((symbol, index) => {
