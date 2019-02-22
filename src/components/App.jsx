@@ -4,6 +4,7 @@ import { Switch, Route, Redirect } from 'react-router-dom';
 import Header from './Header';
 import Home from '../screens/Home';
 import PageNotFound from '../screens/PageNotFound';
+import Portfolio from '../screens/Portfolio';
 import Live from '../screens/Live';
 import Performance from '../screens/Performance';
 import Login from '../screens/Login';
@@ -17,6 +18,7 @@ const App = () => {
         <Route exact path="/login" component={Login} />
         <Route exact path="/live" component={Live} />
         <Route exact path="/performance" component={Performance} />
+        <Route exact path="/portfolio" component={Portfolio} />
         <Route exact path="/404" component={PageNotFound} />
         <Redirect to="/404" />
       </Switch>

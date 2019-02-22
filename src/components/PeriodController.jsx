@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { ButtonGroup, Button } from 'react-bootstrap';
 import { updatePeriod } from '../actions/periodController';
 
-const PeriodController = ({ period, isMarketOpen, dispatch }) => {
+const PeriodController = ({ period, dispatch }) => {
   let [oned, fived, onem, threem, sixm, ytd, oney, twoy, fivey] = [
     'outline-secondary',
     'outline-secondary',
@@ -52,7 +52,6 @@ const PeriodController = ({ period, isMarketOpen, dispatch }) => {
     <div className="periodButtons">
       <ButtonGroup aria-label="Period">
         <Button
-          disabled={!isMarketOpen}
           variant={oned}
           size="sm"
           onClick={() => dispatch(updatePeriod('1d'))}
@@ -60,7 +59,6 @@ const PeriodController = ({ period, isMarketOpen, dispatch }) => {
           1 day
         </Button>
         <Button
-          disabled={!isMarketOpen}
           variant={fived}
           size="sm"
           onClick={() => dispatch(updatePeriod('5d'))}
@@ -123,7 +121,6 @@ const PeriodController = ({ period, isMarketOpen, dispatch }) => {
 
 const mapStateToProps = state => ({
   period: state.periodController.period,
-  isMarketOpen: state.marketState.isMarketOpen,
 });
 
 export default connect(mapStateToProps)(PeriodController);

@@ -261,8 +261,8 @@ const runQuery = (symbols, period, isMarketOpen, dispatch) => {
       const isMarketOpen = range === 'today';
       dispatch(setMarketOpen(isMarketOpen));
     });
-  } else if (!isMarketOpen && period === '1d') {
-    dispatch(updatePeriod('1m'));
+    // } else if (!isMarketOpen && period === '1d') {
+    // dispatch(updatePeriod('1m'));
   } else {
     const allsymbols = symbols.join(',');
     const url = `${API}stock/market/batch?symbols=${allsymbols}&types=quote,chart&range=${period}${TOKEN}`;

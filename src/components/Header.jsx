@@ -19,6 +19,9 @@ export default () => (
         <LinkContainer to="/performance">
           <NavItem>performance</NavItem>
         </LinkContainer>
+        <LinkContainer to="/portfolio">
+          <NavItem>portfolio</NavItem>
+        </LinkContainer>
       </Nav>
       <LinkContainer to="/login">
         <NavItem>Login</NavItem>
