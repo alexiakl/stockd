@@ -71,7 +71,7 @@ class Performance extends Component {
             {symbols.map(symbol => (
               <Button
                 key={symbol}
-                className="stockButton"
+                className="stock-button"
                 variant="outline-secondary"
                 size="sm"
                 onClick={evt => this.removeSymbol(evt)}
@@ -85,7 +85,7 @@ class Performance extends Component {
             {filtered.map(symbol => (
               <Button
                 key={symbol}
-                className="stockButton"
+                className="stock-button"
                 variant="outline-secondary"
                 size="sm"
                 onClick={evt => this.addSymbol(evt)}

@@ -15,8 +15,8 @@ const LiveChart = ({ data }) => {
 
   return (
     <div className="chart cols">
-      <div className="chartContainer">
-        <div className="chartHeader">
+      <div className="chart-container">
+        <div className="chart-header">
           <p>Comparison %</p>
         </div>
         <Bar data={datasets} options={options} />

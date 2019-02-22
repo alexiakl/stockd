@@ -23,11 +23,11 @@ const StandardCharts = ({ data }) => {
       foptions.scales.xAxes[0].labels = labels[symbol];
       standardCharts.push(
         <div className="chart cols" key={symbol}>
-          <div className="chartContainer">
-            <div className="chartHeader">
+          <div className="chart-container">
+            <div className="chart-header">
               <p>
                 {symbol} {latestValue > 0 ? latestValue : close}$ <br />
-                <span className={`chartInfo ${getPerformanceColor(change)}`}>
+                <span className={`chart-info ${getPerformanceColor(change)}`}>
                   {change}$ {(changePercent * 100).toFixed(3)}%
                 </span>
               </p>

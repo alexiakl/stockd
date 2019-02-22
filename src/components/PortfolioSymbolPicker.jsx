@@ -15,7 +15,7 @@ const PortfolioSymbolsPicker = ({ filtered, dispatch }) => (
       {filtered.map(symbol => (
         <Button
           key={symbol}
-          className="stockButton"
+          className="stock-button"
           variant="outline-secondary"
           size="sm"
           onClick={evt =>

@@ -49,7 +49,7 @@ const PeriodController = ({ period, dispatch }) => {
   }
 
   return (
-    <div className="periodButtons">
+    <div className="period-buttons">
       <ButtonGroup aria-label="Period">
         <Button
           variant={oned}

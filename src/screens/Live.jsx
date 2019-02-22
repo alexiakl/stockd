@@ -2,7 +2,6 @@ import React from 'react';
 import '../styles/App.scss';
 import { connect } from 'react-redux';
 import axios from 'axios';
-import { cloneDeep } from 'lodash';
 import StandardCharts from '../components/StandardCharts';
 import SymbolsPicker from '../components/SymbolsPicker';
 import { setChartData } from '../actions/chartData';

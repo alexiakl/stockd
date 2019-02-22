@@ -266,7 +266,7 @@ class RatioPerformance extends Component {
           </p>
         </Alert>
         <div className="chart">{<Bar data={data} options={options} />}</div>
-        <div className="periodButtons">
+        <div className="period-buttons">
           <ButtonGroup aria-label="Period">
             <Button
               variant={onem}
