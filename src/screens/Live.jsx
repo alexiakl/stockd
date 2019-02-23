@@ -61,18 +61,11 @@ class Live extends Component {
       data.symbols.push(symbol);
       const { chart, quote } = res.data[symbol];
       const { previousClose, latestPrice, latestSource } = quote;
-      const symbolColor = '#23519b';
       const dataset = {
         label: symbol,
         type: 'line',
         data: [],
         fill: false,
-        borderColor: symbolColor,
-        backgroundColor: symbolColor,
-        pointBorderColor: symbolColor,
-        pointBackgroundColor: symbolColor,
-        pointHoverBackgroundColor: symbolColor,
-        pointHoverBorderColor: symbolColor,
         yAxisID: 'y-axis-1',
       };
       const marketState = getMarketState(latestSource);
