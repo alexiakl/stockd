@@ -114,8 +114,9 @@ class Live extends Component {
 
       data.datasets[symbol] = dataset;
 
-      if (theme === 'light-mode') {
-        data.options.scales.yAxes[0].gridLines.color = '';
+      data.options.scales.yAxes[0].gridLines.color = '';
+      if (theme === 'dark-mode') {
+        data.options.scales.yAxes[0].gridLines.color = '#555';
       }
       data.options.scales.yAxes[0].ticks.callback = value => {
         return `$${value}`;
