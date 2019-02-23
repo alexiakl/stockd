@@ -7,8 +7,8 @@ import { getPerformanceColor } from '../utils/color';
 
 const StandardCharts = ({ data }) => {
   const standardCharts = [];
-  if (data && data.data && data.data.symbols) {
-    const { symbols, options, datasets, labels, info } = data.data;
+  if (data && data.symbols) {
+    const { symbols, options, datasets, labels, info, annotations } = data;
     symbols.forEach(symbol => {
       const fdatasets = {
         datasets: [],
@@ -19,7 +19,7 @@ const StandardCharts = ({ data }) => {
       const { quote, latestValue } = info[symbol];
       const { close, change, changePercent } = quote;
       foptions.legend.display = false;
-      foptions.annotation = data.data.annotations[symbol];
+      foptions.annotation = annotations[symbol];
       foptions.scales.xAxes[0].labels = labels[symbol];
       standardCharts.push(
         <div className="chart cols" key={symbol}>
@@ -39,11 +39,11 @@ const StandardCharts = ({ data }) => {
       );
     });
   }
-  return <div className="flex responsiveCharts">{standardCharts}</div>;
+  return <div className="flex wrap standard-charts">{standardCharts}</div>;
 };
 
 const mapStateToProps = state => ({
-  data: state.chartData,
+  data: state.symbolsData.data,
 });
 
 export default connect(mapStateToProps)(StandardCharts);

@@ -1,14 +1,10 @@
 import { combineReducers } from 'redux';
 import symbolsPicker from './symbolsPicker';
-import marketState from './marketState';
+import symbolsData from './symbolsData';
 import periodController from './periodController';
-import chartData from './chartData';
-import liveChartData from './liveChartData';
 
 export default combineReducers({
   symbolsPicker,
-  marketState,
+  symbolsData,
   periodController,
-  chartData,
-  liveChartData,
 });

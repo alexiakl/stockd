@@ -5,12 +5,6 @@ import SymbolsPicker from '../components/SymbolsPicker';
 import { SYMBOLS_MAP, API, TOKEN } from '../constants';
 import { setMap } from '../actions/symbolsPicker';
 
-const mapStateToProps = state => ({
-  isMarketOpen: state.marketState.isMarketOpen,
-  period: state.periodController.period,
-  symbols: state.symbolsPicker.symbols,
-});
-
 const runQuery = dispatch => {
   const symbolsMap = localStorage.getItem(SYMBOLS_MAP);
   if (!symbolsMap || symbolsMap.length === 0) {
@@ -35,4 +29,11 @@ const Home = ({ dispatch }) => {
     </div>
   );
 };
+
+const mapStateToProps = state => ({
+  marketState: state.marketState,
+  period: state.periodController.period,
+  symbols: state.symbolsPicker.symbols,
+});
+
 export default connect(mapStateToProps)(Home);

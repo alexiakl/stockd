@@ -59,7 +59,14 @@ body {
 
 .flex {
   display: flex;
+}
+
+.wrap {
   flex-wrap: wrap;
+}
+
+.standard-charts {
+  margin-bottom: 20px;
 }
 
 .cols {

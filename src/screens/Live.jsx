@@ -5,12 +5,11 @@ import axios from 'axios';
 import PropTypes from 'prop-types';
 import StandardCharts from '../components/StandardCharts';
 import SymbolsPicker from '../components/SymbolsPicker';
-import { setChartData } from '../actions/chartData';
-import { setMarketOpen } from '../actions/marketState';
 import { getRandomColor } from '../utils/color';
 import { options } from '../utils/chartVars';
 import PeriodController from '../components/PeriodController';
-import { API, TOKEN } from '../constants';
+import { API, TOKEN, UNDEFINED, OPEN, CLOSED, PRE_OPEN } from '../constants';
+import { setSymbolsData } from '../actions/symbolsData';
 import 'chartjs-plugin-annotation';
 
 let timerId = 0;
@@ -33,7 +32,6 @@ class Live extends Component {
 
   runQuery() {
     const { symbols, period } = this.props;
-    console.log(symbols);
     const allsymbols = symbols.join(',');
     const url = `${API}stock/market/batch?symbols=${allsymbols}&types=quote,chart&range=${period}${TOKEN}`;
     // eslint-disable-next-line no-console
@@ -54,7 +52,6 @@ class Live extends Component {
       options,
     };
 
-    let isMarketOpen = false;
     symbols.forEach((symbol, index) => {
       data.symbols.push(symbol);
       const { chart, quote } = res.data[symbol];
@@ -73,7 +70,14 @@ class Live extends Component {
         pointHoverBorderColor: symbolColor,
         yAxisID: 'y-axis-1',
       };
-      isMarketOpen = latestSource.includes('real time');
+      let marketState = UNDEFINED;
+      if (latestSource.includes('real time')) {
+        marketState = OPEN;
+      } else if (latestSource === 'Close') {
+        marketState = CLOSED;
+      } else {
+        marketState = PRE_OPEN;
+      }
       let previousValue = 0;
       let latestValue = 0;
       let skip = 0;
@@ -98,7 +102,7 @@ class Live extends Component {
         ) {
           if (entryindex === chart.length - 1) {
             value = latestPrice;
-            if (isMarketOpen) {
+            if (marketState === OPEN) {
               latestValue = value;
             }
           }
@@ -117,12 +121,12 @@ class Live extends Component {
       };
 
       data.info[symbol] = {
-        isMarketOpen,
+        marketState,
         quote,
         latestValue,
       };
 
-      if (isMarketOpen && period === '1d') {
+      if (period === '1d' && (marketState === OPEN || marketState === CLOSED)) {
         data.annotations[symbol] = {
           annotations: [
             {
@@ -152,10 +156,7 @@ class Live extends Component {
       },
     };
 
-    let timerIntervalTemp = 600000; // 10 mins
-    if (isMarketOpen) {
-      timerIntervalTemp = 120000; // 2 mins
-    }
+    const timerIntervalTemp = 300000; // 5 mins
     if (timerIntervalTemp !== timerInterval) {
       timerInterval = timerIntervalTemp;
       if (timerId) {
@@ -164,8 +165,7 @@ class Live extends Component {
       timerId = setInterval(() => this.runQuery(), timerInterval);
     }
 
-    dispatch(setMarketOpen(isMarketOpen));
-    dispatch(setChartData(data));
+    dispatch(setSymbolsData(data));
   }
 
   render() {
