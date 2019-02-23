@@ -167,7 +167,6 @@ class Live extends Component {
       if (timerId) {
         clearInterval(timerId);
       }
-      console.log(timerInterval);
       timerId = setInterval(() => this.runQuery(), timerInterval);
     }
 
@@ -175,8 +174,9 @@ class Live extends Component {
   }
 
   render() {
+    const { theme } = this.props;
     return (
-      <div>
+      <div className={theme}>
         <SymbolsPicker />
         <PeriodController />
         <StandardCharts />
@@ -188,12 +188,14 @@ class Live extends Component {
 Live.propTypes = {
   period: PropTypes.string.isRequired,
   symbols: PropTypes.arrayOf(PropTypes.string).isRequired,
+  theme: PropTypes.string.isRequired,
   dispatch: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = state => ({
   period: state.periodController.period,
   symbols: state.symbolsPicker.symbols,
+  theme: state.theme,
 });
 
 export default connect(mapStateToProps)(Live);

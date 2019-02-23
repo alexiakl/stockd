@@ -20,6 +20,7 @@ const initialState = {
   symbolsData: {
     data: [],
   },
+  theme: 'dark-mode',
 };
 const store = createStore(rootReducer, initialState);
 

@@ -11,7 +11,7 @@ import Login from '../screens/Login';
 
 const App = () => {
   return (
-    <div className="dark-mode">
+    <div>
       <Header />
       <Switch>
         <Route exact path="/" component={Home} />

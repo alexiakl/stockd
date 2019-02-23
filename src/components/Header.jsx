@@ -4,7 +4,7 @@ import { LinkContainer } from 'react-router-bootstrap';
 import logo from '../static/images/logo/Stockd_1024.png';
 
 export default () => (
-  <Navbar expand="lg">
+  <Navbar expand="lg" bg="dark" variant="dark">
     <LinkContainer to="/">
       <NavItem>
         <img alt="logo" width="40" height="40" src={logo} />
@@ -14,17 +14,17 @@ export default () => (
     <Navbar.Collapse id="basic-navbar-nav">
       <Nav className="mr-auto">
         <LinkContainer to="/live">
-          <NavItem>live</NavItem>
+          <Navbar.Text>live</Navbar.Text>
         </LinkContainer>
         <LinkContainer to="/performance">
-          <NavItem>performance</NavItem>
+          <Navbar.Text>performance</Navbar.Text>
         </LinkContainer>
         <LinkContainer to="/portfolio">
-          <NavItem>portfolio</NavItem>
+          <Navbar.Text>portfolio</Navbar.Text>
         </LinkContainer>
       </Nav>
       <LinkContainer to="/login">
-        <NavItem>Login</NavItem>
+        <Navbar.Text>login</Navbar.Text>
       </LinkContainer>
     </Navbar.Collapse>
   </Navbar>

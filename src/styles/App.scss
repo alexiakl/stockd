@@ -66,7 +66,7 @@ body {
 }
 
 .standard-charts {
-  margin-bottom: 20px;
+  padding-bottom: 20px;
 }
 
 .horizontal-separator {
@@ -134,9 +134,12 @@ body {
   }
 }
 
-.nav-item {
-  padding: 10px 20px;
-  cursor: pointer;
+.navbar {
+  span {
+    margin-left: 20px;
+    padding: 15px 10px;
+    cursor: pointer;
+  }
 }
 
 .navbar {
