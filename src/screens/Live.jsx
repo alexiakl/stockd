@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import '../styles/App.scss';
 import { connect } from 'react-redux';
 import axios from 'axios';
+import PropTypes from 'prop-types';
 import StandardCharts from '../components/StandardCharts';
 import SymbolsPicker from '../components/SymbolsPicker';
 import { setChartData } from '../actions/chartData';
@@ -19,10 +20,17 @@ class Live extends Component {
     this.runQuery();
   }
 
+  componentWillUnmount() {
+    if (timerId) {
+      clearInterval(timerId);
+    }
+  }
+
   runQuery() {
     const { symbols, period } = this.props;
     const allsymbols = symbols.join(',');
     const url = `${API}stock/market/batch?symbols=${allsymbols}&types=quote,chart&range=${period}${TOKEN}`;
+    // eslint-disable-next-line no-console
     console.log(`RQ: Live ${url}`);
     axios.get(url).then(res => {
       this.process(res);
@@ -154,12 +162,6 @@ class Live extends Component {
     dispatch(setChartData(data));
   }
 
-  componentWillUnmount() {
-    if (timerId) {
-      clearInterval(timerId);
-    }
-  }
-
   render() {
     return (
       <div>
@@ -170,6 +172,12 @@ class Live extends Component {
     );
   }
 }
+
+Live.propTypes = {
+  period: PropTypes.string.isRequired,
+  symbols: PropTypes.arrayOf(PropTypes.string).isRequired,
+  dispatch: PropTypes.func.isRequired,
+};
 
 const mapStateToProps = state => ({
   period: state.periodController.period,
