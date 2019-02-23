@@ -4,7 +4,7 @@ import { LinkContainer } from 'react-router-bootstrap';
 import logo from '../static/images/logo/Stockd_1024.png';
 
 export default () => (
-  <Navbar bg="light" expand="lg">
+  <Navbar expand="lg">
     <LinkContainer to="/">
       <NavItem>
         <img alt="logo" width="40" height="40" src={logo} />

@@ -75,6 +75,30 @@ body {
   padding-left: 10px;
 }
 
+.dark-mode {
+  background: $darkbackgroud;
+  color: $darkfont;
+  .stock-button,
+  .period-button {
+    color: $darkfont;
+  }
+  .mr-sm-2 {
+    background: $darkbackgroud;
+    color: $darkfont;
+  }
+  .chart-container {
+    box-shadow: 0 2px 8px 0 $darkshadow;
+  }
+  .sdcontainer,
+  .period-buttons {
+    border-bottom: 1px solid $darkseperator;
+  }
+
+  .horizontal-separator {
+    border-left: 1px solid $darkseperator;
+  }
+}
+
 .cols {
   flex: 100%;
   max-width: 100%;

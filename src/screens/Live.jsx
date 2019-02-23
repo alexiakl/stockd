@@ -5,7 +5,7 @@ import axios from 'axios';
 import PropTypes from 'prop-types';
 import StandardCharts from '../components/StandardCharts';
 import SymbolsPicker from '../components/SymbolsPicker';
-import { getRandomColor } from '../utils/color';
+// import { getRandomColor } from '../utils/color';
 import { options } from '../utils/chartVars';
 import PeriodController from '../components/PeriodController';
 import { API, TOKEN, OPEN, PRE_OPEN } from '../constants';
@@ -13,7 +13,7 @@ import { setSymbolsData } from '../actions/symbolsData';
 import { getMarketState } from '../utils/utils';
 import 'chartjs-plugin-annotation';
 
-import testData from '../data/pre_open.json';
+// import testData from '../data/pre_open.json';
 
 let timerId = 0;
 let timerInterval = 0;
@@ -39,13 +39,11 @@ class Live extends Component {
     const url = `${API}stock/market/batch?symbols=${allsymbols}&types=quote,chart&range=${period}${TOKEN}`;
     // eslint-disable-next-line no-console
     console.log(`RQ: Live ${url}`);
-    if (testData) {
-      this.process({ data: testData });
-    } else {
-      axios.get(url).then(res => {
-        this.process(res);
-      });
-    }
+
+    // this.process({ data: testData });
+    axios.get(url).then(res => {
+      this.process(res);
+    });
   }
 
   process(res) {
@@ -59,11 +57,11 @@ class Live extends Component {
       options,
     };
 
-    symbols.forEach((symbol, index) => {
+    symbols.forEach(symbol => {
       data.symbols.push(symbol);
       const { chart, quote } = res.data[symbol];
       const { previousClose, latestPrice, latestSource } = quote;
-      const symbolColor = getRandomColor(symbols.length, index);
+      const symbolColor = '#23519b';
       const dataset = {
         label: symbol,
         type: 'line',
@@ -169,6 +167,7 @@ class Live extends Component {
       if (timerId) {
         clearInterval(timerId);
       }
+      console.log(timerInterval);
       timerId = setInterval(() => this.runQuery(), timerInterval);
     }
 

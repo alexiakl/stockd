@@ -50,6 +50,7 @@ const options = {
           beginAtZero: false,
         },
         gridLines: {
+          color: '#444',
           zeroLineColor: '#888',
           zeroLineWidth: 2,
           display: true,
