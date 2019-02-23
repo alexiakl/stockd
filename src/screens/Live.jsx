@@ -8,9 +8,12 @@ import SymbolsPicker from '../components/SymbolsPicker';
 import { getRandomColor } from '../utils/color';
 import { options } from '../utils/chartVars';
 import PeriodController from '../components/PeriodController';
-import { API, TOKEN, UNDEFINED, OPEN, CLOSED, PRE_OPEN } from '../constants';
+import { API, TOKEN, OPEN, PRE_OPEN } from '../constants';
 import { setSymbolsData } from '../actions/symbolsData';
+import { getMarketState } from '../utils/utils';
 import 'chartjs-plugin-annotation';
+
+// import testData from '../data/pre_open.json';
 
 let timerId = 0;
 let timerInterval = 0;
@@ -36,6 +39,7 @@ class Live extends Component {
     const url = `${API}stock/market/batch?symbols=${allsymbols}&types=quote,chart&range=${period}${TOKEN}`;
     // eslint-disable-next-line no-console
     console.log(`RQ: Live ${url}`);
+    // this.process({ data: testData });
     axios.get(url).then(res => {
       this.process(res);
     });
@@ -70,14 +74,7 @@ class Live extends Component {
         pointHoverBorderColor: symbolColor,
         yAxisID: 'y-axis-1',
       };
-      let marketState = UNDEFINED;
-      if (latestSource.includes('real time')) {
-        marketState = OPEN;
-      } else if (latestSource === 'Close') {
-        marketState = CLOSED;
-      } else {
-        marketState = PRE_OPEN;
-      }
+      const marketState = getMarketState(latestSource);
       let previousValue = 0;
       let latestValue = 0;
       let skip = 0;
@@ -114,6 +111,13 @@ class Live extends Component {
         }
       });
 
+      if (marketState === PRE_OPEN && period === '1d') {
+        const dupLabels = data.labels[symbol];
+        dupLabels.forEach(() => {
+          data.labels[symbol].push('.');
+        });
+      }
+
       data.datasets[symbol] = dataset;
 
       data.options.scales.yAxes[0].ticks.callback = value => {
@@ -126,7 +130,7 @@ class Live extends Component {
         latestValue,
       };
 
-      if (period === '1d' && (marketState === OPEN || marketState === CLOSED)) {
+      if (period === '1d') {
         data.annotations[symbol] = {
           annotations: [
             {

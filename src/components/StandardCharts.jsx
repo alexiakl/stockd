@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { Bar } from 'react-chartjs-2';
 import { cloneDeep } from 'lodash';
 import { getPerformanceColor } from '../utils/color';
+import { getMarketStateDescription } from '../utils/utils';
 
 const StandardCharts = ({ data }) => {
   const standardCharts = [];
@@ -16,11 +17,12 @@ const StandardCharts = ({ data }) => {
       fdatasets.datasets.push(datasets[symbol]);
       const foptions = cloneDeep(options);
 
-      const { quote, latestValue } = info[symbol];
+      const { quote, latestValue, marketState } = info[symbol];
       const { close, change, changePercent } = quote;
       foptions.legend.display = false;
       foptions.annotation = annotations[symbol];
       foptions.scales.xAxes[0].labels = labels[symbol];
+
       standardCharts.push(
         <div className="chart cols" key={symbol}>
           <div className="chart-container">
@@ -29,6 +31,9 @@ const StandardCharts = ({ data }) => {
                 {symbol} {latestValue > 0 ? latestValue : close}$ <br />
                 <span className={`chart-info ${getPerformanceColor(change)}`}>
                   {change}$ {(changePercent * 100).toFixed(3)}%
+                </span>
+                <span className="chart-info">
+                  {getMarketStateDescription(marketState)}
                 </span>
               </p>
             </div>
