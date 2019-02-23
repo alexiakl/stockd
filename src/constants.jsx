@@ -7,6 +7,8 @@ export const SYMBOLS_ADDED = 'mySymbols';
 export const SYMBOLS_MAP = 'symbolsMap';
 export const SYMBOLS_DEFAULT = 'GOOGL,AAPL,AMZN,MSFT';
 
+export const THEME = 'theme_key';
+
 export const UNDEFINED = 'undefined';
 export const OPEN = 'open';
 export const CLOSED = 'closed';
