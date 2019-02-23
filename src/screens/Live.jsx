@@ -47,7 +47,7 @@ class Live extends Component {
   }
 
   process(res) {
-    const { symbols, period, dispatch } = this.props;
+    const { symbols, period, theme, dispatch } = this.props;
     const data = {
       symbols: [],
       labels: [],
@@ -121,6 +121,9 @@ class Live extends Component {
 
       data.datasets[symbol] = dataset;
 
+      if (theme === 'light-mode') {
+        data.options.scales.yAxes[0].gridLines.color = '';
+      }
       data.options.scales.yAxes[0].ticks.callback = value => {
         return `$${value}`;
       };
