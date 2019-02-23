@@ -124,6 +124,10 @@ body {
 
 .stock-button {
   margin-left: 20px;
+  margin-top: 20px;
+  @include lg {
+    margin-top: 0px;
+  }
 }
 
 .results {
@@ -135,15 +139,11 @@ body {
 }
 
 .navbar {
-  span {
+  .menu-item {
     margin-left: 20px;
     padding: 15px 10px;
     cursor: pointer;
   }
-}
-
-.navbar {
-  padding: 0rem 1rem;
 }
 
 .navbar-collapse {

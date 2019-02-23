@@ -15,10 +15,18 @@ const Header = ({ theme, dispatch }) => {
     }
   }
 
-  let themeButton = <Navbar.Text onClick={handleClick}>dark</Navbar.Text>;
+  let themeButton = (
+    <Navbar.Text onClick={handleClick} className="menu-item">
+      dark
+    </Navbar.Text>
+  );
   let bg = 'light';
   if (theme === 'dark-mode') {
-    themeButton = <Navbar.Text onClick={handleClick}>light</Navbar.Text>;
+    themeButton = (
+      <Navbar.Text onClick={handleClick} className="menu-item">
+        light
+      </Navbar.Text>
+    );
     bg = 'dark';
   }
   return (
@@ -32,19 +40,19 @@ const Header = ({ theme, dispatch }) => {
       <Navbar.Collapse id="basic-navbar-nav">
         <Nav className="mr-auto">
           <LinkContainer to="/live">
-            <Navbar.Text>live</Navbar.Text>
+            <Navbar.Text className="menu-item">live</Navbar.Text>
           </LinkContainer>
           <LinkContainer to="/performance">
-            <Navbar.Text>performance</Navbar.Text>
+            <Navbar.Text className="menu-item">performance</Navbar.Text>
           </LinkContainer>
           <LinkContainer to="/portfolio">
-            <Navbar.Text>portfolio</Navbar.Text>
+            <Navbar.Text className="menu-item">portfolio</Navbar.Text>
           </LinkContainer>
+          <LinkContainer to="/login">
+            <Navbar.Text className="menu-item">login</Navbar.Text>
+          </LinkContainer>
+          {themeButton}
         </Nav>
-        {themeButton}
-        <LinkContainer to="/login">
-          <Navbar.Text>login</Navbar.Text>
-        </LinkContainer>
       </Navbar.Collapse>
     </Navbar>
   );

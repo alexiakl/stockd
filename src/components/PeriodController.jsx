@@ -57,7 +57,7 @@ const PeriodController = ({ period, dispatch }) => {
           size="sm"
           onClick={() => dispatch(updatePeriod('1d'))}
         >
-          1 day
+          1d
         </Button>
         <Button
           className="period-button"
@@ -65,7 +65,7 @@ const PeriodController = ({ period, dispatch }) => {
           size="sm"
           onClick={() => dispatch(updatePeriod('5d'))}
         >
-          5 days
+          5d
         </Button>
         <Button
           className="period-button"
@@ -73,7 +73,7 @@ const PeriodController = ({ period, dispatch }) => {
           size="sm"
           onClick={() => dispatch(updatePeriod('1m'))}
         >
-          1 month
+          1m
         </Button>
         <Button
           className="period-button"
@@ -81,7 +81,7 @@ const PeriodController = ({ period, dispatch }) => {
           size="sm"
           onClick={() => dispatch(updatePeriod('3m'))}
         >
-          3 months
+          3m
         </Button>
         <Button
           className="period-button"
@@ -89,7 +89,7 @@ const PeriodController = ({ period, dispatch }) => {
           size="sm"
           onClick={() => dispatch(updatePeriod('6m'))}
         >
-          6 months
+          6m
         </Button>
         <Button
           className="period-button"
@@ -105,7 +105,7 @@ const PeriodController = ({ period, dispatch }) => {
           size="sm"
           onClick={() => dispatch(updatePeriod('1y'))}
         >
-          1 year
+          1y
         </Button>
         <Button
           className="period-button"
@@ -113,7 +113,7 @@ const PeriodController = ({ period, dispatch }) => {
           size="sm"
           onClick={() => dispatch(updatePeriod('2y'))}
         >
-          2 years
+          2y
         </Button>
         <Button
           className="period-button"
@@ -121,7 +121,7 @@ const PeriodController = ({ period, dispatch }) => {
           size="sm"
           onClick={() => dispatch(updatePeriod('5y'))}
         >
-          5 years
+          5y
         </Button>
       </ButtonGroup>
     </div>
