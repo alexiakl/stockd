@@ -1,16 +1,16 @@
 import { OPEN, CLOSED, PRE_OPEN, UNDEFINED } from '../constants';
 
-const getMarketStateDescription = value => {
+const getMarketStateDescription = (value, quote) => {
   let marketStateSentence = '';
   switch (value) {
     case PRE_OPEN:
-      marketStateSentence = ' - will open soon';
+      marketStateSentence = ` opening soon, chart: ${quote.latestTime}`;
       break;
     case OPEN:
-      marketStateSentence = ' - active';
+      marketStateSentence = ` latest: ${quote.latestTime}`;
       break;
     case CLOSED:
-      marketStateSentence = ' - closed';
+      marketStateSentence = ` closed: ${quote.latestTime}`;
       break;
 
     default:

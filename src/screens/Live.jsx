@@ -13,7 +13,7 @@ import { setSymbolsData } from '../actions/symbolsData';
 import { getMarketState } from '../utils/utils';
 import 'chartjs-plugin-annotation';
 
-// import testData from '../data/pre_open.json';
+import testData from '../data/pre_open.json';
 
 let timerId = 0;
 let timerInterval = 0;
@@ -39,10 +39,13 @@ class Live extends Component {
     const url = `${API}stock/market/batch?symbols=${allsymbols}&types=quote,chart&range=${period}${TOKEN}`;
     // eslint-disable-next-line no-console
     console.log(`RQ: Live ${url}`);
-    // this.process({ data: testData });
-    axios.get(url).then(res => {
-      this.process(res);
-    });
+    if (testData) {
+      this.process({ data: testData });
+    } else {
+      axios.get(url).then(res => {
+        this.process(res);
+      });
+    }
   }
 
   process(res) {

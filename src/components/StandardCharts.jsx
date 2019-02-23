@@ -32,8 +32,8 @@ const StandardCharts = ({ data }) => {
                 <span className={`chart-info ${getPerformanceColor(change)}`}>
                   {change}$ {(changePercent * 100).toFixed(3)}%
                 </span>
-                <span className="chart-info">
-                  {getMarketStateDescription(marketState)}
+                <span className="chart-info horizontal-separator">
+                  {getMarketStateDescription(marketState, quote)}
                 </span>
               </p>
             </div>
