@@ -20,6 +20,11 @@ class Live extends Component {
     this.runQuery();
   }
 
+  componentWillReceiveProps(nextProps) {
+    this.props = nextProps;
+    this.runQuery();
+  }
+
   componentWillUnmount() {
     if (timerId) {
       clearInterval(timerId);
@@ -28,6 +33,7 @@ class Live extends Component {
 
   runQuery() {
     const { symbols, period } = this.props;
+    console.log(symbols);
     const allsymbols = symbols.join(',');
     const url = `${API}stock/market/batch?symbols=${allsymbols}&types=quote,chart&range=${period}${TOKEN}`;
     // eslint-disable-next-line no-console
