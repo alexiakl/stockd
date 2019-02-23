@@ -60,4 +60,14 @@ const getPerformanceColor = value => {
   return '';
 };
 
-export { getRandomColor, getPerformanceColor };
+const getPerformanceColorHex = value => {
+  if (value > 0) {
+    return '#24a321';
+  }
+  if (value < 0) {
+    return '#af2725';
+  }
+  return '#666';
+};
+
+export { getRandomColor, getPerformanceColor, getPerformanceColorHex };

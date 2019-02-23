@@ -66,13 +66,37 @@ body {
 }
 
 .standard-charts {
-  margin-bottom: 20px;
+  padding-bottom: 20px;
 }
 
 .horizontal-separator {
   border-left: 1px solid $seperator;
   margin-left: 10px;
   padding-left: 10px;
+}
+
+.dark-mode {
+  background: $darkbackgroud;
+  color: $darkfont;
+  .stock-button,
+  .period-button {
+    color: $darkfont;
+  }
+  .mr-sm-2 {
+    background: $darkbackgroud;
+    color: $darkfont;
+  }
+  .chart-container {
+    box-shadow: 0 2px 8px 0 $darkshadow;
+  }
+  .sdcontainer,
+  .period-buttons {
+    border-bottom: 1px solid $darkseperator;
+  }
+
+  .horizontal-separator {
+    border-left: 1px solid $darkseperator;
+  }
 }
 
 .cols {
@@ -110,9 +134,12 @@ body {
   }
 }
 
-.nav-item {
-  padding: 10px 20px;
-  cursor: pointer;
+.navbar {
+  span {
+    margin-left: 20px;
+    padding: 15px 10px;
+    cursor: pointer;
+  }
 }
 
 .navbar {

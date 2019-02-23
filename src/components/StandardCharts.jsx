@@ -3,7 +3,7 @@ import '../styles/App.scss';
 import { connect } from 'react-redux';
 import { Bar } from 'react-chartjs-2';
 import { cloneDeep } from 'lodash';
-import { getPerformanceColor } from '../utils/color';
+import { getPerformanceColor, getPerformanceColorHex } from '../utils/color';
 import { getMarketStateDescription } from '../utils/utils';
 
 const StandardCharts = ({ data }) => {
@@ -14,6 +14,7 @@ const StandardCharts = ({ data }) => {
       const fdatasets = {
         datasets: [],
       };
+
       fdatasets.datasets.push(datasets[symbol]);
       const foptions = cloneDeep(options);
 
@@ -22,6 +23,14 @@ const StandardCharts = ({ data }) => {
       foptions.legend.display = false;
       foptions.annotation = annotations[symbol];
       foptions.scales.xAxes[0].labels = labels[symbol];
+
+      const symbolColor = getPerformanceColorHex(change);
+      datasets[symbol].borderColor = symbolColor;
+      datasets[symbol].backgroundColor = symbolColor;
+      datasets[symbol].pointBorderColor = symbolColor;
+      datasets[symbol].pointBackgroundColor = symbolColor;
+      datasets[symbol].pointHoverBackgroundColor = symbolColor;
+      datasets[symbol].pointHoverBorderColor = symbolColor;
 
       standardCharts.push(
         <div className="chart cols" key={symbol}>

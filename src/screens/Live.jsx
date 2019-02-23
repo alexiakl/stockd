@@ -5,7 +5,7 @@ import axios from 'axios';
 import PropTypes from 'prop-types';
 import StandardCharts from '../components/StandardCharts';
 import SymbolsPicker from '../components/SymbolsPicker';
-import { getRandomColor } from '../utils/color';
+// import { getRandomColor } from '../utils/color';
 import { options } from '../utils/chartVars';
 import PeriodController from '../components/PeriodController';
 import { API, TOKEN, OPEN, PRE_OPEN } from '../constants';
@@ -13,7 +13,7 @@ import { setSymbolsData } from '../actions/symbolsData';
 import { getMarketState } from '../utils/utils';
 import 'chartjs-plugin-annotation';
 
-import testData from '../data/pre_open.json';
+// import testData from '../data/pre_open.json';
 
 let timerId = 0;
 let timerInterval = 0;
@@ -39,17 +39,15 @@ class Live extends Component {
     const url = `${API}stock/market/batch?symbols=${allsymbols}&types=quote,chart&range=${period}${TOKEN}`;
     // eslint-disable-next-line no-console
     console.log(`RQ: Live ${url}`);
-    if (testData) {
-      this.process({ data: testData });
-    } else {
-      axios.get(url).then(res => {
-        this.process(res);
-      });
-    }
+
+    // this.process({ data: testData });
+    axios.get(url).then(res => {
+      this.process(res);
+    });
   }
 
   process(res) {
-    const { symbols, period, dispatch } = this.props;
+    const { symbols, period, theme, dispatch } = this.props;
     const data = {
       symbols: [],
       labels: [],
@@ -59,22 +57,15 @@ class Live extends Component {
       options,
     };
 
-    symbols.forEach((symbol, index) => {
+    symbols.forEach(symbol => {
       data.symbols.push(symbol);
       const { chart, quote } = res.data[symbol];
       const { previousClose, latestPrice, latestSource } = quote;
-      const symbolColor = getRandomColor(symbols.length, index);
       const dataset = {
         label: symbol,
         type: 'line',
         data: [],
         fill: false,
-        borderColor: symbolColor,
-        backgroundColor: symbolColor,
-        pointBorderColor: symbolColor,
-        pointBackgroundColor: symbolColor,
-        pointHoverBackgroundColor: symbolColor,
-        pointHoverBorderColor: symbolColor,
         yAxisID: 'y-axis-1',
       };
       const marketState = getMarketState(latestSource);
@@ -123,6 +114,10 @@ class Live extends Component {
 
       data.datasets[symbol] = dataset;
 
+      data.options.scales.yAxes[0].gridLines.color = '';
+      if (theme === 'dark-mode') {
+        data.options.scales.yAxes[0].gridLines.color = '#555';
+      }
       data.options.scales.yAxes[0].ticks.callback = value => {
         return `$${value}`;
       };
@@ -176,8 +171,9 @@ class Live extends Component {
   }
 
   render() {
+    const { theme } = this.props;
     return (
-      <div>
+      <div className={theme}>
         <SymbolsPicker />
         <PeriodController />
         <StandardCharts />
@@ -189,12 +185,14 @@ class Live extends Component {
 Live.propTypes = {
   period: PropTypes.string.isRequired,
   symbols: PropTypes.arrayOf(PropTypes.string).isRequired,
+  theme: PropTypes.string.isRequired,
   dispatch: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = state => ({
   period: state.periodController.period,
   symbols: state.symbolsPicker.symbols,
+  theme: state.theme,
 });
 
 export default connect(mapStateToProps)(Live);

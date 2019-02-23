@@ -5,7 +5,12 @@ import { createStore } from 'redux';
 import { Provider } from 'react-redux';
 import App from './components/App';
 import rootReducer from './reducers';
-import { SYMBOLS_ADDED, SYMBOLS_MAP, SYMBOLS_DEFAULT } from './constants';
+import {
+  SYMBOLS_ADDED,
+  SYMBOLS_MAP,
+  SYMBOLS_DEFAULT,
+  THEME,
+} from './constants';
 
 const initialState = {
   symbolsPicker: {
@@ -20,6 +25,7 @@ const initialState = {
   symbolsData: {
     data: [],
   },
+  theme: localStorage.getItem(THEME),
 };
 const store = createStore(rootReducer, initialState);
 

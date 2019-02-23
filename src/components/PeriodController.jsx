@@ -52,6 +52,7 @@ const PeriodController = ({ period, dispatch }) => {
     <div className="period-buttons">
       <ButtonGroup aria-label="Period">
         <Button
+          className="period-button"
           variant={oned}
           size="sm"
           onClick={() => dispatch(updatePeriod('1d'))}
@@ -59,6 +60,7 @@ const PeriodController = ({ period, dispatch }) => {
           1 day
         </Button>
         <Button
+          className="period-button"
           variant={fived}
           size="sm"
           onClick={() => dispatch(updatePeriod('5d'))}
@@ -66,6 +68,7 @@ const PeriodController = ({ period, dispatch }) => {
           5 days
         </Button>
         <Button
+          className="period-button"
           variant={onem}
           size="sm"
           onClick={() => dispatch(updatePeriod('1m'))}
@@ -73,6 +76,7 @@ const PeriodController = ({ period, dispatch }) => {
           1 month
         </Button>
         <Button
+          className="period-button"
           variant={threem}
           size="sm"
           onClick={() => dispatch(updatePeriod('3m'))}
@@ -80,6 +84,7 @@ const PeriodController = ({ period, dispatch }) => {
           3 months
         </Button>
         <Button
+          className="period-button"
           variant={sixm}
           size="sm"
           onClick={() => dispatch(updatePeriod('6m'))}
@@ -87,6 +92,7 @@ const PeriodController = ({ period, dispatch }) => {
           6 months
         </Button>
         <Button
+          className="period-button"
           variant={ytd}
           size="sm"
           onClick={() => dispatch(updatePeriod('ytd'))}
@@ -94,6 +100,7 @@ const PeriodController = ({ period, dispatch }) => {
           YTD
         </Button>
         <Button
+          className="period-button"
           variant={oney}
           size="sm"
           onClick={() => dispatch(updatePeriod('1y'))}
@@ -101,6 +108,7 @@ const PeriodController = ({ period, dispatch }) => {
           1 year
         </Button>
         <Button
+          className="period-button"
           variant={twoy}
           size="sm"
           onClick={() => dispatch(updatePeriod('2y'))}
@@ -108,6 +116,7 @@ const PeriodController = ({ period, dispatch }) => {
           2 years
         </Button>
         <Button
+          className="period-button"
           variant={fivey}
           size="sm"
           onClick={() => dispatch(updatePeriod('5y'))}
