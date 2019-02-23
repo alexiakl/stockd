@@ -8,7 +8,6 @@ import logo from '../static/images/logo/Stockd_1024.png';
 const Header = ({ theme, dispatch }) => {
   function handleClick(e) {
     e.preventDefault();
-    console.log(theme);
     if (theme === 'dark-mode') {
       dispatch(setTheme('light-mode'));
     } else {
@@ -17,11 +16,13 @@ const Header = ({ theme, dispatch }) => {
   }
 
   let themeButton = <Navbar.Text onClick={handleClick}>dark</Navbar.Text>;
+  let bg = 'light';
   if (theme === 'dark-mode') {
     themeButton = <Navbar.Text onClick={handleClick}>light</Navbar.Text>;
+    bg = 'dark';
   }
   return (
-    <Navbar expand="lg" bg="dark" variant="dark">
+    <Navbar expand="lg" bg={bg} variant={bg}>
       <LinkContainer to="/">
         <NavItem>
           <img alt="logo" width="40" height="40" src={logo} />
