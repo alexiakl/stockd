@@ -1,5 +1,4 @@
 import React from 'react';
-
 import { Switch, Route, Redirect } from 'react-router-dom';
 import Header from './Header';
 import Home from '../screens/Home';

@@ -10,6 +10,15 @@ import { SYMBOLS_ADDED } from '../constants';
 const symbolsPicker = (state = [], action) => {
   switch (action.type) {
     case ADD_SYMBOL: {
+      if (!state.symbols) {
+        const newSymbols = [];
+        newSymbols.push(action.symbol);
+        localStorage.setItem(SYMBOLS_ADDED, JSON.stringify(newSymbols));
+        return {
+          ...state,
+          symbols: newSymbols,
+        };
+      }
       if (state.symbols.indexOf(action.symbol) < 0) {
         const newSymbols = [...state.symbols, action.symbol];
         localStorage.setItem(SYMBOLS_ADDED, JSON.stringify(newSymbols));
@@ -37,6 +46,9 @@ const symbolsPicker = (state = [], action) => {
     }
     case FILTER_SYMBOLS: {
       let filtered = [];
+      if (!state.map || state.map.length < 100) {
+        return filtered;
+      }
       if (action.symbol.length > 0) {
         filtered = state.map.filter(symbol => {
           return symbol.toUpperCase().indexOf(action.symbol.toUpperCase()) >= 0;

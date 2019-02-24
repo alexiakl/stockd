@@ -3,6 +3,7 @@ import '../styles/App.scss';
 import { connect } from 'react-redux';
 import axios from 'axios';
 import PropTypes from 'prop-types';
+import Helmet from 'react-helmet';
 import StandardCharts from '../components/StandardCharts';
 import SymbolsPicker from '../components/SymbolsPicker';
 // import { getRandomColor } from '../utils/color';
@@ -35,15 +36,17 @@ class Live extends Component {
 
   runQuery() {
     const { symbols, period } = this.props;
-    const allsymbols = symbols.join(',');
-    const url = `${API}stock/market/batch?symbols=${allsymbols}&types=quote,chart&range=${period}${TOKEN}`;
-    // eslint-disable-next-line no-console
-    console.log(`RQ: Live ${url}`);
+    if (symbols) {
+      const allsymbols = symbols.join(',');
+      const url = `${API}stock/market/batch?symbols=${allsymbols}&types=quote,chart&range=${period}${TOKEN}`;
+      // eslint-disable-next-line no-console
+      console.log(`RQ: Live ${url}`);
 
-    // this.process({ data: testData });
-    axios.get(url).then(res => {
-      this.process(res);
-    });
+      // this.process({ data: testData });
+      axios.get(url).then(res => {
+        this.process(res);
+      });
+    }
   }
 
   process(res) {

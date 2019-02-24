@@ -2,10 +2,32 @@ import React from 'react';
 import { Nav, Navbar, NavItem } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import { connect } from 'react-redux';
+import Helmet from 'react-helmet';
+import axios from 'axios';
 import { setTheme } from '../actions/theme';
 import logo from '../static/images/logo/Stockd_1024.png';
+import { SYMBOLS_MAP, API, TOKEN } from '../constants';
+import { setMap } from '../actions/symbolsPicker';
+
+const runQuery = dispatch => {
+  const symbolsMap = localStorage.getItem(SYMBOLS_MAP);
+  if (!symbolsMap || symbolsMap.length === 0) {
+    const map = [];
+    const url = `${API}ref-data/symbols?filter=symbol,name${TOKEN}`;
+    console.log(`RQ: Home ${url}`);
+    axios.get(url).then(res => {
+      res.data.forEach(symbol => {
+        map.push(`${symbol.symbol} ${symbol.name}`);
+      });
+      localStorage.setItem(SYMBOLS_MAP, JSON.stringify(map));
+      dispatch(setMap(map));
+    });
+  }
+};
 
 const Header = ({ theme, dispatch }) => {
+  runQuery(dispatch);
+
   function handleClick(e) {
     e.preventDefault();
     if (theme === 'dark-mode') {
@@ -20,6 +42,7 @@ const Header = ({ theme, dispatch }) => {
       dark
     </Navbar.Text>
   );
+
   let bg = 'light';
   if (theme === 'dark-mode') {
     themeButton = (
@@ -29,8 +52,14 @@ const Header = ({ theme, dispatch }) => {
     );
     bg = 'dark';
   }
+
   return (
     <Navbar expand="lg" bg={bg} variant={bg}>
+      <Helmet>
+        <style>
+          {theme === 'dark-mode' ? 'body { background-color: #303030; }' : ''}
+        </style>
+      </Helmet>
       <LinkContainer to="/">
         <NavItem>
           <img alt="logo" width="40" height="40" src={logo} />
