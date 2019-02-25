@@ -7,6 +7,7 @@ import Portfolio from '../screens/Portfolio';
 import Live from '../screens/Live';
 import Performance from '../screens/Performance';
 import Login from '../screens/Login';
+import '../styles/App.scss';
 
 const App = () => {
   return (

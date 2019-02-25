@@ -1,5 +1,4 @@
 import React from 'react';
-import '../styles/App.scss';
 import { connect } from 'react-redux';
 import { Bar } from 'react-chartjs-2';
 import { cloneDeep } from 'lodash';

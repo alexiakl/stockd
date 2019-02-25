@@ -69,16 +69,16 @@ const Header = ({ theme, dispatch }) => {
       <Navbar.Collapse id="basic-navbar-nav">
         <Nav className="mr-auto">
           <LinkContainer to="/live">
-            <Navbar.Text className="menu-item">live</Navbar.Text>
+            <Nav.Link className="menu-item">live</Nav.Link>
           </LinkContainer>
           <LinkContainer to="/performance">
-            <Navbar.Text className="menu-item">performance</Navbar.Text>
+            <Nav.Link className="menu-item">performance</Nav.Link>
           </LinkContainer>
           <LinkContainer to="/portfolio">
-            <Navbar.Text className="menu-item">portfolio</Navbar.Text>
+            <Nav.Link className="menu-item">portfolio</Nav.Link>
           </LinkContainer>
           <LinkContainer to="/login">
-            <Navbar.Text className="menu-item">login</Navbar.Text>
+            <Nav.Link className="menu-item">login</Nav.Link>
           </LinkContainer>
           {themeButton}
         </Nav>

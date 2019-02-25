@@ -3,7 +3,6 @@ import '../styles/App.scss';
 import { connect } from 'react-redux';
 import axios from 'axios';
 import PropTypes from 'prop-types';
-import Helmet from 'react-helmet';
 import StandardCharts from '../components/StandardCharts';
 import SymbolsPicker from '../components/SymbolsPicker';
 // import { getRandomColor } from '../utils/color';
@@ -41,6 +40,7 @@ class Live extends Component {
       const url = `${API}stock/market/batch?symbols=${allsymbols}&types=quote,chart&range=${period}${TOKEN}`;
       // eslint-disable-next-line no-console
       console.log(`RQ: Live ${url}`);
+      console.log(`Timer: ${timerInterval}`);
 
       // this.process({ data: testData });
       axios.get(url).then(res => {
@@ -50,6 +50,7 @@ class Live extends Component {
   }
 
   process(res) {
+    let tempTimerInterval = 0;
     const { symbols, period, theme, dispatch } = this.props;
     const data = {
       symbols: [],
@@ -78,6 +79,9 @@ class Live extends Component {
       if (chart.length > 50) {
         skip = parseInt(chart.length / 50, 10);
       }
+      if (!data.labels[symbol]) {
+        data.labels[symbol] = [];
+      }
       chart.forEach((entry, entryindex) => {
         let value = 0;
         if (entry.close > 0) {
@@ -98,21 +102,24 @@ class Live extends Component {
             value = latestPrice;
             if (marketState === OPEN) {
               latestValue = value;
+              tempTimerInterval = 300000; // 5 minutes
             }
           }
           dataset.data.push(value.toFixed(3));
-          if (!data.labels[symbol]) {
-            data.labels[symbol] = [];
-          }
           data.labels[symbol].push(entry.label);
         }
       });
 
       if (marketState === PRE_OPEN && period === '1d') {
+        if (tempTimerInterval === 0) {
+          tempTimerInterval = 600000; // 10 minutes
+        }
         const dupLabels = data.labels[symbol];
-        dupLabels.forEach(() => {
-          data.labels[symbol].push('.');
-        });
+        if (dupLabels && dupLabels.length > 0) {
+          dupLabels.forEach(() => {
+            data.labels[symbol].push('.');
+          });
+        }
       }
 
       data.datasets[symbol] = dataset;
@@ -161,12 +168,16 @@ class Live extends Component {
       },
     };
 
-    const timerIntervalTemp = 300000; // 5 mins
-    if (timerIntervalTemp !== timerInterval) {
-      timerInterval = timerIntervalTemp;
+    const defaultIntervalTemp = 900000; // 15 mins
+    if (timerInterval === 0 || timerInterval !== tempTimerInterval) {
+      timerInterval = defaultIntervalTemp;
+      if (tempTimerInterval > 0) {
+        timerInterval = tempTimerInterval;
+      }
       if (timerId) {
         clearInterval(timerId);
       }
+      console.log(`Timer set: ${timerInterval}`);
       timerId = setInterval(() => this.runQuery(), timerInterval);
     }
 
