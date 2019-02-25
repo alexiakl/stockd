@@ -1,5 +1,5 @@
 import React from 'react';
-import { Nav, Navbar, NavItem } from 'react-bootstrap';
+import { Nav, Navbar, NavItem, Button } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import { connect } from 'react-redux';
 import Helmet from 'react-helmet';
@@ -38,17 +38,17 @@ const Header = ({ theme, dispatch }) => {
   }
 
   let themeButton = (
-    <Navbar.Text onClick={handleClick} className="menu-item">
+    <Button onClick={handleClick} className="menu-item" variant="secondary">
       dark
-    </Navbar.Text>
+    </Button>
   );
 
   let bg = 'light';
   if (theme === 'dark-mode') {
     themeButton = (
-      <Navbar.Text onClick={handleClick} className="menu-item">
+      <Button onClick={handleClick} className="menu-item" variant="secondary">
         light
-      </Navbar.Text>
+      </Button>
     );
     bg = 'dark';
   }
@@ -77,11 +77,8 @@ const Header = ({ theme, dispatch }) => {
           <LinkContainer to="/portfolio">
             <Nav.Link className="menu-item">portfolio</Nav.Link>
           </LinkContainer>
-          <LinkContainer to="/login">
-            <Nav.Link className="menu-item">login</Nav.Link>
-          </LinkContainer>
-          {themeButton}
         </Nav>
+        {themeButton}
       </Navbar.Collapse>
     </Navbar>
   );
