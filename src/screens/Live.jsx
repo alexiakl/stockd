@@ -40,7 +40,6 @@ class Live extends Component {
       const url = `${API}stock/market/batch?symbols=${allsymbols}&types=quote,chart&range=${period}${TOKEN}`;
       // eslint-disable-next-line no-console
       console.log(`RQ: Live ${url}`);
-      console.log(`Timer: ${timerInterval}`);
 
       // this.process({ data: testData });
       axios.get(url).then(res => {

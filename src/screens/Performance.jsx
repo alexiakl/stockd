@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import '../styles/App.scss';
 import { Form, FormControl, Button } from 'react-bootstrap';
 import RatioPerformance from '../components/RatioPerformance';
-import { SYMBOLS_ADDED, SYMBOLS_MAP, SYMBOLS_DEFAULT } from '../constants';
+import { SYMBOLS_ADDED, SYMBOLS_MAP } from '../constants';
 
 class Performance extends Component {
   map = null;
@@ -15,7 +15,7 @@ class Performance extends Component {
   componentWillMount() {
     const { symbols } = this.state;
     if (!symbols || symbols.length === 0) {
-      this.setState({ symbols: SYMBOLS_DEFAULT.split(',') });
+      // this.setState({ symbols: SYMBOLS_DEFAULT.split(',') });
     }
     this.map = JSON.parse(localStorage.getItem(SYMBOLS_MAP));
   }

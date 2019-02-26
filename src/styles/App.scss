@@ -99,6 +99,13 @@ body {
   }
 }
 
+.mr-sm-2 {
+  width: 100% !important;
+  @include lg {
+    width: 250px !important;
+  }
+}
+
 .cols {
   flex: 100%;
   max-width: 100%;
@@ -123,10 +130,12 @@ body {
 }
 
 .stock-button {
-  margin-left: 20px;
   margin-top: 20px;
+  margin-right: 20px;
   @include lg {
     margin-top: 0px;
+    margin-left: 20px;
+    margin-right: 0px;
   }
 }
 

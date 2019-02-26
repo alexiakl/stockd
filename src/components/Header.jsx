@@ -6,12 +6,22 @@ import Helmet from 'react-helmet';
 import axios from 'axios';
 import { setTheme } from '../actions/theme';
 import logo from '../static/images/logo/Stockd_1024.png';
-import { SYMBOLS_MAP, API, TOKEN } from '../constants';
-import { setMap } from '../actions/symbolsPicker';
+import { SYMBOLS_MAP, SYMBOLS_EXPIRY, API, TOKEN } from '../constants';
+import { setMap, addSymbol } from '../actions/symbolsPicker';
 
 const runQuery = dispatch => {
   const symbolsMap = localStorage.getItem(SYMBOLS_MAP);
-  if (!symbolsMap || symbolsMap.length === 0) {
+  const expiry = localStorage.getItem(SYMBOLS_EXPIRY);
+  if (!expiry) {
+    dispatch(addSymbol('MSFT'));
+  }
+  const now = new Date();
+  if (
+    !symbolsMap ||
+    symbolsMap.length === 0 ||
+    !expiry ||
+    now.getTime() < expiry
+  ) {
     const map = [];
     const url = `${API}ref-data/symbols?filter=symbol,name${TOKEN}`;
     console.log(`RQ: Home ${url}`);
@@ -20,6 +30,11 @@ const runQuery = dispatch => {
         map.push(`${symbol.symbol} ${symbol.name}`);
       });
       localStorage.setItem(SYMBOLS_MAP, JSON.stringify(map));
+
+      let time = now.getTime();
+      time += 12 * 3600 * 1000;
+      localStorage.setItem(SYMBOLS_EXPIRY, time);
+
       dispatch(setMap(map));
     });
   }
