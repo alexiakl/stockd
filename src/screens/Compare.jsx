@@ -51,7 +51,7 @@ class Compare extends Component {
         <PeriodController />
         {isFetchingData && (
           <div className="loader">
-            <PulseLoader color="#24a321" />
+            <PulseLoader color="#5c646d" />
           </div>
         )}
         <CompareChart />
