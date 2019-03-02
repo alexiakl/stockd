@@ -68,6 +68,11 @@ const Header = ({ theme, dispatch }) => {
     bg = 'dark';
   }
 
+  let addClass = '';
+  if (window.location.pathname === '/') {
+    addClass = 'active';
+  }
+
   return (
     <Navbar expand="lg" bg={bg} variant={bg}>
       <Helmet>
@@ -84,7 +89,7 @@ const Header = ({ theme, dispatch }) => {
       <Navbar.Collapse id="basic-navbar-nav">
         <Nav className="mr-auto">
           <LinkContainer to="/live">
-            <Nav.Link className="menu-item">live</Nav.Link>
+            <Nav.Link className={`menu-item ${addClass}`}>live</Nav.Link>
           </LinkContainer>
           <LinkContainer to="/compare">
             <Nav.Link className="menu-item">compare</Nav.Link>

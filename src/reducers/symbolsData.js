@@ -1,4 +1,4 @@
-import { SET_SYMBOLS_DATA } from '../actions/symbolsData';
+import { SET_SYMBOLS_DATA, SET_QUERY_RESULT } from '../actions/symbolsData';
 
 const symbolsData = (state = [], action) => {
   switch (action.type) {
@@ -6,6 +6,12 @@ const symbolsData = (state = [], action) => {
       return {
         ...state,
         data: action.data,
+      };
+    }
+    case SET_QUERY_RESULT: {
+      return {
+        ...state,
+        queryResult: action.queryResult,
       };
     }
     default:

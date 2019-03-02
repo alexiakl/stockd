@@ -18,6 +18,7 @@ const initialState = {
   },
   symbolsData: {
     data: [],
+    queryResult: {},
   },
   appStatus: {
     theme: localStorage.getItem(THEME),
