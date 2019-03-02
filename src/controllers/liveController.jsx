@@ -21,14 +21,10 @@ const runQuery = props => {
     console.log(`RQ: Live ${url}`);
 
     dispatch(setIsFetchingData(true));
-    const start = Date.now();
 
     axios
       .get(url)
       .then(res => {
-        const end = Date.now();
-        const elapsed = end - start;
-        console.log(elapsed);
         dispatch(setIsFetchingData(false));
         dispatch(setQueryResult(res));
       })
@@ -40,7 +36,12 @@ const runQuery = props => {
 
 const processResult = props => {
   const { symbols, period, theme, queryResult, dispatch } = props;
-
+  if (
+    Object.entries(queryResult).length === 0 &&
+    queryResult.constructor === Object
+  ) {
+    return;
+  }
   let tempTimerInterval = 0;
   const data = {
     symbols: [],

@@ -17,8 +17,11 @@ const initialState = {
     period: '1d',
   },
   symbolsData: {
-    data: [],
+    data: {},
     queryResult: {},
+  },
+  compareData: {
+    data: {},
   },
   appStatus: {
     theme: localStorage.getItem(THEME),

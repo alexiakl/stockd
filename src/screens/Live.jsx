@@ -1,7 +1,7 @@
+/* eslint-disable react/prop-types */
 import React, { Component } from 'react';
 import '../styles/App.scss';
 import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
 import { PulseLoader } from 'react-spinners';
 import StandardCharts from '../components/StandardCharts';
 import SymbolsPicker from '../components/SymbolsPicker';
@@ -34,7 +34,6 @@ class Live extends Component {
       JSON.stringify(nextQueryResult) !== JSON.stringify(queryResult)
     ) {
       this.props = nextProps;
-      console.log(nextQueryResult);
       processResult(this.props);
     }
   }
@@ -61,14 +60,6 @@ class Live extends Component {
     );
   }
 }
-
-Live.propTypes = {
-  period: PropTypes.string.isRequired,
-  symbols: PropTypes.arrayOf(PropTypes.string).isRequired,
-  isFetchingData: PropTypes.bool.isRequired,
-  theme: PropTypes.string.isRequired,
-  dispatch: PropTypes.func.isRequired,
-};
 
 const mapStateToProps = state => ({
   period: state.periodController.period,
