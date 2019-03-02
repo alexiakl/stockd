@@ -13,7 +13,7 @@ const App = () => {
     <div>
       <Header />
       <Switch>
-        <Route exact path="/" component={Live} />
+        <Route exact path="/" render={() => <Redirect to="/live" />} />
         <Route exact path="/login" component={Login} />
         <Route exact path="/live" component={Live} />
         <Route exact path="/compare" component={Compare} />

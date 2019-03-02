@@ -212,13 +212,120 @@ class RatioPerformance extends Component {
     const minDate = new Date();
     minDate.setDate(-1800); // around 5 years in the past
 
+    if (this.allsymbols !== oldsymbols) {
+      this.runQuery();
+    }
+    let [onem, threem, sixm, ytd, oney, twoy, fivey] = [
+      'outline-secondary',
+      'outline-secondary',
+      'outline-secondary',
+      'outline-secondary',
+      'outline-secondary',
+      'outline-secondary',
+      'outline-secondary',
+    ];
+    switch (this.period) {
+      case '1m':
+        onem = 'secondary';
+        break;
+      case '3m':
+        threem = 'secondary';
+        break;
+      case '6m':
+        sixm = 'secondary';
+        break;
+      case 'ytd':
+        ytd = 'secondary';
+        break;
+      case '1y':
+        oney = 'secondary';
+        break;
+      case '2y':
+        twoy = 'secondary';
+        break;
+      case '5y':
+        fivey = 'secondary';
+        break;
+      default:
+        // code block
+        break;
+    }
     return (
       <div className="container">
         <Alert dismissible variant="dark">
-          If you bought 1000$ worth of stock {this.period} ago, how much would
-          it be worth now?
+          <Alert.Heading>
+            If you bought 1000$ worth of stock {this.period} ago, how much would
+            it be worth now?
+          </Alert.Heading>
+          <hr />
+          <p className="mb-0">
+            <ul>
+              <li>Compare by adding more symbols</li>
+              <li>Adjust the period below the chart</li>
+            </ul>
+          </p>
         </Alert>
         <div className="chart">{<Bar data={data} options={options} />}</div>
+        <div className="period-buttons">
+          <ButtonGroup aria-label="Period">
+            <Button
+              variant={onem}
+              size="sm"
+              onClick={() => this.handlePeriodChange('1m')}
+            >
+              1 month
+            </Button>
+            <Button
+              variant={threem}
+              size="sm"
+              onClick={() => this.handlePeriodChange('3m')}
+            >
+              3 months
+            </Button>
+            <Button
+              variant={sixm}
+              size="sm"
+              onClick={() => this.handlePeriodChange('6m')}
+            >
+              6 months
+            </Button>
+            <Button
+              variant={ytd}
+              size="sm"
+              onClick={() => this.handlePeriodChange('ytd')}
+            >
+              YTD
+            </Button>
+            <Button
+              variant={oney}
+              size="sm"
+              onClick={() => this.handlePeriodChange('1y')}
+            >
+              1 year
+            </Button>
+            <Button
+              variant={twoy}
+              size="sm"
+              onClick={() => this.handlePeriodChange('2y')}
+            >
+              2 years
+            </Button>
+            <Button
+              variant={fivey}
+              size="sm"
+              onClick={() => this.handlePeriodChange('5y')}
+            >
+              5 years
+            </Button>
+          </ButtonGroup>
+          <DatePicker
+            selected={startDate}
+            onChange={this.handleDateChange}
+            minDate={minDate}
+            maxDate={today}
+            showDisabledMonthNavigation
+          />
+        </div>
       </div>
     );
   }

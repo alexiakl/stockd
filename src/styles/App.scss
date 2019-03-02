@@ -107,6 +107,12 @@ body {
     border-bottom: 1px solid $darkseperator;
   }
 
+  .alert-dark {
+    background: #888888;
+    color: $darkfont;
+    border-color: #00000000;
+  }
+
   .horizontal-separator {
     @include lg {
       border-left: 1px solid $darkseperator;

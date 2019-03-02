@@ -1,104 +1,79 @@
 import React, { Component } from 'react';
 import '../styles/App.scss';
-import { Form, FormControl, Button } from 'react-bootstrap';
-import RatioPerformance from '../components/RatioPerformance';
-import { SYMBOLS_ADDED, SYMBOLS_MAP } from '../constants';
+import { connect } from 'react-redux';
+import { PulseLoader } from 'react-spinners';
+import PropTypes from 'prop-types';
+import SymbolsPicker from '../components/SymbolsPicker';
+import PeriodController from '../components/PeriodController';
+import { processResult } from '../controllers/compareController';
+import { runQuery } from '../controllers/liveController';
+import CompareChart from '../components/CompareChart';
 
 class Compare extends Component {
-  map = null;
-
-  state = {
-    filtered: [],
-    symbols: JSON.parse(localStorage.getItem(SYMBOLS_ADDED)),
-  };
-
-  componentWillMount() {
-    const { symbols } = this.state;
-    if (!symbols || symbols.length === 0) {
-      // this.setState({ symbols: SYMBOLS_DEFAULT.split(',') });
-    }
-    this.map = JSON.parse(localStorage.getItem(SYMBOLS_MAP));
-  }
-
-  addSymbol(evt) {
-    const { symbols } = this.state;
-    const symbol = evt.target.innerHTML.split(' ')[0];
-    if (symbols.indexOf(symbol) < 0) {
-      symbols.push(symbol);
-      localStorage.setItem(SYMBOLS_ADDED, JSON.stringify(symbols));
-      this.setState({ symbols });
-    }
-  }
-
-  filterSymbols(evt) {
-    let { filtered } = this.state;
-    if (evt.target.value.length > 0) {
-      filtered = this.map.filter(symbol => {
-        return (
-          symbol.toUpperCase().indexOf(evt.target.value.toUpperCase()) >= 0
-        );
-      });
-      if (filtered.length > 5) {
-        filtered = filtered.slice(0, 5);
-      }
+  componentDidMount() {
+    const { queryResult } = this.props;
+    if (
+      Object.entries(queryResult).length === 0 &&
+      queryResult.constructor === Object
+    ) {
+      runQuery(this.props);
     } else {
-      filtered = [];
+      processResult(this.props);
     }
-    this.setState({ filtered });
   }
 
-  removeSymbol(evt) {
-    const { symbols } = this.state;
-    if (symbols.indexOf(evt.target.innerHTML) > -1) {
-      symbols.splice(symbols.indexOf(evt.target.innerHTML), 1);
-      localStorage.setItem(SYMBOLS_ADDED, JSON.stringify(symbols));
-      this.setState({ symbols });
+  componentWillReceiveProps(nextProps) {
+    const { symbols, period, queryResult, theme } = this.props;
+    const {
+      symbols: nextSymbols,
+      period: nextPeriod,
+      queryResult: nextQueryResult,
+      theme: nextTheme,
+    } = nextProps;
+
+    if (nextSymbols.length !== symbols.length || period !== nextPeriod) {
+      this.props = nextProps;
+      runQuery(this.props);
+    } else if (
+      JSON.stringify(nextQueryResult) !== JSON.stringify(queryResult) ||
+      theme !== nextTheme
+    ) {
+      this.props = nextProps;
+      processResult(this.props);
     }
   }
 
   render() {
-    const { filtered, symbols } = this.state;
+    const { theme, isFetchingData } = this.props;
     return (
-      <div>
-        <div className="sdcontainer">
-          <Form inline>
-            <FormControl
-              type="text"
-              placeholder="symbol"
-              className="mr-sm-2"
-              onChange={evt => this.filterSymbols(evt)}
-            />
-            {symbols.map(symbol => (
-              <Button
-                key={symbol}
-                className="stock-button"
-                variant="outline-secondary"
-                size="sm"
-                onClick={evt => this.removeSymbol(evt)}
-              >
-                {symbol}
-              </Button>
-            ))}
-          </Form>
-
-          <div className="results">
-            {filtered.map(symbol => (
-              <Button
-                key={symbol}
-                className="stock-button"
-                variant="outline-secondary"
-                size="sm"
-                onClick={evt => this.addSymbol(evt)}
-              >
-                {symbol}
-              </Button>
-            ))}
+      <div className={theme}>
+        <SymbolsPicker />
+        <PeriodController />
+        {isFetchingData && (
+          <div className="loader">
+            <PulseLoader color="#24a321" />
           </div>
-        </div>
-        <RatioPerformance symbols={symbols} />
+        )}
+        <CompareChart />
       </div>
     );
   }
 }
 
-export default Compare;
+Compare.propTypes = {
+  period: PropTypes.string.isRequired,
+  symbols: PropTypes.arrayOf(PropTypes.string).isRequired,
+  isFetchingData: PropTypes.bool.isRequired,
+  theme: PropTypes.string.isRequired,
+  dispatch: PropTypes.func.isRequired,
+};
+
+const mapStateToProps = state => ({
+  period: state.periodController.period,
+  symbols: state.symbolsPicker.symbols,
+  isFetchingData: state.appStatus.isFetchingData,
+  queryResult: state.symbolsData.queryResult,
+  theme: state.appStatus.theme,
+});
+
+export default connect(mapStateToProps)(Compare);
