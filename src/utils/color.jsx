@@ -1,21 +1,34 @@
 const darkColors = [
   '#004c99',
   '#99004c',
-  '#4c0099',
-  '#00994c',
+  '#4682B4',
+  '#2ca12c',
   '#999900',
   '#CC6600',
-  '#000000',
+  '#858585',
   '#008080',
-  '#A9A9A9',
   '#0000CC',
+  '#A9A9A9',
+];
+
+const lightColors = [
+  '#BA55D3',
+  '#4682B4',
+  '#FF69B4',
+  '#87CEEB',
+  '#9ACD32',
+  '#6B8E23',
+  '#FF8C00',
+  '#A9A9A9',
+  '#008080',
+  '#D3D3D3',
 ];
 
 const getRandomColor = (theme, index) => {
   if (theme === 'dark-mode') {
     return darkColors[index];
   }
-  return darkColors[index];
+  return lightColors[index];
 };
 
 const getPerformanceColor = value => {
