@@ -23,17 +23,20 @@ class Compare extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    const { symbols, period, queryResult } = this.props;
+    const { symbols, period, queryResult, theme } = this.props;
     const {
       symbols: nextSymbols,
       period: nextPeriod,
       queryResult: nextQueryResult,
+      theme: nextTheme,
     } = nextProps;
+
     if (nextSymbols.length !== symbols.length || period !== nextPeriod) {
       this.props = nextProps;
       runQuery(this.props);
     } else if (
-      JSON.stringify(nextQueryResult) !== JSON.stringify(queryResult)
+      JSON.stringify(nextQueryResult) !== JSON.stringify(queryResult) ||
+      theme !== nextTheme
     ) {
       this.props = nextProps;
       processResult(this.props);

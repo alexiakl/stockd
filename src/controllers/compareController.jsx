@@ -1,5 +1,6 @@
 import { setCompareData } from '../actions/compareData';
 import { options } from '../utils/chartVars';
+import { getRandomColor } from '../utils/color';
 
 const processResult = props => {
   const { symbols, theme, queryResult, dispatch } = props;
@@ -41,7 +42,7 @@ const processResult = props => {
 
   symbols.forEach((symbol, index) => {
     const { chart } = queryResult.data[symbol];
-    const symbolColor = '#5e5e5e';
+    const symbolColor = getRandomColor(theme, index);
     const dataset = {
       label: symbol,
       type: 'line',
@@ -93,6 +94,18 @@ const processResult = props => {
     if (theme === 'dark-mode') {
       data.options.scales.yAxes[0].gridLines.color = '#555';
     }
+
+    data.options.scales.yAxes[0].ticks.callback = xvalue => {
+      return `$${xvalue}`;
+    };
+
+    data.options.tooltips.callbacks = {
+      label(tooltipItem, cdata) {
+        let { label } = cdata.datasets[tooltipItem.datasetIndex];
+        label += `: ${tooltipItem.yLabel}$`;
+        return label;
+      },
+    };
   });
 
   dispatch(setCompareData(data));
