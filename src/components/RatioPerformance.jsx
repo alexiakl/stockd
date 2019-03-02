@@ -252,7 +252,7 @@ class RatioPerformance extends Component {
     }
     return (
       <div className="container">
-        <Alert dismissible variant="success">
+        <Alert dismissible variant="dark">
           <Alert.Heading>
             If you bought 1000$ worth of stock {this.period} ago, how much would
             it be worth now?

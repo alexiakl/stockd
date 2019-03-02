@@ -20,7 +20,7 @@ const runQuery = dispatch => {
     !symbolsMap ||
     symbolsMap.length === 0 ||
     !expiry ||
-    now.getTime() < expiry
+    now.getTime() > expiry
   ) {
     const map = [];
     const url = `${API}ref-data/symbols?filter=symbol,name${TOKEN}`;

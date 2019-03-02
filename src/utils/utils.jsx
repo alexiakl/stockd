@@ -2,15 +2,26 @@ import { OPEN, CLOSED, PRE_OPEN, UNDEFINED } from '../constants';
 
 const getMarketStateDescription = (value, quote) => {
   let marketStateSentence = '';
+  let time = quote.latestTime;
+  const splittedTime = time.split(':');
+  if (splittedTime.length === 3) {
+    let suffix = '';
+    if (time.toUpperCase().includes('AM')) {
+      suffix = 'AM';
+    } else if (time.toUpperCase().includes('PM')) {
+      suffix = 'PM';
+    }
+    time = `${splittedTime[0]}:${splittedTime[1]}${suffix}`;
+  }
   switch (value) {
     case PRE_OPEN:
-      marketStateSentence = ` opening soon, chart: ${quote.latestTime}`;
+      marketStateSentence = ` opening soon ${time}`;
       break;
     case OPEN:
-      marketStateSentence = ` latest: ${quote.latestTime}`;
+      marketStateSentence = ` latest: ${time}`;
       break;
     case CLOSED:
-      marketStateSentence = ` closed: ${quote.latestTime}`;
+      marketStateSentence = ` closed: ${time}`;
       break;
 
     default:

@@ -70,9 +70,16 @@ body {
 }
 
 .horizontal-separator {
-  border-left: 1px solid $seperator;
-  margin-left: 10px;
-  padding-left: 10px;
+  display: block;
+  @include lg {
+    display: inline-block;
+    border-left: 1px solid $seperator;
+    margin-left: 10px;
+    padding-left: 10px;
+  }
+}
+.horizontal-break {
+  display: block;
 }
 
 .dark-mode {
@@ -95,7 +102,9 @@ body {
   }
 
   .horizontal-separator {
-    border-left: 1px solid $darkseperator;
+    @include lg {
+      border-left: 1px solid $darkseperator;
+    }
   }
 }
 
