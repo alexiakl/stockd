@@ -26,6 +26,12 @@ body {
   margin: 0 auto;
 }
 
+.loader {
+  padding-left: 50%;
+  margin-left: -28px;
+  padding-top: 20px;
+}
+
 .chart-container {
   box-shadow: 0 2px 8px 0 $shadow;
   border-radius: 5px;

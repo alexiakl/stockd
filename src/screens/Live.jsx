@@ -3,6 +3,8 @@ import '../styles/App.scss';
 import { connect } from 'react-redux';
 import axios from 'axios';
 import PropTypes from 'prop-types';
+import { PulseLoader } from 'react-spinners';
+import { setIsFetchingData } from '../actions/appStatus';
 import StandardCharts from '../components/StandardCharts';
 import SymbolsPicker from '../components/SymbolsPicker';
 // import { getRandomColor } from '../utils/color';
@@ -23,8 +25,12 @@ class Live extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    this.props = nextProps;
-    this.runQuery();
+    const { symbols, period } = this.props;
+    const { symbols: nextSymbols, period: nextPeriod } = nextProps;
+    if (nextSymbols.length !== symbols.length || period !== nextPeriod) {
+      this.props = nextProps;
+      this.runQuery();
+    }
   }
 
   componentWillUnmount() {
@@ -34,7 +40,7 @@ class Live extends Component {
   }
 
   runQuery() {
-    const { symbols, period } = this.props;
+    const { symbols, period, dispatch } = this.props;
     if (symbols) {
       const allsymbols = symbols.join(',');
       const url = `${API}stock/market/batch?symbols=${allsymbols}&types=quote,chart&range=${period}${TOKEN}`;
@@ -42,9 +48,16 @@ class Live extends Component {
       console.log(`RQ: Live ${url}`);
 
       // this.process({ data: testData });
-      axios.get(url).then(res => {
-        this.process(res);
-      });
+      dispatch(setIsFetchingData(true));
+      axios
+        .get(url)
+        .then(res => {
+          dispatch(setIsFetchingData(false));
+          this.process(res);
+        })
+        .catch(error => {
+          dispatch(setIsFetchingData(false));
+        });
     }
   }
 
@@ -184,11 +197,16 @@ class Live extends Component {
   }
 
   render() {
-    const { theme } = this.props;
+    const { theme, isFetchingData } = this.props;
     return (
       <div className={theme}>
         <SymbolsPicker />
         <PeriodController />
+        {isFetchingData && (
+          <div className="loader">
+            <PulseLoader color="#24a321" />
+          </div>
+        )}
         <StandardCharts />
       </div>
     );
@@ -198,6 +216,7 @@ class Live extends Component {
 Live.propTypes = {
   period: PropTypes.string.isRequired,
   symbols: PropTypes.arrayOf(PropTypes.string).isRequired,
+  isFetchingData: PropTypes.bool.isRequired,
   theme: PropTypes.string.isRequired,
   dispatch: PropTypes.func.isRequired,
 };
@@ -205,7 +224,8 @@ Live.propTypes = {
 const mapStateToProps = state => ({
   period: state.periodController.period,
   symbols: state.symbolsPicker.symbols,
-  theme: state.theme,
+  isFetchingData: state.appStatus.isFetchingData,
+  theme: state.appStatus.theme,
 });
 
 export default connect(mapStateToProps)(Live);

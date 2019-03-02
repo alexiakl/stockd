@@ -4,7 +4,7 @@ import { LinkContainer } from 'react-router-bootstrap';
 import { connect } from 'react-redux';
 import Helmet from 'react-helmet';
 import axios from 'axios';
-import { setTheme } from '../actions/theme';
+import { setTheme } from '../actions/appStatus';
 import logo from '../static/images/logo/Stockd_1024.png';
 import { SYMBOLS_MAP, SYMBOLS_EXPIRY, API, TOKEN } from '../constants';
 import { setMap, addSymbol } from '../actions/symbolsPicker';
@@ -86,8 +86,8 @@ const Header = ({ theme, dispatch }) => {
           <LinkContainer to="/live">
             <Nav.Link className="menu-item">live</Nav.Link>
           </LinkContainer>
-          <LinkContainer to="/performance">
-            <Nav.Link className="menu-item">performance</Nav.Link>
+          <LinkContainer to="/compare">
+            <Nav.Link className="menu-item">compare</Nav.Link>
           </LinkContainer>
           <LinkContainer to="/portfolio">
             <Nav.Link className="menu-item">portfolio</Nav.Link>
@@ -100,7 +100,7 @@ const Header = ({ theme, dispatch }) => {
 };
 
 const mapStateToProps = state => ({
-  theme: state.theme,
+  theme: state.appStatus.theme,
 });
 
 export default connect(mapStateToProps)(Header);

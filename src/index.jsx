@@ -19,7 +19,10 @@ const initialState = {
   symbolsData: {
     data: [],
   },
-  theme: localStorage.getItem(THEME),
+  appStatus: {
+    theme: localStorage.getItem(THEME),
+    isFetchingData: false,
+  },
 };
 const store = createStore(rootReducer, initialState);
 

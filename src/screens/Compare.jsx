@@ -4,7 +4,7 @@ import { Form, FormControl, Button } from 'react-bootstrap';
 import RatioPerformance from '../components/RatioPerformance';
 import { SYMBOLS_ADDED, SYMBOLS_MAP } from '../constants';
 
-class Performance extends Component {
+class Compare extends Component {
   map = null;
 
   state = {
@@ -101,4 +101,4 @@ class Performance extends Component {
   }
 }
 
-export default Performance;
+export default Compare;
