@@ -41,7 +41,7 @@ const processResult = props => {
 
   symbols.forEach((symbol, index) => {
     const { chart } = queryResult.data[symbol];
-    const symbolColor = '#fefefe';
+    const symbolColor = '#5e5e5e';
     const dataset = {
       label: symbol,
       type: 'line',
@@ -87,7 +87,7 @@ const processResult = props => {
       }
     });
 
-    data.datasets[symbol] = dataset;
+    data.datasets.push(dataset);
 
     data.options.scales.yAxes[0].gridLines.color = '';
     if (theme === 'dark-mode') {

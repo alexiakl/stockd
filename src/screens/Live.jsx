@@ -17,7 +17,15 @@ import 'chartjs-plugin-annotation';
 
 class Live extends Component {
   componentDidMount() {
-    runQuery(this.props);
+    const { queryResult } = this.props;
+    if (
+      Object.entries(queryResult).length === 0 &&
+      queryResult.constructor === Object
+    ) {
+      runQuery(this.props);
+    } else {
+      processResult(this.props);
+    }
   }
 
   componentWillReceiveProps(nextProps) {

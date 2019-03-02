@@ -10,8 +10,16 @@ import { runQuery } from '../controllers/liveController';
 import CompareChart from '../components/CompareChart';
 
 class Compare extends Component {
-  componentWillMount() {
-    processResult(this.props);
+  componentDidMount() {
+    const { queryResult } = this.props;
+    if (
+      Object.entries(queryResult).length === 0 &&
+      queryResult.constructor === Object
+    ) {
+      runQuery(this.props);
+    } else {
+      processResult(this.props);
+    }
   }
 
   componentWillReceiveProps(nextProps) {
