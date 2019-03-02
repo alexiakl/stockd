@@ -56,6 +56,15 @@ const StandardCharts = ({ data, period }) => {
       datasets[symbol].pointHoverBackgroundColor = symbolColor;
       datasets[symbol].pointHoverBorderColor = symbolColor;
 
+      let setDimension = false;
+      let width = 0;
+      let height = 0;
+      if (window.innerWidth < 900) {
+        setDimension = true;
+        width = (90 * window.innerWidth) / 100;
+        height = (80 * width) / 100;
+      }
+
       standardCharts.push(
         <div className="chart cols" key={symbol}>
           <div className="chart-container">
@@ -83,7 +92,16 @@ const StandardCharts = ({ data, period }) => {
                 )}
               </p>
             </div>
-            {<Bar data={fdatasets} options={foptions} />}
+            {setDimension ? (
+              <Bar
+                data={fdatasets}
+                options={foptions}
+                width={width}
+                height={height}
+              />
+            ) : (
+              <Bar data={fdatasets} options={foptions} />
+            )}
             <div />
           </div>
         </div>,

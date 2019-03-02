@@ -3,10 +3,10 @@ const options = {
   maintainAspectRatio: true,
   layout: {
     padding: {
-      left: 25,
-      right: 25,
-      top: 20,
-      bottom: 20,
+      left: 20,
+      right: 20,
+      top: 0,
+      bottom: 10,
     },
   },
   hover: {
@@ -30,6 +30,9 @@ const options = {
   elements: {
     line: {
       fill: false,
+    },
+    point: {
+      radius: 0,
     },
   },
   scales: {
