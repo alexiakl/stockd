@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import PortfolioSymbolsPicker from '../components/PortfolioSymbolPicker';
+import PortfolioSymbolsPicker from '../components/symbolsPicker/PortfolioSymbolsPicker';
 
 const Portfolio = ({ dispatch }) => {
   return (

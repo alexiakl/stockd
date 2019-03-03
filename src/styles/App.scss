@@ -140,8 +140,8 @@ body {
 
 .stock-buttons {
   display: flex;
-  flex-wrap: wrap;
-  text-align: center;
+  overflow-y: hidden;
+  overflow-x: auto;
 }
 
 .period-buttons {
@@ -153,6 +153,9 @@ body {
 .stock-button {
   margin-top: 20px;
   margin-right: 20px;
+  border: 1px solid $seperator;
+  border-radius: 5px;
+  padding: 3px 6px;
   @include lg {
     margin-top: 0px;
     margin-left: 20px;

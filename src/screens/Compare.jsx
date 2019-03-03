@@ -2,12 +2,11 @@ import React, { Component } from 'react';
 import '../styles/App.scss';
 import { connect } from 'react-redux';
 import { PulseLoader } from 'react-spinners';
-import PropTypes from 'prop-types';
-import SymbolsPicker from '../components/SymbolsPicker';
+import SymbolsPicker from '../components/symbolsPicker/SymbolsPicker';
 import PeriodController from '../components/PeriodController';
 import { processResult } from '../controllers/compareController';
 import { runQuery } from '../controllers/liveController';
-import CompareChart from '../components/CompareChart';
+import CompareChart from '../components/charts/CompareChart';
 
 class Compare extends Component {
   componentDidMount() {
@@ -59,14 +58,6 @@ class Compare extends Component {
     );
   }
 }
-
-Compare.propTypes = {
-  period: PropTypes.string.isRequired,
-  symbols: PropTypes.arrayOf(PropTypes.string).isRequired,
-  isFetchingData: PropTypes.bool.isRequired,
-  theme: PropTypes.string.isRequired,
-  dispatch: PropTypes.func.isRequired,
-};
 
 const mapStateToProps = state => ({
   period: state.periodController.period,

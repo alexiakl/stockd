@@ -1,11 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Form, FormControl, Button } from 'react-bootstrap';
-import {
-  filterSymbols,
-  addSymbol,
-  removeSymbol,
-} from '../actions/symbolsPicker';
+import { filterSymbols, addSymbol } from '../../actions/symbolsPicker';
+import DroppableContainer from './DroppableContainer';
 
 const SymbolsPicker = ({ symbols, filtered, dispatch }) => (
   <div>
@@ -17,18 +14,9 @@ const SymbolsPicker = ({ symbols, filtered, dispatch }) => (
           className="mr-sm-2"
           onChange={evt => dispatch(filterSymbols(evt.target.value))}
         />
-        {symbols &&
-          symbols.map(symbol => (
-            <Button
-              key={symbol}
-              className="stock-button"
-              variant="outline-secondary"
-              size="sm"
-              onClick={evt => dispatch(removeSymbol(evt.target.innerHTML))}
-            >
-              {symbol}
-            </Button>
-          ))}
+        {symbols && (
+          <DroppableContainer dispatch={dispatch} symbols={symbols} />
+        )}
       </Form>
 
       <div className="results">

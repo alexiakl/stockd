@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Line } from 'react-chartjs-2';
 import { Alert } from 'react-bootstrap';
 import { cloneDeep } from 'lodash';
-import { getChartDimensions } from '../utils/utils';
+import { getChartDimensions } from '../../utils/utils';
 
 const CompareChart = ({ data, period }) => {
   const { datasets, options } = data;

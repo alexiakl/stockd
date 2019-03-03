@@ -4,10 +4,10 @@ import { LinkContainer } from 'react-router-bootstrap';
 import { connect } from 'react-redux';
 import Helmet from 'react-helmet';
 import axios from 'axios';
-import { setTheme } from '../actions/appStatus';
-import logo from '../static/images/logo/Stockd_1024.png';
-import { SYMBOLS_MAP, SYMBOLS_EXPIRY, API, TOKEN } from '../constants';
-import { setMap, addSymbol } from '../actions/symbolsPicker';
+import { setTheme } from '../../actions/appStatus';
+import logo from '../../static/images/logo/Stockd_1024.png';
+import { SYMBOLS_MAP, SYMBOLS_EXPIRY, API, TOKEN } from '../../constants';
+import { setMap, addSymbol } from '../../actions/symbolsPicker';
 
 const runQuery = dispatch => {
   const symbolsMap = localStorage.getItem(SYMBOLS_MAP);

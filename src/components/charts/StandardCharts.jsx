@@ -2,9 +2,12 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Line } from 'react-chartjs-2';
 import { cloneDeep } from 'lodash';
-import { getPerformanceColor, getPerformanceColorHex } from '../utils/color';
-import { getMarketStateDescription, getChartDimensions } from '../utils/utils';
-import { CLOSED } from '../constants';
+import { getPerformanceColor, getPerformanceColorHex } from '../../utils/color';
+import {
+  getMarketStateDescription,
+  getChartDimensions,
+} from '../../utils/utils';
+import { CLOSED } from '../../constants';
 
 const StandardCharts = ({ data, period }) => {
   const standardCharts = [];

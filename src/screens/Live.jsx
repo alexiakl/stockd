@@ -3,8 +3,8 @@ import React, { Component } from 'react';
 import '../styles/App.scss';
 import { connect } from 'react-redux';
 import { PulseLoader } from 'react-spinners';
-import StandardCharts from '../components/StandardCharts';
-import SymbolsPicker from '../components/SymbolsPicker';
+import StandardCharts from '../components/charts/StandardCharts';
+import SymbolsPicker from '../components/symbolsPicker/SymbolsPicker';
 import PeriodController from '../components/PeriodController';
 import {
   getTimerId,

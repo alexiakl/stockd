@@ -1,6 +1,7 @@
 import React from 'react';
 import { Switch, Route, Redirect } from 'react-router-dom';
-import Header from './Header';
+import Header from './layout/Header';
+import Footer from './layout/Footer';
 import PageNotFound from '../screens/PageNotFound';
 import Portfolio from '../screens/Portfolio';
 import Live from '../screens/Live';
@@ -21,6 +22,7 @@ const App = () => {
         <Route exact path="/404" component={PageNotFound} />
         <Redirect to="/404" />
       </Switch>
+      <Footer />
     </div>
   );
 };

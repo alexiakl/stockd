@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Form, FormControl, Button } from 'react-bootstrap';
-import { filterSymbols, addSymbol } from '../actions/portfolioSymbolsPicker';
+import { filterSymbols, addSymbol } from '../../actions/portfolioSymbolsPicker';
 
 const PortfolioSymbolsPicker = ({ filtered, dispatch }) => (
   <div className="sdcontainer">
