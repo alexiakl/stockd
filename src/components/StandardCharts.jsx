@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Bar } from 'react-chartjs-2';
 import { cloneDeep } from 'lodash';
 import { getPerformanceColor, getPerformanceColorHex } from '../utils/color';
-import { getMarketStateDescription } from '../utils/utils';
+import { getMarketStateDescription, getChartDimensions } from '../utils/utils';
 import { CLOSED } from '../constants';
 
 const StandardCharts = ({ data, period }) => {
@@ -56,13 +56,9 @@ const StandardCharts = ({ data, period }) => {
       datasets[symbol].pointHoverBackgroundColor = symbolColor;
       datasets[symbol].pointHoverBorderColor = symbolColor;
 
-      let setDimension = false;
-      let width = 0;
-      let height = 0;
+      let dimensions = [];
       if (window.innerWidth < 900) {
-        setDimension = true;
-        width = (90 * window.innerWidth) / 100;
-        height = (80 * width) / 100;
+        dimensions = getChartDimensions(window.innerWidth);
       }
 
       standardCharts.push(
@@ -92,17 +88,16 @@ const StandardCharts = ({ data, period }) => {
                 )}
               </p>
             </div>
-            {setDimension ? (
+            {dimensions.length > 0 ? (
               <Bar
                 data={fdatasets}
                 options={foptions}
-                width={width}
-                height={height}
+                width={dimensions[0]}
+                height={dimensions[1]}
               />
             ) : (
               <Bar data={fdatasets} options={foptions} />
             )}
-            <div />
           </div>
         </div>,
       );

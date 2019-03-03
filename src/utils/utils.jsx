@@ -42,4 +42,10 @@ const getMarketState = value => {
   return marketState;
 };
 
-export { getMarketStateDescription, getMarketState };
+const getChartDimensions = value => {
+  const width = (90 * value) / 100;
+  const height = (80 * width) / 100;
+  return [width, height];
+};
+
+export { getMarketStateDescription, getMarketState, getChartDimensions };
