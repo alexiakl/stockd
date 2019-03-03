@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import React, { Component } from 'react';
 import '../styles/App.scss';
 import { connect } from 'react-redux';
@@ -36,13 +35,16 @@ class Live extends Component {
       queryResult: nextQueryResult,
       theme: nextTheme,
     } = nextProps;
+    console.log(nextSymbols);
+    console.log(symbols);
 
-    if (nextSymbols.length !== symbols.length || period !== nextPeriod) {
+    if (nextSymbols.length > symbols.length || period !== nextPeriod) {
       this.props = nextProps;
       runQuery(this.props);
     } else if (
       JSON.stringify(nextQueryResult) !== JSON.stringify(queryResult) ||
-      theme !== nextTheme
+      theme !== nextTheme ||
+      nextSymbols.join(',') !== symbols.join(',')
     ) {
       this.props = nextProps;
       processResult(this.props);

@@ -1,9 +1,20 @@
 import React from 'react';
 import { Droppable, DragDropContext } from 'react-beautiful-dnd';
+import { connect } from 'react-redux';
 import DraggableSymbol from './DraggableSymbol';
+import { updateOrder } from '../../actions/symbolsPicker';
 
-const onDragEnd = () => {};
 const DroppableContainer = ({ dispatch, symbols }) => {
+  const onDragEnd = result => {
+    const { destination, source } = result;
+    if (source && destination) {
+      const element = symbols[source.index];
+      symbols.splice(source.index, 1);
+      symbols.splice(destination.index, 0, element);
+      dispatch(updateOrder(symbols));
+    }
+  };
+
   return (
     <DragDropContext onDragEnd={onDragEnd}>
       <Droppable
@@ -32,4 +43,8 @@ const DroppableContainer = ({ dispatch, symbols }) => {
   );
 };
 
-export default DroppableContainer;
+const mapStateToProps = state => ({
+  symbols: state.symbolsPicker.symbols,
+});
+
+export default connect(mapStateToProps)(DroppableContainer);

@@ -30,12 +30,13 @@ class Compare extends Component {
       theme: nextTheme,
     } = nextProps;
 
-    if (nextSymbols.length !== symbols.length || period !== nextPeriod) {
+    if (nextSymbols.length > symbols.length || period !== nextPeriod) {
       this.props = nextProps;
       runQuery(this.props);
     } else if (
       JSON.stringify(nextQueryResult) !== JSON.stringify(queryResult) ||
-      theme !== nextTheme
+      theme !== nextTheme ||
+      nextSymbols.join(',') !== symbols.join(',')
     ) {
       this.props = nextProps;
       processResult(this.props);

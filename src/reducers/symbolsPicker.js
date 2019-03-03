@@ -2,6 +2,7 @@ import {
   ADD_SYMBOL,
   REMOVE_SYMBOL,
   FILTER_SYMBOLS,
+  UPDATE_ORDER,
   SET_MAP,
 } from '../actions/symbolsPicker';
 
@@ -9,6 +10,13 @@ import { SYMBOLS_ADDED } from '../constants';
 
 const symbolsPicker = (state = [], action) => {
   switch (action.type) {
+    case UPDATE_ORDER: {
+      localStorage.setItem(SYMBOLS_ADDED, JSON.stringify(action.symbols));
+      return {
+        ...state,
+        symbols: action.symbols,
+      };
+    }
     case ADD_SYMBOL: {
       if (!state.symbols) {
         const newSymbols = [];
