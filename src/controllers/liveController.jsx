@@ -42,7 +42,7 @@ const processResult = props => {
   ) {
     return;
   }
-  let tempTimerInterval = 0;
+  let tempTimerInterval = 900000;
   const data = {
     symbols: [],
     labels: [],
