@@ -14,7 +14,7 @@ const getTimerId = () => {
 
 const runQuery = props => {
   const { symbols, period, dispatch } = props;
-  if (symbols) {
+  if (symbols && symbols.length > 0) {
     const allsymbols = symbols.join(',');
     const url = `${API}stock/market/batch?symbols=${allsymbols}&types=quote,chart&range=${period}${TOKEN}`;
     // eslint-disable-next-line no-console

@@ -17,37 +17,35 @@ const SymbolsPicker = ({ symbols, filtered, dispatch }) => (
           className="mr-sm-2"
           onChange={evt => dispatch(filterSymbols(evt.target.value))}
         />
-        {symbols
-          ? symbols.map(symbol => (
-              <Button
-                key={symbol}
-                className="stock-button"
-                variant="outline-secondary"
-                size="sm"
-                onClick={evt => dispatch(removeSymbol(evt.target.innerHTML))}
-              >
-                {symbol}
-              </Button>
-            ))
-          : ''}
+        {symbols &&
+          symbols.map(symbol => (
+            <Button
+              key={symbol}
+              className="stock-button"
+              variant="outline-secondary"
+              size="sm"
+              onClick={evt => dispatch(removeSymbol(evt.target.innerHTML))}
+            >
+              {symbol}
+            </Button>
+          ))}
       </Form>
 
       <div className="results">
-        {filtered
-          ? filtered.map(symbol => (
-              <Button
-                key={symbol}
-                className="stock-button"
-                variant="outline-secondary"
-                size="sm"
-                onClick={evt =>
-                  dispatch(addSymbol(evt.target.innerHTML.split(' ')[0]))
-                }
-              >
-                {symbol.length > 30 ? `${symbol.substring(0, 30)}..` : symbol}
-              </Button>
-            ))
-          : ''}
+        {filtered &&
+          filtered.map(symbol => (
+            <Button
+              key={symbol}
+              className="stock-button"
+              variant="outline-secondary"
+              size="sm"
+              onClick={evt =>
+                dispatch(addSymbol(evt.target.innerHTML.split(' ')[0]))
+              }
+            >
+              {symbol.length > 30 ? `${symbol.substring(0, 30)}..` : symbol}
+            </Button>
+          ))}
       </div>
     </div>
   </div>
