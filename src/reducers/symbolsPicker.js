@@ -1,3 +1,4 @@
+import { cloneDeep } from 'lodash';
 import {
   ADD_SYMBOL,
   REMOVE_SYMBOL,
@@ -19,7 +20,7 @@ const symbolsPicker = (state = [], action) => {
     }
     case ADD_SYMBOL: {
       if (!state.symbols) {
-        const newSymbols = [];
+        const newSymbols = cloneDeep(state.symbols);
         newSymbols.push(action.symbol);
         localStorage.setItem(SYMBOLS_ADDED, JSON.stringify(newSymbols));
         return {

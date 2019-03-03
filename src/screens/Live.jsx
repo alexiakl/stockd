@@ -35,8 +35,6 @@ class Live extends Component {
       queryResult: nextQueryResult,
       theme: nextTheme,
     } = nextProps;
-    console.log(nextSymbols);
-    console.log(symbols);
 
     if (nextSymbols.length > symbols.length || period !== nextPeriod) {
       this.props = nextProps;

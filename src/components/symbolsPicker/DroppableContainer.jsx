@@ -1,6 +1,7 @@
 import React from 'react';
 import { Droppable, DragDropContext } from 'react-beautiful-dnd';
 import { connect } from 'react-redux';
+import { cloneDeep } from 'lodash';
 import DraggableSymbol from './DraggableSymbol';
 import { updateOrder } from '../../actions/symbolsPicker';
 
@@ -8,10 +9,11 @@ const DroppableContainer = ({ dispatch, symbols }) => {
   const onDragEnd = result => {
     const { destination, source } = result;
     if (source && destination) {
-      const element = symbols[source.index];
-      symbols.splice(source.index, 1);
-      symbols.splice(destination.index, 0, element);
-      dispatch(updateOrder(symbols));
+      const newSymbols = cloneDeep(symbols);
+      const element = newSymbols[source.index];
+      newSymbols.splice(source.index, 1);
+      newSymbols.splice(destination.index, 0, element);
+      dispatch(updateOrder(newSymbols));
     }
   };
 
