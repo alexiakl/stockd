@@ -33,6 +33,8 @@ const options = {
     },
     point: {
       radius: 0,
+      hitRadius: 2,
+      hoverRadius: 5,
     },
   },
   scales: {

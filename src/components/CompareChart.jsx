@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Bar } from 'react-chartjs-2';
+import { Line } from 'react-chartjs-2';
 import { Alert } from 'react-bootstrap';
 import { cloneDeep } from 'lodash';
 import { getChartDimensions } from '../utils/utils';
@@ -24,14 +24,14 @@ const CompareChart = ({ data, period }) => {
       </Alert>
       <div className="chart">
         {dimensions.length > 0 ? (
-          <Bar
+          <Line
             data={fdatasets}
             options={foptions}
             width={dimensions[0]}
             height={dimensions[1]}
           />
         ) : (
-          <Bar data={fdatasets} options={foptions} />
+          <Line data={fdatasets} options={foptions} />
         )}
       </div>
     </div>
