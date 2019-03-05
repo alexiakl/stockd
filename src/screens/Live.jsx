@@ -6,7 +6,7 @@ import StandardCharts from '../components/charts/StandardCharts';
 import SymbolsPicker from '../components/symbolsPicker/SymbolsPicker';
 import PeriodController from '../components/PeriodController';
 import {
-  getTimerId,
+  resetTimer,
   runQuery,
   processResult,
 } from '../controllers/liveController';
@@ -28,15 +28,20 @@ class Live extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    const { symbols, period, queryResult, theme } = this.props;
+    const { symbols, period, queryResult, theme, fireTimer } = this.props;
     const {
       symbols: nextSymbols,
       period: nextPeriod,
       queryResult: nextQueryResult,
       theme: nextTheme,
+      fireTimer: nextFireTimer,
     } = nextProps;
 
-    if (nextSymbols.length > symbols.length || period !== nextPeriod) {
+    if (
+      nextSymbols.length > symbols.length ||
+      period !== nextPeriod ||
+      fireTimer !== nextFireTimer
+    ) {
       this.props = nextProps;
       runQuery(this.props);
     } else if (
@@ -50,9 +55,7 @@ class Live extends Component {
   }
 
   componentWillUnmount() {
-    if (getTimerId()) {
-      clearInterval(getTimerId());
-    }
+    resetTimer();
   }
 
   render() {
@@ -76,6 +79,7 @@ const mapStateToProps = state => ({
   period: state.periodController.period,
   symbols: state.symbolsPicker.symbols,
   queryResult: state.symbolsData.queryResult,
+  fireTimer: state.symbolsData.fireTimer,
   isFetchingData: state.appStatus.isFetchingData,
   theme: state.appStatus.theme,
 });

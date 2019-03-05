@@ -1,4 +1,8 @@
-import { SET_SYMBOLS_DATA, SET_QUERY_RESULT } from '../actions/symbolsData';
+import {
+  SET_SYMBOLS_DATA,
+  SET_QUERY_RESULT,
+  FIRE_TIMER,
+} from '../actions/symbolsData';
 
 const symbolsData = (state = [], action) => {
   switch (action.type) {
@@ -12,6 +16,13 @@ const symbolsData = (state = [], action) => {
       return {
         ...state,
         queryResult: action.queryResult,
+      };
+    }
+    case FIRE_TIMER: {
+      const fireTimer = !state.fireTimer;
+      return {
+        ...state,
+        fireTimer,
       };
     }
     default:

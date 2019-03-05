@@ -19,6 +19,7 @@ const initialState = {
   symbolsData: {
     data: {},
     queryResult: {},
+    fireTimer: false,
   },
   compareData: {
     data: {},

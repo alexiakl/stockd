@@ -1,15 +1,23 @@
 import axios from 'axios';
 import { API, TOKEN, OPEN, PRE_OPEN } from '../constants';
 import { setIsFetchingData } from '../actions/appStatus';
-import { setQueryResult, setSymbolsData } from '../actions/symbolsData';
+import {
+  setQueryResult,
+  setSymbolsData,
+  fireTimer,
+} from '../actions/symbolsData';
 import { options } from '../utils/chartVars';
 import { getMarketState } from '../utils/utils';
 
 let timerId = 0;
 let timerInterval = 0;
 
-const getTimerId = () => {
-  return timerId;
+const resetTimer = () => {
+  if (timerId) {
+    clearInterval(timerId);
+  }
+  timerId = 0;
+  timerInterval = 0;
 };
 
 const runQuery = props => {
@@ -169,10 +177,10 @@ const processResult = props => {
       clearInterval(timerId);
     }
     console.log(`Timer set: ${timerInterval}`);
-    timerId = setInterval(() => this.runQuery(), timerInterval);
+    timerId = setInterval(() => dispatch(fireTimer()), timerInterval);
   }
 
   dispatch(setSymbolsData(data));
 };
 
-export { runQuery, processResult, getTimerId };
+export { runQuery, processResult, resetTimer };
