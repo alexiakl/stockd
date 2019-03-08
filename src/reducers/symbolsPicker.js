@@ -20,7 +20,10 @@ const symbolsPicker = (state = [], action) => {
     }
     case ADD_SYMBOL: {
       if (!state.symbols) {
-        const newSymbols = cloneDeep(state.symbols);
+        let newSymbols = cloneDeep(state.symbols);
+        if (!newSymbols || newSymbols.length === 0) {
+          newSymbols = [];
+        }
         newSymbols.push(action.symbol);
         localStorage.setItem(SYMBOLS_ADDED, JSON.stringify(newSymbols));
         return {

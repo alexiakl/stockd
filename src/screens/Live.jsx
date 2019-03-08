@@ -18,8 +18,9 @@ class Live extends Component {
   componentDidMount() {
     const { queryResult } = this.props;
     if (
-      Object.entries(queryResult).length === 0 &&
-      queryResult.constructor === Object
+      !queryResult ||
+      (Object.entries(queryResult).length === 0 &&
+        queryResult.constructor === Object)
     ) {
       runQuery(this.props);
     } else {
