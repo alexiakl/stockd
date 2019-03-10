@@ -1,5 +1,6 @@
 import React from 'react';
 import { Switch, Route, Redirect } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
 import Header from './layout/Header';
 import Footer from './layout/Footer';
 import PageNotFound from '../screens/PageNotFound';
@@ -8,10 +9,12 @@ import Live from '../screens/Live';
 import Compare from '../screens/Compare';
 import Login from '../screens/Login';
 import '../styles/App.scss';
+import 'react-toastify/dist/ReactToastify.css';
 
 const App = () => {
   return (
     <div>
+      <ToastContainer />
       <Header />
       <Switch>
         <Route exact path="/" render={() => <Redirect to="/live" />} />

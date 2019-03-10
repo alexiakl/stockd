@@ -6,7 +6,7 @@ import Helmet from 'react-helmet';
 import axios from 'axios';
 import { setTheme } from '../../actions/appStatus';
 import logo from '../../static/images/logo/Stockd_1024.png';
-import { SYMBOLS_MAP, SYMBOLS_EXPIRY, API, TOKEN } from '../../constants';
+import { SYMBOLS_MAP, SYMBOLS_EXPIRY, IEXAPI, IEXTOKEN } from '../../constants';
 import { setMap, addSymbol } from '../../actions/symbolsPicker';
 
 const runQuery = dispatch => {
@@ -23,7 +23,7 @@ const runQuery = dispatch => {
     now.getTime() > expiry
   ) {
     const map = [];
-    const url = `${API}ref-data/symbols?filter=symbol,name${TOKEN}`;
+    const url = `${IEXAPI}ref-data/symbols?filter=symbol,name${IEXTOKEN}`;
     console.log(`RQ: Home ${url}`);
     axios.get(url).then(res => {
       res.data.forEach(symbol => {
@@ -94,9 +94,9 @@ const Header = ({ theme, dispatch }) => {
           <LinkContainer to="/compare">
             <Nav.Link className="menu-item">compare</Nav.Link>
           </LinkContainer>
-          <LinkContainer to="/portfolio">
+          {/* <LinkContainer to="/portfolio">
             <Nav.Link className="menu-item">portfolio</Nav.Link>
-          </LinkContainer>
+          </LinkContainer> */}
         </Nav>
         {themeButton}
       </Navbar.Collapse>

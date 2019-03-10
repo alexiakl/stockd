@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { API, TOKEN, OPEN, PRE_OPEN } from '../constants';
+import { IEXAPI, IEXTOKEN, OPEN, PRE_OPEN } from '../constants';
 import { setIsFetchingData } from '../actions/appStatus';
 import {
   setQueryResult,
@@ -24,7 +24,7 @@ const runQuery = props => {
   const { symbols, period, dispatch } = props;
   if (symbols && symbols.length > 0) {
     const allsymbols = symbols.join(',');
-    const url = `${API}stock/market/batch?symbols=${allsymbols}&types=quote,chart&range=${period}${TOKEN}`;
+    const url = `${IEXAPI}stock/market/batch?symbols=${allsymbols}&types=quote,chart&range=${period}${IEXTOKEN}`;
     // eslint-disable-next-line no-console
     console.log(`RQ: Live ${url}`);
 
@@ -36,7 +36,7 @@ const runQuery = props => {
         dispatch(setIsFetchingData(false));
         dispatch(setQueryResult(res));
       })
-      .catch(error => {
+      .catch(() => {
         dispatch(setIsFetchingData(false));
       });
   }

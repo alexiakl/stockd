@@ -9,6 +9,13 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+.login {
+  padding: 60px 0;
+  form {
+    margin: 0 auto;
+    max-width: 320px;
+  }
+}
 
 .sdcontainer {
   flex-wrap: wrap;
@@ -96,6 +103,12 @@ body {
     color: $darkfont;
     border: 1px solid $darkseperator;
   }
+
+  .form-control {
+    background: $darkbackgroud;
+    color: $darkfont;
+  }
+
   .mr-sm-2 {
     background: $darkbackgroud;
     color: $darkfont;
