@@ -28,6 +28,9 @@ const initialState = {
     queryResult: {},
     fireTimer: false,
   },
+  portfolioSymbolsPicker: {
+    data: [],
+  },
   compareData: {
     data: {},
   },
