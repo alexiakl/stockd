@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
+import { Redirect } from 'react-router-dom';
 import '../styles/App.scss';
 import { connect } from 'react-redux';
 import { PulseLoader } from 'react-spinners';
+import { TOKEN } from '../constants';
 import StandardCharts from '../components/charts/StandardCharts';
 import SymbolsPicker from '../components/symbolsPicker/SymbolsPicker';
 import PeriodController from '../components/PeriodController';
@@ -61,6 +63,10 @@ class Live extends Component {
 
   render() {
     const { theme, isFetchingData } = this.props;
+    const token = localStorage.getItem(TOKEN);
+    if (!token) {
+      return <Redirect to="/login" />;
+    }
     return (
       <div className={theme}>
         <SymbolsPicker />

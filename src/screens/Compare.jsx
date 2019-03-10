@@ -2,11 +2,13 @@ import React, { Component } from 'react';
 import '../styles/App.scss';
 import { connect } from 'react-redux';
 import { PulseLoader } from 'react-spinners';
+import { Redirect } from 'react-router-dom';
 import SymbolsPicker from '../components/symbolsPicker/SymbolsPicker';
 import PeriodController from '../components/PeriodController';
 import { processResult } from '../controllers/compareController';
 import { runQuery } from '../controllers/liveController';
 import CompareChart from '../components/charts/CompareChart';
+import { TOKEN } from '../constants';
 
 class Compare extends Component {
   componentDidMount() {
@@ -45,6 +47,11 @@ class Compare extends Component {
 
   render() {
     const { theme, isFetchingData } = this.props;
+
+    const token = localStorage.getItem(TOKEN);
+    if (!token) {
+      return <Redirect to="/login" />;
+    }
     return (
       <div className={theme}>
         <SymbolsPicker />
