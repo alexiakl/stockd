@@ -16,6 +16,7 @@ const CompareChart = ({ data, period }) => {
   if (window.innerWidth < 900) {
     dimensions = getChartDimensions(window.innerWidth);
   }
+
   return (
     <div className="container">
       <Alert dismissible variant="dark">

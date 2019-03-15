@@ -65,7 +65,7 @@ const processResult = props => {
 
     chart.forEach((entry, entryindex) => {
       if (finalLabels[entry.label] === 1) {
-        if (startingPoint < 0) {
+        if (startingPoint < 0 || !startingPoint) {
           startingPoint = entry.close;
         }
         let value = 0;
