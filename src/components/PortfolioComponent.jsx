@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Table, Button, Badge } from 'react-bootstrap';
+import { Table, Form, Badge, Button } from 'react-bootstrap';
 import {
   addSymbolRecord,
   removeSymbolRecord,
@@ -30,23 +30,31 @@ class PortfolioComponent extends Component {
     const { dispatch } = this.props;
     return (
       <tr key={`row-expanded-${item.symbol}-${index}`}>
-        <td />
         <td>
           <Badge variant="warning">buy</Badge>{' '}
           <Badge variant="light">sell</Badge>
         </td>
-        <td>20</td>
-        <td>100</td>
-        <td>50</td>
-        <td>10000</td>
         <td>
+          <Form.Control size="sm" type="text" placeholder="0" />
+        </td>
+        <td>
+          <Form.Control size="sm" type="text" placeholder="0" />
+        </td>
+        <td>
+          <Form.Control size="sm" type="text" placeholder="0" />
+        </td>
+        <td>
+          <Form.Control size="sm" type="text" placeholder="0" />
+        </td>
+        <td className="center">
           <Badge
             variant="warning"
+            className="action"
             onClick={() =>
               dispatch(removeSymbolRecord({ symbol: item.symbol, index }))
             }
           >
-            Remove
+            -
           </Badge>
         </td>
       </tr>
@@ -60,26 +68,23 @@ class PortfolioComponent extends Component {
     const itemRows = [
       <tr key={`row-data-${item.symbol}`}>
         <td>
-          <Badge onClick={clickCallback} variant="secondary">
-            {item.symbol}
-          </Badge>
-        </td>
-        <td>
-          <Badge onClick={clickCallback} variant="secondary">
-            {item.records.length} transaction{item.records.length > 1 && 's'}
-          </Badge>
+          <Button size="sm" onClick={clickCallback} variant="secondary">
+            {item.symbol} <Badge variant="light">{item.records.length}</Badge>
+            <span className="sr-only">unread messages</span>
+          </Button>
         </td>
         <td />
         <td />
         <td />
         <td />
-        <td>
+        <td className="center">
           <Badge
             key={item.symbol}
             variant="info"
+            className="action"
             onClick={() => dispatch(addSymbolRecord(item.symbol))}
           >
-            Add
+            +
           </Badge>
         </td>
       </tr>,
@@ -111,13 +116,12 @@ class PortfolioComponent extends Component {
       <Table hover variant={theme}>
         <thead>
           <tr>
-            <th>Symbol</th>
-            <th>Type</th>
+            <th />
             <th>Quantity</th>
             <th>Unit Price</th>
             <th>Fees</th>
             <th>Total</th>
-            <th>Actions</th>
+            <th />
           </tr>
         </thead>
         <tbody>{allItemRows}</tbody>
