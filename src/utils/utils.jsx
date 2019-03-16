@@ -1,4 +1,4 @@
-import { OPEN, CLOSED, PRE_OPEN, UNDEFINED } from '../constants';
+import { OPEN, CLOSED, PRE_OPEN, UNDEFINED, PORTFOLIO } from '../constants';
 
 const getMarketStateDescription = (value, quote) => {
   let marketStateSentence = '';
@@ -48,4 +48,13 @@ const getChartDimensions = value => {
   return [width, height];
 };
 
-export { getMarketStateDescription, getMarketState, getChartDimensions };
+const savePortfolio = portfolio => {
+  localStorage.setItem(PORTFOLIO, JSON.stringify(portfolio));
+};
+
+export {
+  getMarketStateDescription,
+  getMarketState,
+  getChartDimensions,
+  savePortfolio,
+};

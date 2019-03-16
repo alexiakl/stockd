@@ -9,6 +9,7 @@ import {
   setUnitPrice,
   setBuy,
 } from '../actions/portfolioSymbolsPicker';
+import { PORTFOLIO } from '../constants';
 
 class PortfolioComponent extends Component {
   constructor() {

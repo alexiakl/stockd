@@ -12,6 +12,7 @@ import {
   EMAIL,
   TOKEN,
   NAME,
+  PORTFOLIO,
 } from './constants';
 
 const initialState = {
@@ -29,7 +30,7 @@ const initialState = {
     fireTimer: false,
   },
   portfolioSymbolsPicker: {
-    data: {},
+    data: JSON.parse(localStorage.getItem(PORTFOLIO)),
   },
   compareData: {
     data: {},

@@ -7,6 +7,7 @@ export const IEXTOKEN = '';
 export const TOKEN = 'TOKEN';
 export const NAME = 'NAME';
 export const EMAIL = 'EMAIL';
+export const PORTFOLIO = 'PORTFOLIO';
 export const SYMBOLS_ADDED = 'SYMBOLS_ADDED';
 export const SYMBOLS_MAP = 'SYMBOLS_MAP';
 export const SYMBOLS_EXPIRY = 'SYMBOLS_EXPIRY';

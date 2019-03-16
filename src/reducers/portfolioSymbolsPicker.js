@@ -1,4 +1,5 @@
 import { cloneDeep } from 'lodash';
+import { savePortfolio } from '../utils/utils';
 import {
   ADD_PORTFOLIO_RECORD,
   ADD_SYMBOL_RECORD,
@@ -27,6 +28,8 @@ const portfolioSymbolsPicker = (state = [], action) => {
           total: 0,
         });
         newPortfolio[action.symbol] = object;
+
+        savePortfolio(newPortfolio);
         return {
           ...state,
           data: newPortfolio,
@@ -47,6 +50,7 @@ const portfolioSymbolsPicker = (state = [], action) => {
         total: 0,
       });
 
+      savePortfolio(newPortfolio);
       return {
         ...state,
         data: newPortfolio,
@@ -61,6 +65,7 @@ const portfolioSymbolsPicker = (state = [], action) => {
         ...object.records.slice(action.record.index + 1),
       ];
 
+      savePortfolio(newPortfolio);
       return {
         ...state,
         data: newPortfolio,
@@ -72,6 +77,7 @@ const portfolioSymbolsPicker = (state = [], action) => {
       const object = newPortfolio[action.record.symbol];
       object.records[action.record.index].buy = action.record.buy;
 
+      savePortfolio(newPortfolio);
       return {
         ...state,
         data: newPortfolio,
@@ -86,6 +92,8 @@ const portfolioSymbolsPicker = (state = [], action) => {
       );
       const { unitPrice, fees, quantity } = object.records[action.record.index];
       object.records[action.record.index].total = unitPrice * quantity + fees;
+
+      savePortfolio(newPortfolio);
       return {
         ...state,
         data: newPortfolio,
@@ -99,6 +107,7 @@ const portfolioSymbolsPicker = (state = [], action) => {
       const { unitPrice, fees, quantity } = object.records[action.record.index];
       object.records[action.record.index].total = unitPrice * quantity + fees;
 
+      savePortfolio(newPortfolio);
       return {
         ...state,
         data: newPortfolio,
@@ -114,6 +123,7 @@ const portfolioSymbolsPicker = (state = [], action) => {
       const { unitPrice, fees, quantity } = object.records[action.record.index];
       object.records[action.record.index].total = unitPrice * quantity + fees;
 
+      savePortfolio(newPortfolio);
       return {
         ...state,
         data: newPortfolio,
