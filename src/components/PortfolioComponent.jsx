@@ -109,7 +109,13 @@ class PortfolioComponent extends Component {
           />
         </td>
         <td>
-          <Form.Control size="sm" type="number" placeholder="0" />
+          <Form.Control
+            size="sm"
+            type="number"
+            placeholder="0"
+            disabled
+            value={item.total}
+          />
         </td>
         <td className="center">
           <Badge

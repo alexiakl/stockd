@@ -81,8 +81,11 @@ const portfolioSymbolsPicker = (state = [], action) => {
     case SET_QUANTITY: {
       const newPortfolio = cloneDeep(state.data);
       const object = newPortfolio[action.record.symbol];
-      object.records[action.record.index].quantity = action.record.quantity;
-
+      object.records[action.record.index].quantity = parseFloat(
+        action.record.quantity,
+      );
+      const { unitPrice, fees, quantity } = object.records[action.record.index];
+      object.records[action.record.index].total = unitPrice * quantity + fees;
       return {
         ...state,
         data: newPortfolio,
@@ -92,7 +95,9 @@ const portfolioSymbolsPicker = (state = [], action) => {
     case SET_FEES: {
       const newPortfolio = cloneDeep(state.data);
       const object = newPortfolio[action.record.symbol];
-      object.records[action.record.index].fees = action.record.fees;
+      object.records[action.record.index].fees = parseFloat(action.record.fees);
+      const { unitPrice, fees, quantity } = object.records[action.record.index];
+      object.records[action.record.index].total = unitPrice * quantity + fees;
 
       return {
         ...state,
@@ -103,7 +108,11 @@ const portfolioSymbolsPicker = (state = [], action) => {
     case SET_UNIT_PRICE: {
       const newPortfolio = cloneDeep(state.data);
       const object = newPortfolio[action.record.symbol];
-      object.records[action.record.index].unitPrice = action.record.unitPrice;
+      object.records[action.record.index].unitPrice = parseFloat(
+        action.record.unitPrice,
+      );
+      const { unitPrice, fees, quantity } = object.records[action.record.index];
+      object.records[action.record.index].total = unitPrice * quantity + fees;
 
       return {
         ...state,
