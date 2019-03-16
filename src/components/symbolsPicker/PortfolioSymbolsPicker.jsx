@@ -1,10 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Form, FormControl, Button } from 'react-bootstrap';
-import {
-  addPortfolioRecord,
-  removePortfolioRecord,
-} from '../../actions/portfolioSymbolsPicker';
+import { addPortfolioRecord } from '../../actions/portfolioSymbolsPicker';
 import { filterSymbols } from '../../actions/symbolsPicker';
 
 const PortfolioSymbolsPicker = ({ filtered, dispatch }) => (

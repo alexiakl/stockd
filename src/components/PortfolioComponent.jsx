@@ -4,6 +4,10 @@ import { Table, Form, Badge, Button } from 'react-bootstrap';
 import {
   addSymbolRecord,
   removeSymbolRecord,
+  setFees,
+  setQuantity,
+  setUnitPrice,
+  setBuy,
 } from '../actions/portfolioSymbolsPicker';
 
 class PortfolioComponent extends Component {
@@ -26,25 +30,86 @@ class PortfolioComponent extends Component {
     this.setState({ expandedRows: newExpandedRows });
   }
 
+  updateQuantity(symbol, index, quantity) {
+    const { dispatch } = this.props;
+    dispatch(setQuantity({ symbol, index, quantity }));
+  }
+
+  updateFees(symbol, index, fees) {
+    const { dispatch } = this.props;
+    dispatch(setFees({ symbol, index, fees }));
+  }
+
+  updateBuy(symbol, index, buy) {
+    const { dispatch } = this.props;
+    dispatch(setBuy({ symbol, index, buy }));
+  }
+
+  updateUnitPrice(symbol, index, unitPrice) {
+    const { dispatch } = this.props;
+    dispatch(setUnitPrice({ symbol, index, unitPrice }));
+  }
+
   renderSubItem(item, index) {
     const { dispatch } = this.props;
+    let buyVariant = 'light';
+    let sellVariant = 'light';
+    if (item.buy) {
+      buyVariant = 'warning';
+    } else {
+      sellVariant = 'warning';
+    }
     return (
       <tr key={`row-expanded-${item.symbol}-${index}`}>
         <td>
-          <Badge variant="warning">buy</Badge>{' '}
-          <Badge variant="light">sell</Badge>
+          <Badge
+            variant={buyVariant}
+            onClick={() => this.updateBuy(item.symbol, index, true)}
+          >
+            buy
+          </Badge>{' '}
+          <Badge
+            variant={sellVariant}
+            onClick={() => this.updateBuy(item.symbol, index, false)}
+          >
+            sell
+          </Badge>
         </td>
         <td>
-          <Form.Control size="sm" type="text" placeholder="0" />
+          <Form.Control
+            size="sm"
+            type="number"
+            placeholder="0"
+            defaultValue={item.quantity}
+            onChange={evt =>
+              this.updateQuantity(item.symbol, index, evt.target.value)
+            }
+          />
         </td>
         <td>
-          <Form.Control size="sm" type="text" placeholder="0" />
+          <Form.Control
+            size="sm"
+            type="number"
+            placeholder="0"
+            defaultValue={item.unitPrice}
+            onChange={evt =>
+              this.updateUnitPrice(item.symbol, index, evt.target.value)
+            }
+          />
         </td>
         <td>
-          <Form.Control size="sm" type="text" placeholder="0" />
+          <Form.Control
+            size="sm"
+            type="number"
+            placeholder="0"
+            defaultValue={item.fees}
+            onChange={evt =>
+              this.updateFees(item.symbol, index, evt.target.value)
+            }
+          />
         </td>
         <td>
-          <Form.Control size="sm" type="text" placeholder="0" />
+          <Form.Control size="sm" type="number" placeholder="0" />
         </td>
         <td className="center">
           <Badge
@@ -107,7 +172,8 @@ class PortfolioComponent extends Component {
     const { data, theme } = this.props;
     let allItemRows = [];
 
-    data.forEach(record => {
+    Object.keys(data).forEach(symbol => {
+      const record = data[symbol];
       const perItemRows = this.renderItem(record);
       allItemRows = allItemRows.concat(perItemRows);
     });

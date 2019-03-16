@@ -29,7 +29,7 @@ const initialState = {
     fireTimer: false,
   },
   portfolioSymbolsPicker: {
-    data: [],
+    data: {},
   },
   compareData: {
     data: {},

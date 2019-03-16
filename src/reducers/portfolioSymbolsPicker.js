@@ -1,28 +1,32 @@
 import { cloneDeep } from 'lodash';
 import {
   ADD_PORTFOLIO_RECORD,
-  REMOVE_PORTFOLIO_RECORD,
   ADD_SYMBOL_RECORD,
   REMOVE_SYMBOL_RECORD,
+  SET_FEES,
+  SET_QUANTITY,
+  SET_UNIT_PRICE,
+  SET_BUY,
 } from '../actions/portfolioSymbolsPicker';
 
 const portfolioSymbolsPicker = (state = [], action) => {
   switch (action.type) {
     case ADD_PORTFOLIO_RECORD: {
-      const index = state.data
-        .map(record => {
-          return record.symbol;
-        })
-        .indexOf(action.symbol);
-
-      if (index < 0) {
+      const record = state.data[action.symbol];
+      if (!record) {
         const newPortfolio = cloneDeep(state.data);
         const object = {};
         object.symbol = action.symbol;
-        const item = { symbol: action.symbol };
         object.records = [];
-        object.records.push(item);
-        newPortfolio.push(object);
+        object.records.push({
+          symbol: action.symbol,
+          buy: true,
+          quantity: 0,
+          unitPrice: 0,
+          fees: 0,
+          total: 0,
+        });
+        newPortfolio[action.symbol] = object;
         return {
           ...state,
           data: newPortfolio,
@@ -33,12 +37,14 @@ const portfolioSymbolsPicker = (state = [], action) => {
 
     case ADD_SYMBOL_RECORD: {
       const newPortfolio = cloneDeep(state.data);
-      newPortfolio.map(item => {
-        if (item.symbol === action.symbol) {
-          const record = { symbol: action.symbol };
-          item.records.push(record);
-        }
-        return item;
+      const object = newPortfolio[action.symbol];
+      object.records.push({
+        symbol: action.symbol,
+        buy: true,
+        quantity: 0,
+        unitPrice: 0,
+        fees: 0,
+        total: 0,
       });
 
       return {
@@ -49,16 +55,11 @@ const portfolioSymbolsPicker = (state = [], action) => {
 
     case REMOVE_SYMBOL_RECORD: {
       const newPortfolio = cloneDeep(state.data);
-      newPortfolio.map(item => {
-        if (item.symbol === action.record.symbol) {
-          const newRecords = [
-            ...item.records.slice(0, action.record.index),
-            ...item.records.slice(action.record.index + 1),
-          ];
-          item.records = newRecords;
-        }
-        return item;
-      });
+      const object = newPortfolio[action.record.symbol];
+      object.records = [
+        ...object.records.slice(0, action.record.index),
+        ...object.records.slice(action.record.index + 1),
+      ];
 
       return {
         ...state,
@@ -66,24 +67,50 @@ const portfolioSymbolsPicker = (state = [], action) => {
       };
     }
 
-    case REMOVE_PORTFOLIO_RECORD: {
-      const index = state.data
-        .map(record => {
-          return record.symbol;
-        })
-        .indexOf(action.symbol);
-      if (index > -1) {
-        const newPortfolio = [
-          ...state.data.slice(0, index),
-          ...state.data.slice(index + 1),
-        ];
-        return {
-          ...state,
-          data: newPortfolio,
-        };
-      }
-      return state;
+    case SET_BUY: {
+      const newPortfolio = cloneDeep(state.data);
+      const object = newPortfolio[action.record.symbol];
+      object.records[action.record.index].buy = action.record.buy;
+
+      return {
+        ...state,
+        data: newPortfolio,
+      };
     }
+
+    case SET_QUANTITY: {
+      const newPortfolio = cloneDeep(state.data);
+      const object = newPortfolio[action.record.symbol];
+      object.records[action.record.index].quantity = action.record.quantity;
+
+      return {
+        ...state,
+        data: newPortfolio,
+      };
+    }
+
+    case SET_FEES: {
+      const newPortfolio = cloneDeep(state.data);
+      const object = newPortfolio[action.record.symbol];
+      object.records[action.record.index].fees = action.record.fees;
+
+      return {
+        ...state,
+        data: newPortfolio,
+      };
+    }
+
+    case SET_UNIT_PRICE: {
+      const newPortfolio = cloneDeep(state.data);
+      const object = newPortfolio[action.record.symbol];
+      object.records[action.record.index].unitPrice = action.record.unitPrice;
+
+      return {
+        ...state,
+        data: newPortfolio,
+      };
+    }
+
     default:
       return state;
   }
