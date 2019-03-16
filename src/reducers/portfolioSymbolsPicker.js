@@ -3,6 +3,7 @@ import {
   ADD_PORTFOLIO_RECORD,
   REMOVE_PORTFOLIO_RECORD,
   ADD_SYMBOL_RECORD,
+  REMOVE_SYMBOL_RECORD,
 } from '../actions/portfolioSymbolsPicker';
 
 const portfolioSymbolsPicker = (state = [], action) => {
@@ -29,20 +30,36 @@ const portfolioSymbolsPicker = (state = [], action) => {
       }
       return state;
     }
+
     case ADD_SYMBOL_RECORD: {
       const newPortfolio = cloneDeep(state.data);
       newPortfolio.map(item => {
-        console.log(item.symbol);
-        console.log(action.symbol);
         if (item.symbol === action.symbol) {
           const record = { symbol: action.symbol };
-          console.log('pushed');
           item.records.push(record);
         }
         return item;
       });
 
-      console.log(newPortfolio);
+      return {
+        ...state,
+        data: newPortfolio,
+      };
+    }
+
+    case REMOVE_SYMBOL_RECORD: {
+      const newPortfolio = cloneDeep(state.data);
+      newPortfolio.map(item => {
+        if (item.symbol === action.record.symbol) {
+          const newRecords = [
+            ...item.records.slice(0, action.record.index),
+            ...item.records.slice(action.record.index + 1),
+          ];
+          item.records = newRecords;
+        }
+        return item;
+      });
+
       return {
         ...state,
         data: newPortfolio,

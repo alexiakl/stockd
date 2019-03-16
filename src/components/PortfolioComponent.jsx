@@ -1,7 +1,10 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Table, Button } from 'react-bootstrap';
-import { addSymbolRecord } from '../actions/portfolioSymbolsPicker';
+import { Table, Button, Badge } from 'react-bootstrap';
+import {
+  addSymbolRecord,
+  removeSymbolRecord,
+} from '../actions/portfolioSymbolsPicker';
 
 class PortfolioComponent extends Component {
   constructor() {
@@ -23,20 +26,28 @@ class PortfolioComponent extends Component {
     this.setState({ expandedRows: newExpandedRows });
   }
 
-  renderSubItem(item) {
+  renderSubItem(item, index) {
+    const { dispatch } = this.props;
     return (
-      <tr key={`row-expanded-${item.symbol}`}>
-        <td>yuhu</td>
+      <tr key={`row-expanded-${item.symbol}-${index}`}>
+        <td />
         <td>
-          <Button
-            key={item.symbol}
-            className="stock-button"
-            variant="outline-secondary"
-            size="sm"
-            onClick={evt => console.log('yo')}
+          <Badge variant="warning">buy</Badge>{' '}
+          <Badge variant="light">sell</Badge>
+        </td>
+        <td>20</td>
+        <td>100</td>
+        <td>50</td>
+        <td>10000</td>
+        <td>
+          <Badge
+            variant="warning"
+            onClick={() =>
+              dispatch(removeSymbolRecord({ symbol: item.symbol, index }))
+            }
           >
             Remove
-          </Button>
+          </Badge>
         </td>
       </tr>
     );
@@ -48,27 +59,35 @@ class PortfolioComponent extends Component {
     const clickCallback = () => this.handleRowClick(item.symbol);
     const itemRows = [
       <tr key={`row-data-${item.symbol}`}>
-        <td onClick={clickCallback}>{item.symbol}</td>
-        <td onClick={clickCallback}>
-          {item.records.length} transaction{item.records.length > 1 && 's'}
+        <td>
+          <Badge onClick={clickCallback} variant="secondary">
+            {item.symbol}
+          </Badge>
         </td>
         <td>
-          <Button
+          <Badge onClick={clickCallback} variant="secondary">
+            {item.records.length} transaction{item.records.length > 1 && 's'}
+          </Badge>
+        </td>
+        <td />
+        <td />
+        <td />
+        <td />
+        <td>
+          <Badge
             key={item.symbol}
-            className="stock-button"
-            variant="outline-secondary"
-            size="sm"
-            onClick={evt => dispatch(addSymbolRecord(item.symbol))}
+            variant="info"
+            onClick={() => dispatch(addSymbolRecord(item.symbol))}
           >
             Add
-          </Button>
+          </Badge>
         </td>
       </tr>,
     ];
 
     let allSubItemRows = [];
-    item.records.forEach(record => {
-      const perItemRows = this.renderSubItem(record);
+    item.records.forEach((record, index) => {
+      const perItemRows = this.renderSubItem(record, index);
       allSubItemRows = allSubItemRows.concat(perItemRows);
     });
 
@@ -80,7 +99,7 @@ class PortfolioComponent extends Component {
   }
 
   render() {
-    const { data } = this.props;
+    const { data, theme } = this.props;
     let allItemRows = [];
 
     data.forEach(record => {
@@ -89,7 +108,18 @@ class PortfolioComponent extends Component {
     });
 
     return (
-      <Table striped bordered hover>
+      <Table hover variant={theme}>
+        <thead>
+          <tr>
+            <th>Symbol</th>
+            <th>Type</th>
+            <th>Quantity</th>
+            <th>Unit Price</th>
+            <th>Fees</th>
+            <th>Total</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
         <tbody>{allItemRows}</tbody>
       </Table>
     );
@@ -98,6 +128,7 @@ class PortfolioComponent extends Component {
 
 const mapStateToProps = state => ({
   data: state.portfolioSymbolsPicker.data,
+  theme: state.appStatus.theme,
 });
 
 export default connect(mapStateToProps)(PortfolioComponent);
