@@ -94,9 +94,9 @@ const Header = ({ theme, dispatch }) => {
           <LinkContainer to="/compare">
             <Nav.Link className="menu-item">compare</Nav.Link>
           </LinkContainer>
-          {/* <LinkContainer to="/portfolio">
+          <LinkContainer to="/portfolio">
             <Nav.Link className="menu-item">portfolio</Nav.Link>
-          </LinkContainer> */}
+          </LinkContainer>
         </Nav>
         {themeButton}
       </Navbar.Collapse>

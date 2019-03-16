@@ -1,7 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Form, FormControl, Button } from 'react-bootstrap';
-import { filterSymbols, addSymbol } from '../../actions/portfolioSymbolsPicker';
+import { addPortfolioRecord } from '../../actions/portfolioSymbolsPicker';
+import { filterSymbols } from '../../actions/symbolsPicker';
 
 const PortfolioSymbolsPicker = ({ filtered, dispatch }) => (
   <div className="sdcontainer">
@@ -12,19 +13,21 @@ const PortfolioSymbolsPicker = ({ filtered, dispatch }) => (
         className="mr-sm-2"
         onChange={evt => dispatch(filterSymbols(evt.target.value))}
       />
-      {filtered.map(symbol => (
-        <Button
-          key={symbol}
-          className="stock-button"
-          variant="outline-secondary"
-          size="sm"
-          onClick={evt =>
-            dispatch(addSymbol(evt.target.innerHTML.split(' ')[0]))
-          }
-        >
-          {symbol.length > 30 ? `${symbol.substring(0, 30)}..` : symbol}
-        </Button>
-      ))}
+      <div className="results">
+        {filtered.map(symbol => (
+          <Button
+            key={symbol}
+            className="stock-button"
+            variant="outline-secondary"
+            size="sm"
+            onClick={evt =>
+              dispatch(addPortfolioRecord(evt.target.innerHTML.split(' ')[0]))
+            }
+          >
+            {symbol.length > 30 ? `${symbol.substring(0, 30)}..` : symbol}
+          </Button>
+        ))}
+      </div>
     </Form>
   </div>
 );
