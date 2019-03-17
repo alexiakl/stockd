@@ -12,6 +12,7 @@ import {
 } from '../actions/portfolio';
 import runQuery from '../controllers/portfolioController';
 import 'react-confirm-alert/src/react-confirm-alert.css';
+import PortfolioQuotes from './PortfolioQuotes';
 
 class PortfolioComponent extends Component {
   constructor() {
@@ -207,7 +208,7 @@ class PortfolioComponent extends Component {
   }
 
   render() {
-    const { data, theme, quotes } = this.props;
+    const { data, theme } = this.props;
     let allItemRows = [];
 
     if (data) {
@@ -219,19 +220,22 @@ class PortfolioComponent extends Component {
     }
 
     return (
-      <Table hover variant={theme}>
-        <thead>
-          <tr>
-            <th />
-            <th>Quantity</th>
-            <th>Unit Price</th>
-            <th>Fees</th>
-            <th>Total</th>
-            <th />
-          </tr>
-        </thead>
-        <tbody>{allItemRows}</tbody>
-      </Table>
+      <React.Fragment>
+        <PortfolioQuotes />
+        <Table hover variant={theme}>
+          <thead>
+            <tr>
+              <th />
+              <th>Quantity</th>
+              <th>Unit Price</th>
+              <th>Fees</th>
+              <th>Total</th>
+              <th />
+            </tr>
+          </thead>
+          <tbody>{allItemRows}</tbody>
+        </Table>
+      </React.Fragment>
     );
   }
 }
