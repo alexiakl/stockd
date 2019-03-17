@@ -87,11 +87,14 @@ const portfolioSymbolsPicker = (state = [], action) => {
     case SET_QUANTITY: {
       const newPortfolio = cloneDeep(state.data);
       const object = newPortfolio[action.record.symbol];
-      object.records[action.record.index].quantity = parseFloat(
-        action.record.quantity,
-      );
+      let newQuantity = parseFloat(action.record.quantity);
+      if (!newQuantity) {
+        newQuantity = 0;
+      }
+      object.records[action.record.index].quantity = newQuantity;
       const { unitPrice, fees, quantity } = object.records[action.record.index];
-      object.records[action.record.index].total = unitPrice * quantity + fees;
+      const newTotal = (unitPrice * quantity + fees).toFixed(2);
+      object.records[action.record.index].total = newTotal;
 
       savePortfolio(newPortfolio);
       return {
@@ -103,9 +106,14 @@ const portfolioSymbolsPicker = (state = [], action) => {
     case SET_FEES: {
       const newPortfolio = cloneDeep(state.data);
       const object = newPortfolio[action.record.symbol];
-      object.records[action.record.index].fees = parseFloat(action.record.fees);
+      let newFees = parseFloat(action.record.fees);
+      if (!newFees) {
+        newFees = 0;
+      }
+      object.records[action.record.index].fees = newFees;
       const { unitPrice, fees, quantity } = object.records[action.record.index];
-      object.records[action.record.index].total = unitPrice * quantity + fees;
+      const newTotal = (unitPrice * quantity + fees).toFixed(2);
+      object.records[action.record.index].total = newTotal;
 
       savePortfolio(newPortfolio);
       return {
@@ -117,11 +125,14 @@ const portfolioSymbolsPicker = (state = [], action) => {
     case SET_UNIT_PRICE: {
       const newPortfolio = cloneDeep(state.data);
       const object = newPortfolio[action.record.symbol];
-      object.records[action.record.index].unitPrice = parseFloat(
-        action.record.unitPrice,
-      );
+      let newUnitPrice = parseFloat(action.record.unitPrice);
+      if (!newUnitPrice) {
+        newUnitPrice = 0;
+      }
+      object.records[action.record.index].unitPrice = newUnitPrice;
       const { unitPrice, fees, quantity } = object.records[action.record.index];
-      object.records[action.record.index].total = unitPrice * quantity + fees;
+      const newTotal = (unitPrice * quantity + fees).toFixed(2);
+      object.records[action.record.index].total = newTotal;
 
       savePortfolio(newPortfolio);
       return {
