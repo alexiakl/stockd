@@ -8,10 +8,18 @@ import {
   SET_QUANTITY,
   SET_UNIT_PRICE,
   SET_BUY,
-} from '../actions/portfolioSymbolsPicker';
+  PORTFOLIO_QUOTES,
+} from '../actions/portfolio';
 
-const portfolioSymbolsPicker = (state = [], action) => {
+const portfolio = (state = [], action) => {
   switch (action.type) {
+    case PORTFOLIO_QUOTES: {
+      return {
+        ...state,
+        quotes: action.quotes,
+      };
+    }
+
     case ADD_PORTFOLIO_RECORD: {
       const record = state.data[action.symbol];
       if (!record) {
@@ -146,4 +154,4 @@ const portfolioSymbolsPicker = (state = [], action) => {
   }
 };
 
-export default portfolioSymbolsPicker;
+export default portfolio;

@@ -29,8 +29,9 @@ const initialState = {
     queryResult: {},
     fireTimer: false,
   },
-  portfolioSymbolsPicker: {
+  portfolio: {
     data: JSON.parse(localStorage.getItem(PORTFOLIO)),
+    quotes: {},
   },
   compareData: {
     data: {},

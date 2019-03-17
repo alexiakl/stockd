@@ -5,6 +5,7 @@ export const SET_QUANTITY = 'SET_QUANTITY';
 export const SET_FEES = 'SET_FEES';
 export const SET_UNIT_PRICE = 'SET_UNIT_PRICE';
 export const SET_BUY = 'SET_BUY';
+export const PORTFOLIO_QUOTES = 'PORTFOLIO_QUOTES';
 
 export function addPortfolioRecord(symbol) {
   return { type: ADD_PORTFOLIO_RECORD, symbol };
@@ -32,4 +33,8 @@ export function setFees(record) {
 
 export function setBuy(record) {
   return { type: SET_BUY, record };
+}
+
+export function setPortfolioQuotes(quotes) {
+  return { type: PORTFOLIO_QUOTES, quotes };
 }

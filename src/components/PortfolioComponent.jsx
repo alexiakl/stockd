@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Table, Form, Badge, Button } from 'react-bootstrap';
+import { confirmAlert } from 'react-confirm-alert';
 import {
   addSymbolRecord,
   removeSymbolRecord,
@@ -8,8 +9,9 @@ import {
   setQuantity,
   setUnitPrice,
   setBuy,
-} from '../actions/portfolioSymbolsPicker';
-import { PORTFOLIO } from '../constants';
+} from '../actions/portfolio';
+import runQuery from '../controllers/portfolioController';
+import 'react-confirm-alert/src/react-confirm-alert.css';
 
 class PortfolioComponent extends Component {
   constructor() {
@@ -18,6 +20,18 @@ class PortfolioComponent extends Component {
     this.state = {
       expandedRows: [],
     };
+  }
+
+  componentDidMount() {
+    const { data, dispatch } = this.props;
+
+    const symbols = [];
+    if (data) {
+      Object.keys(data).forEach(symbol => {
+        symbols.push(symbol);
+      });
+      runQuery(symbols, dispatch);
+    }
   }
 
   handleRowClick(rowId) {
@@ -51,8 +65,27 @@ class PortfolioComponent extends Component {
     dispatch(setUnitPrice({ symbol, index, unitPrice }));
   }
 
+  confirmRemoval(symbol, index) {
+    confirmAlert({
+      title: 'Are you sure?',
+      message: 'You cannot undo this action.',
+      buttons: [
+        {
+          label: 'Yes',
+          onClick: () => {
+            const { dispatch } = this.props;
+            dispatch(removeSymbolRecord({ symbol, index }));
+          },
+        },
+        {
+          label: 'No',
+          onClick: () => {},
+        },
+      ],
+    });
+  }
+
   renderSubItem(item, index) {
-    const { dispatch } = this.props;
     let buyVariant = 'light';
     let sellVariant = 'light';
     if (item.buy) {
@@ -67,13 +100,13 @@ class PortfolioComponent extends Component {
             variant={buyVariant}
             onClick={() => this.updateBuy(item.symbol, index, true)}
           >
-            buy
+            bought
           </Badge>{' '}
           <Badge
             variant={sellVariant}
             onClick={() => this.updateBuy(item.symbol, index, false)}
           >
-            sell
+            sold
           </Badge>
         </td>
         <td>
@@ -122,9 +155,7 @@ class PortfolioComponent extends Component {
           <Badge
             variant="warning"
             className="action"
-            onClick={() =>
-              dispatch(removeSymbolRecord({ symbol: item.symbol, index }))
-            }
+            onClick={() => this.confirmRemoval(item.symbol, index)}
           >
             -
           </Badge>
@@ -176,14 +207,16 @@ class PortfolioComponent extends Component {
   }
 
   render() {
-    const { data, theme } = this.props;
+    const { data, theme, quotes } = this.props;
     let allItemRows = [];
 
-    Object.keys(data).forEach(symbol => {
-      const record = data[symbol];
-      const perItemRows = this.renderItem(record);
-      allItemRows = allItemRows.concat(perItemRows);
-    });
+    if (data) {
+      Object.keys(data).forEach(symbol => {
+        const record = data[symbol];
+        const perItemRows = this.renderItem(record);
+        allItemRows = allItemRows.concat(perItemRows);
+      });
+    }
 
     return (
       <Table hover variant={theme}>
@@ -204,7 +237,8 @@ class PortfolioComponent extends Component {
 }
 
 const mapStateToProps = state => ({
-  data: state.portfolioSymbolsPicker.data,
+  data: state.portfolio.data,
+  quotes: state.portfolio.quotes,
   theme: state.appStatus.theme,
 });
 

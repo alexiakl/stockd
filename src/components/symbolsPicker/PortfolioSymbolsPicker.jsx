@@ -1,10 +1,10 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Form, FormControl, Button } from 'react-bootstrap';
-import { addPortfolioRecord } from '../../actions/portfolioSymbolsPicker';
+import { addPortfolioRecord } from '../../actions/portfolio';
 import { filterSymbols } from '../../actions/symbolsPicker';
 
-const PortfolioSymbolsPicker = ({ filtered, dispatch }) => (
+const portfolio = ({ filtered, dispatch }) => (
   <div className="sdcontainer">
     <Form inline>
       <FormControl
@@ -36,4 +36,4 @@ const mapStateToProps = state => ({
   filtered: state.symbolsPicker.filtered,
 });
 
-export default connect(mapStateToProps)(PortfolioSymbolsPicker);
+export default connect(mapStateToProps)(portfolio);
