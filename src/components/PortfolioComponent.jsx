@@ -13,6 +13,7 @@ import {
 import runQuery from '../controllers/portfolioController';
 import 'react-confirm-alert/src/react-confirm-alert.css';
 import PortfolioQuotes from './PortfolioQuotes';
+import { getPerformanceColor } from '../utils/color';
 
 class PortfolioComponent extends Component {
   constructor() {
@@ -44,6 +45,32 @@ class PortfolioComponent extends Component {
       : expandedRows.concat(rowId);
 
     this.setState({ expandedRows: newExpandedRows });
+  }
+
+  calculatePortfolioQuotes() {
+    const { data, quotes, theme } = this.props;
+    const totals = [];
+    let total = 0;
+    if (data) {
+      Object.keys(data).forEach(symbol => {
+        const item = data[symbol];
+        let b = 0;
+        let s = 0;
+        item.records.forEach((record, index) => {
+          if (quotes.data) {
+            b += record.quantity * record.unitPrice + record.fees;
+            s +=
+              record.quantity * quotes.data[symbol].quote.latestPrice -
+              record.fees;
+          }
+        });
+        const result = s - b;
+        totals[symbol] = result.toFixed(2);
+        total += parseFloat(result.toFixed(2));
+      });
+    }
+
+    return { total, totals };
   }
 
   updateQuantity(symbol, index, quantity) {
@@ -165,7 +192,11 @@ class PortfolioComponent extends Component {
     );
   }
 
-  renderItem(item) {
+  renderItem(item, totalObject) {
+    let totalClassName = 'green';
+    if (totalObject.totals[item.symbol] < 0) {
+      totalClassName = 'red';
+    }
     const { expandedRows } = this.state;
     const { dispatch } = this.props;
     const clickCallback = () => this.handleRowClick(item.symbol);
@@ -180,7 +211,7 @@ class PortfolioComponent extends Component {
         <td />
         <td />
         <td />
-        <td />
+        <td className={totalClassName}>{totalObject.totals[item.symbol]}</td>
         <td className="center">
           <Badge
             key={item.symbol}
@@ -212,9 +243,10 @@ class PortfolioComponent extends Component {
     let allItemRows = [];
 
     if (data) {
+      const totalObject = this.calculatePortfolioQuotes();
       Object.keys(data).forEach(symbol => {
         const record = data[symbol];
-        const perItemRows = this.renderItem(record);
+        const perItemRows = this.renderItem(record, totalObject);
         allItemRows = allItemRows.concat(perItemRows);
       });
     }
