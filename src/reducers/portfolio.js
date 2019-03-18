@@ -21,9 +21,11 @@ const portfolio = (state = [], action) => {
     }
 
     case ADD_PORTFOLIO_RECORD: {
-      const record = state.data[action.symbol];
-      if (!record) {
-        const newPortfolio = cloneDeep(state.data);
+      if (!state.data || !state.data[action.symbol]) {
+        let newPortfolio = [];
+        if (state.data) {
+          newPortfolio = cloneDeep(state.data);
+        }
         const object = {};
         object.symbol = action.symbol;
         object.records = [];
