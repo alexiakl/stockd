@@ -32,8 +32,25 @@ body {
 }
 
 .table {
+  .th-small {
+    padding: 0px 0px;
+    max-width: 90%;
+    min-width: 90%;
+  }
+  .btn-sm {
+    padding: 1px 1px;
+  }
+  @include lg {
+    .btn-sm {
+      padding: 3px 5px;
+    }
+    .th-small {
+      width: 37px;
+    }
+  }
   th {
     font-size: 12px;
+    vertical-align: middle !important;
   }
   td {
     .action {

@@ -12,8 +12,7 @@ import {
 } from '../actions/portfolio';
 import runQuery from '../controllers/portfolioController';
 import 'react-confirm-alert/src/react-confirm-alert.css';
-import PortfolioQuotes from './PortfolioQuotes';
-import { getPerformanceColor } from '../utils/color';
+import sync from '../static/images/sync.svg';
 
 class PortfolioComponent extends Component {
   constructor() {
@@ -49,6 +48,7 @@ class PortfolioComponent extends Component {
 
   calculatePortfolioQuotes() {
     const { data, quotes, theme } = this.props;
+
     const totals = [];
     let total = 0;
     if (data) {
@@ -57,7 +57,7 @@ class PortfolioComponent extends Component {
         let b = 0;
         let s = 0;
         item.records.forEach((record, index) => {
-          if (quotes.data) {
+          if (quotes.data && quotes.data[symbol]) {
             b += record.quantity * record.unitPrice + record.fees;
             s +=
               record.quantity * quotes.data[symbol].quote.latestPrice -
@@ -91,6 +91,12 @@ class PortfolioComponent extends Component {
   updateUnitPrice(symbol, index, unitPrice) {
     const { dispatch } = this.props;
     dispatch(setUnitPrice({ symbol, index, unitPrice }));
+  }
+
+  addRecord(symbol) {
+    const { dispatch } = this.props;
+    this.handleRowClick(symbol);
+    dispatch(addSymbolRecord(symbol));
   }
 
   confirmRemoval(symbol, index) {
@@ -198,14 +204,12 @@ class PortfolioComponent extends Component {
       totalClassName = 'red';
     }
     const { expandedRows } = this.state;
-    const { dispatch } = this.props;
     const clickCallback = () => this.handleRowClick(item.symbol);
     const itemRows = [
       <tr key={`row-data-${item.symbol}`}>
         <td>
           <Button size="sm" onClick={clickCallback} variant="secondary">
             {item.symbol} <Badge variant="light">{item.records.length}</Badge>
-            <span className="sr-only">unread messages</span>
           </Button>
         </td>
         <td />
@@ -217,7 +221,7 @@ class PortfolioComponent extends Component {
             key={item.symbol}
             variant="info"
             className="action"
-            onClick={() => dispatch(addSymbolRecord(item.symbol))}
+            onClick={() => this.addRecord(item.symbol)}
           >
             +
           </Badge>
@@ -239,12 +243,14 @@ class PortfolioComponent extends Component {
   }
 
   render() {
-    const { data, theme } = this.props;
+    const { data, theme, dispatch } = this.props;
     let allItemRows = [];
 
+    const symbols = [];
     if (data) {
       const totalObject = this.calculatePortfolioQuotes();
       Object.keys(data).forEach(symbol => {
+        symbols.push(symbol);
         const record = data[symbol];
         const perItemRows = this.renderItem(record, totalObject);
         allItemRows = allItemRows.concat(perItemRows);
@@ -253,7 +259,6 @@ class PortfolioComponent extends Component {
 
     return (
       <React.Fragment>
-        <PortfolioQuotes />
         <Table hover variant={theme}>
           <thead>
             <tr>
@@ -262,7 +267,15 @@ class PortfolioComponent extends Component {
               <th>Unit Price</th>
               <th>Fees</th>
               <th>Total</th>
-              <th />
+              <th className="th-small">
+                <Button
+                  size="sm"
+                  onClick={() => runQuery(symbols, dispatch)}
+                  variant="secondary"
+                >
+                  <img alt="sync" src={sync} width="22" height="22" />
+                </Button>
+              </th>
             </tr>
           </thead>
           <tbody>{allItemRows}</tbody>
