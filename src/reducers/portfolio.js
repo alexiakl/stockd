@@ -39,7 +39,8 @@ const portfolio = (state = [], action) => {
         newPortfolio[symbol] = object;
       }
       const total = (unitPrice * quantity + fees).toFixed(2);
-      object.records.push({
+      const transaction = {
+        action: 'add',
         symbol,
         buy,
         quantity,
@@ -47,9 +48,10 @@ const portfolio = (state = [], action) => {
         fees,
         total,
         date,
-      });
+      };
+      object.records.push(transaction);
 
-      savePortfolio(newPortfolio);
+      savePortfolio(newPortfolio, transaction);
       return {
         ...state,
         data: newPortfolio,
@@ -66,8 +68,11 @@ const portfolio = (state = [], action) => {
       if (object.records.length === 0) {
         delete newPortfolio[action.record.symbol];
       }
-
-      savePortfolio(newPortfolio);
+      const transaction = {
+        action: 'delete',
+        symbol: action.record.symbol,
+      };
+      savePortfolio(newPortfolio, transaction);
       return {
         ...state,
         data: newPortfolio,

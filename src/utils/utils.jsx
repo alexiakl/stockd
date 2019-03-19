@@ -1,4 +1,14 @@
-import { OPEN, CLOSED, PRE_OPEN, UNDEFINED, PORTFOLIO } from '../constants';
+import axios from 'axios';
+import { toast } from 'react-toastify';
+import {
+  OPEN,
+  CLOSED,
+  PRE_OPEN,
+  UNDEFINED,
+  PORTFOLIO,
+  API,
+  TOKEN,
+} from '../constants';
 
 const getMarketStateDescription = (value, quote) => {
   let marketStateSentence = '';
@@ -48,8 +58,43 @@ const getChartDimensions = value => {
   return [width, height];
 };
 
-const savePortfolio = portfolio => {
-  localStorage.setItem(PORTFOLIO, JSON.stringify(portfolio));
+const savePortfolio = (portfolio, transaction) => {
+  const portfolioString = JSON.stringify(portfolio);
+  localStorage.setItem(PORTFOLIO, portfolioString);
+
+  const url = `${API}user/portfolio`;
+  const token = localStorage.getItem(TOKEN);
+  if (!token) {
+    return;
+  }
+  const AuthStr = `Bearer ${token}`;
+
+  axios
+    .put(
+      url,
+      {
+        portfolio: portfolioString,
+      },
+      {
+        headers: {
+          Authorization: AuthStr,
+        },
+      },
+    )
+    .then(res => {
+      if (res.data.success !== 1) {
+        toast.warn('Could not save', {
+          position: toast.POSITION.BOTTOM_CENTER,
+          hideProgressBar: true,
+        });
+      }
+    })
+    .catch(() => {
+      toast.warn('Could not save', {
+        position: toast.POSITION.BOTTOM_CENTER,
+        hideProgressBar: true,
+      });
+    });
 };
 
 export {
