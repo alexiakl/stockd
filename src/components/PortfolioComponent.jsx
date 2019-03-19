@@ -140,30 +140,45 @@ class PortfolioComponent extends Component {
     const { data, quotes } = this.props;
 
     const totals = [];
+    const quantities = [];
+    const unitPrices = [];
     const profits = [];
     let total = 0;
     if (data) {
       Object.keys(data).forEach(symbol => {
         profits[symbol] = [];
         const item = data[symbol];
-        let b = 0;
-        let s = 0;
+        let symbolbuy = 0;
+        let symbolsell = 0;
+        let symbolquantity = 0;
+        let symbolunitprices = 0;
         item.records.forEach((record, index) => {
           if (quotes.data && quotes.data[symbol]) {
-            b += record.quantity * record.unitPrice + record.fees;
-            s +=
+            const transactionbuy =
+              record.quantity * record.unitPrice + record.fees;
+            const transactionsell =
               record.quantity * quotes.data[symbol].quote.latestPrice -
               record.fees;
-            profits[symbol][index] = (s - b).toFixed(2);
+            symbolbuy += transactionbuy;
+            symbolsell += transactionsell;
+
+            profits[symbol][index] = (transactionsell - transactionbuy).toFixed(
+              2,
+            );
+            symbolquantity += record.quantity;
+            symbolunitprices += record.unitPrice;
           }
         });
-        const result = s - b;
-        totals[symbol] = result.toFixed(2);
-        total += parseFloat(result.toFixed(2));
+        totals[symbol] = (symbolsell - symbolbuy).toFixed(2);
+        quantities[symbol] = (symbolquantity / item.records.length).toFixed(2);
+        unitPrices[symbol] = (symbolunitprices / item.records.length).toFixed(
+          2,
+        );
+        total += parseFloat((symbolsell - symbolbuy).toFixed(2));
       });
     }
 
-    return { total, totals, profits };
+    return { total, totals, profits, quantities, unitPrices };
   }
 
   confirmRemoval(e, symbol, index) {
@@ -235,8 +250,8 @@ class PortfolioComponent extends Component {
             {item.symbol} <Badge variant="light">{item.records.length}</Badge>
           </Button>
         </td>
-        <td />
-        <td />
+        <td>{totalObject.quantities[item.symbol]}</td>
+        <td>{totalObject.unitPrices[item.symbol]}</td>
         <td className={totalClassName}>{totalObject.totals[item.symbol]}</td>
         <td className="center">
           <Badge
