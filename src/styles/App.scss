@@ -31,12 +31,15 @@ body {
   cursor: pointer;
 }
 
+.ReactModal__Content,
 .react-confirm-alert-body {
-  background: #454545;
+  background: $darkbackgroud !important;
   color: $darkfont;
 }
+
+.ReactModal__Overlay,
 .react-confirm-alert-overlay {
-  background: #00000033;
+  background: #00000099 !important;
 }
 
 .table {

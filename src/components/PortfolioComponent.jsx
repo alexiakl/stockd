@@ -1,18 +1,22 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Table, Form, Badge, Button } from 'react-bootstrap';
+import Modal from 'react-modal';
 import { confirmAlert } from 'react-confirm-alert';
-import {
-  addSymbolRecord,
-  removeSymbolRecord,
-  setFees,
-  setQuantity,
-  setUnitPrice,
-  setBuy,
-} from '../actions/portfolio';
+import { addSymbolRecord, removeSymbolRecord } from '../actions/portfolio';
 import runQuery from '../controllers/portfolioController';
 import 'react-confirm-alert/src/react-confirm-alert.css';
-import sync from '../static/images/sync.svg';
+
+const modalStyles = {
+  content: {
+    top: '50%',
+    left: '50%',
+    right: 'auto',
+    bottom: 'auto',
+    marginRight: '-50%',
+    transform: 'translate(-50%, -50%)',
+  },
+};
 
 class PortfolioComponent extends Component {
   constructor() {
@@ -20,10 +24,18 @@ class PortfolioComponent extends Component {
 
     this.state = {
       expandedRows: [],
+      modalIsOpen: false,
+      addSymbol: '',
+      addBuy: true,
+      addQuantity: 0,
+      addUnitPrice: 0,
+      addFees: 0,
+      addDate: new Date(),
     };
   }
 
   componentDidMount() {
+    Modal.setAppElement('body');
     const { data, dispatch } = this.props;
 
     const symbols = [];
@@ -33,6 +45,26 @@ class PortfolioComponent extends Component {
       });
       runQuery(symbols, dispatch);
     }
+  }
+
+  today = () => {
+    const today = new Date();
+    const mm = today.getMonth() + 1;
+    const dd = today.getDate();
+
+    return [
+      (mm > 9 ? '' : '0') + mm,
+      (dd > 9 ? '' : '0') + dd,
+      today.getFullYear(),
+    ].join('/');
+  };
+
+  closeModal() {
+    this.setState({ modalIsOpen: false });
+  }
+
+  openModal(symbol) {
+    this.setState({ addSymbol: symbol, modalIsOpen: true });
   }
 
   handleRowClick(rowId) {
@@ -46,8 +78,41 @@ class PortfolioComponent extends Component {
     this.setState({ expandedRows: newExpandedRows });
   }
 
+  addTransactionRecord() {
+    const { dispatch } = this.props;
+    let { addDate: date, addFees: fees } = this.state;
+    const {
+      addSymbol: symbol,
+      addBuy: buy,
+      addUnitPrice: unitPrice,
+      addQuantity: quantity,
+    } = this.state;
+    this.handleRowClick(symbol);
+
+    if (!date) {
+      date = this.today();
+    }
+    if (!fees) {
+      fees = 0;
+    }
+    if (!unitPrice || !quantity) {
+      return;
+    }
+
+    const record = {
+      symbol,
+      buy,
+      fees,
+      unitPrice,
+      quantity,
+      date,
+    };
+    this.setState({ modalIsOpen: false });
+    dispatch(addSymbolRecord(record));
+  }
+
   calculatePortfolioQuotes() {
-    const { data, quotes, theme } = this.props;
+    const { data, quotes } = this.props;
 
     const totals = [];
     const profits = [];
@@ -76,32 +141,6 @@ class PortfolioComponent extends Component {
     return { total, totals, profits };
   }
 
-  updateQuantity(symbol, index, quantity) {
-    const { dispatch } = this.props;
-    dispatch(setQuantity({ symbol, index, quantity }));
-  }
-
-  updateFees(symbol, index, fees) {
-    const { dispatch } = this.props;
-    dispatch(setFees({ symbol, index, fees }));
-  }
-
-  updateBuy(symbol, index, buy) {
-    const { dispatch } = this.props;
-    dispatch(setBuy({ symbol, index, buy }));
-  }
-
-  updateUnitPrice(symbol, index, unitPrice) {
-    const { dispatch } = this.props;
-    dispatch(setUnitPrice({ symbol, index, unitPrice }));
-  }
-
-  addRecord(symbol) {
-    const { dispatch } = this.props;
-    this.handleRowClick(symbol);
-    dispatch(addSymbolRecord(symbol));
-  }
-
   confirmRemoval(symbol, index) {
     confirmAlert({
       title: 'Are you sure?',
@@ -127,28 +166,15 @@ class PortfolioComponent extends Component {
     if (totalObject.profits[item.symbol][index] < 0) {
       totalClassName = 'red';
     }
-    let buyVariant = 'light';
-    let sellVariant = 'light';
+
+    let transaction = 'sell';
     if (item.buy) {
-      buyVariant = 'warning';
-    } else {
-      sellVariant = 'warning';
+      transaction = 'buy';
     }
     return (
       <tr key={`row-expanded-${item.symbol}-${index}`}>
         <td>
-          <Badge
-            variant={buyVariant}
-            onClick={() => this.updateBuy(item.symbol, index, true)}
-          >
-            bought
-          </Badge>{' '}
-          <Badge
-            variant={sellVariant}
-            onClick={() => this.updateBuy(item.symbol, index, false)}
-          >
-            sold
-          </Badge>
+          <Badge variant="warning">{transaction}</Badge>
         </td>
         <td>{item.quantity}</td>
         <td>{item.unitPrice}</td>
@@ -192,7 +218,7 @@ class PortfolioComponent extends Component {
             key={item.symbol}
             variant="info"
             className="action"
-            onClick={() => this.addRecord(item.symbol)}
+            onClick={() => this.openModal(item.symbol)}
           >
             +
           </Badge>
@@ -215,6 +241,8 @@ class PortfolioComponent extends Component {
 
   render() {
     const { data, theme, dispatch } = this.props;
+    const { modalIsOpen, addSymbol } = this.state;
+
     let allItemRows = [];
 
     const symbols = [];
@@ -230,6 +258,82 @@ class PortfolioComponent extends Component {
 
     return (
       <React.Fragment>
+        <Modal
+          isOpen={modalIsOpen}
+          onRequestClose={() => this.closeModal()}
+          style={modalStyles}
+          contentLabel="Add transaction"
+        >
+          <h2>{addSymbol} Add Transaction</h2>
+          <Form className={theme}>
+            <Form.Group controlId="transactionType">
+              <Form.Label>Type</Form.Label>
+              <Form.Check
+                defaultChecked
+                name="transactionType"
+                id="transactionTypeBuy"
+                type="radio"
+                label="Buy"
+                onClick={() => this.setState({ addBuy: true })}
+              />
+              <Form.Check
+                name="transactionType"
+                id="transactionTypeSell"
+                type="radio"
+                label="Sell"
+                onClick={() => this.setState({ addBuy: false })}
+              />
+            </Form.Group>
+
+            <Form.Group controlId="formQuantity">
+              <Form.Label>Quantity</Form.Label>
+              <Form.Control
+                type="number"
+                placeholder="Number of shares"
+                onChange={evt =>
+                  this.setState({ addQuantity: evt.target.value })
+                }
+              />
+            </Form.Group>
+
+            <Form.Group controlId="formUnitPrice">
+              <Form.Label>Unit Price</Form.Label>
+              <Form.Control
+                type="number"
+                placeholder="Price per share"
+                onChange={evt =>
+                  this.setState({ addUnitPrice: evt.target.value })
+                }
+              />
+            </Form.Group>
+
+            <Form.Group controlId="formFees">
+              <Form.Label>Fees</Form.Label>
+              <Form.Control
+                type="number"
+                placeholder="Commission, fees or other costs"
+                onChange={evt => this.setState({ addFees: evt.target.value })}
+              />
+            </Form.Group>
+
+            <Form.Group controlId="formDate">
+              <Form.Label>Date</Form.Label>
+              <Form.Control
+                type="date"
+                placeholder="Commission, fees or other costs"
+                onChange={evt => this.setState({ addDate: evt.target.value })}
+              />
+            </Form.Group>
+
+            <Button
+              variant="outline-info"
+              type="submit"
+              onClick={() => this.addTransactionRecord()}
+            >
+              Add
+            </Button>
+          </Form>
+        </Modal>
         <Table hover variant={theme}>
           <thead>
             <tr>

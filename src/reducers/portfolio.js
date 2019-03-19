@@ -4,10 +4,6 @@ import {
   ADD_PORTFOLIO_RECORD,
   ADD_SYMBOL_RECORD,
   REMOVE_SYMBOL_RECORD,
-  SET_FEES,
-  SET_QUANTITY,
-  SET_UNIT_PRICE,
-  SET_BUY,
   PORTFOLIO_QUOTES,
 } from '../actions/portfolio';
 
@@ -50,14 +46,22 @@ const portfolio = (state = [], action) => {
 
     case ADD_SYMBOL_RECORD: {
       const newPortfolio = cloneDeep(state.data);
-      const object = newPortfolio[action.symbol];
+      let { unitPrice, fees, quantity } = action.record;
+      const { symbol, buy, date } = action.record;
+      unitPrice = parseFloat(unitPrice);
+      fees = parseFloat(fees);
+      quantity = parseFloat(quantity);
+
+      const object = newPortfolio[symbol];
+      const total = (unitPrice * quantity + fees).toFixed(2);
       object.records.push({
-        symbol: action.symbol,
-        buy: true,
-        quantity: 0,
-        unitPrice: 0,
-        fees: 0,
-        total: 0,
+        symbol,
+        buy,
+        quantity,
+        unitPrice,
+        fees,
+        total,
+        date,
       });
 
       savePortfolio(newPortfolio);
@@ -77,75 +81,6 @@ const portfolio = (state = [], action) => {
       if (object.records.length === 0) {
         delete newPortfolio[action.record.symbol];
       }
-
-      savePortfolio(newPortfolio);
-      return {
-        ...state,
-        data: newPortfolio,
-      };
-    }
-
-    case SET_BUY: {
-      const newPortfolio = cloneDeep(state.data);
-      const object = newPortfolio[action.record.symbol];
-      object.records[action.record.index].buy = action.record.buy;
-
-      savePortfolio(newPortfolio);
-      return {
-        ...state,
-        data: newPortfolio,
-      };
-    }
-
-    case SET_QUANTITY: {
-      const newPortfolio = cloneDeep(state.data);
-      const object = newPortfolio[action.record.symbol];
-      let newQuantity = parseFloat(action.record.quantity);
-      if (!newQuantity) {
-        newQuantity = 0;
-      }
-      object.records[action.record.index].quantity = newQuantity;
-      const { unitPrice, fees, quantity } = object.records[action.record.index];
-      const newTotal = (unitPrice * quantity + fees).toFixed(2);
-      object.records[action.record.index].total = newTotal;
-
-      savePortfolio(newPortfolio);
-      return {
-        ...state,
-        data: newPortfolio,
-      };
-    }
-
-    case SET_FEES: {
-      const newPortfolio = cloneDeep(state.data);
-      const object = newPortfolio[action.record.symbol];
-      let newFees = parseFloat(action.record.fees);
-      if (!newFees) {
-        newFees = 0;
-      }
-      object.records[action.record.index].fees = newFees;
-      const { unitPrice, fees, quantity } = object.records[action.record.index];
-      const newTotal = (unitPrice * quantity + fees).toFixed(2);
-      object.records[action.record.index].total = newTotal;
-
-      savePortfolio(newPortfolio);
-      return {
-        ...state,
-        data: newPortfolio,
-      };
-    }
-
-    case SET_UNIT_PRICE: {
-      const newPortfolio = cloneDeep(state.data);
-      const object = newPortfolio[action.record.symbol];
-      let newUnitPrice = parseFloat(action.record.unitPrice);
-      if (!newUnitPrice) {
-        newUnitPrice = 0;
-      }
-      object.records[action.record.index].unitPrice = newUnitPrice;
-      const { unitPrice, fees, quantity } = object.records[action.record.index];
-      const newTotal = (unitPrice * quantity + fees).toFixed(2);
-      object.records[action.record.index].total = newTotal;
 
       savePortfolio(newPortfolio);
       return {
