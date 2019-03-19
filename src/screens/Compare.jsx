@@ -24,15 +24,20 @@ class Compare extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    const { symbols, period, queryResult, theme } = this.props;
+    const { symbols, period, queryResult, theme, fireTimer } = this.props;
     const {
       symbols: nextSymbols,
       period: nextPeriod,
       queryResult: nextQueryResult,
+      fireTimer: nextFireTimer,
       theme: nextTheme,
     } = nextProps;
 
-    if (nextSymbols.length > symbols.length || period !== nextPeriod) {
+    if (
+      nextSymbols.length > symbols.length ||
+      period !== nextPeriod ||
+      fireTimer !== nextFireTimer
+    ) {
       this.props = nextProps;
       runQuery(this.props);
     } else if (
@@ -72,6 +77,7 @@ const mapStateToProps = state => ({
   symbols: state.symbolsPicker.symbols,
   isFetchingData: state.appStatus.isFetchingData,
   queryResult: state.symbolsData.queryResult,
+  fireTimer: state.symbolsData.fireTimer,
   theme: state.appStatus.theme,
 });
 

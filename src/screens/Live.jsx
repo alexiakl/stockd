@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { Redirect } from 'react-router-dom';
 import '../styles/App.scss';
 import { connect } from 'react-redux';
-import { PulseLoader } from 'react-spinners';
 import { TOKEN } from '../constants';
 import StandardCharts from '../components/charts/StandardCharts';
 import SymbolsPicker from '../components/symbolsPicker/SymbolsPicker';
@@ -62,7 +61,7 @@ class Live extends Component {
   }
 
   render() {
-    const { theme, isFetchingData } = this.props;
+    const { theme } = this.props;
     const token = localStorage.getItem(TOKEN);
     if (!token) {
       return <Redirect to="/login" />;
@@ -71,11 +70,6 @@ class Live extends Component {
       <div className={theme}>
         <SymbolsPicker />
         <PeriodController />
-        {isFetchingData && (
-          <div className="loader">
-            <PulseLoader color="#5c646d" />
-          </div>
-        )}
         <StandardCharts />
       </div>
     );
@@ -87,7 +81,6 @@ const mapStateToProps = state => ({
   symbols: state.symbolsPicker.symbols,
   queryResult: state.symbolsData.queryResult,
   fireTimer: state.symbolsData.fireTimer,
-  isFetchingData: state.appStatus.isFetchingData,
   theme: state.appStatus.theme,
 });
 

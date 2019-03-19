@@ -1,9 +1,10 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { ButtonGroup, Button } from 'react-bootstrap';
+import { ButtonGroup, Button, Badge } from 'react-bootstrap';
 import { updatePeriod } from '../actions/periodController';
+import { fireTimer } from '../actions/symbolsData';
 
-const PeriodController = ({ period, dispatch }) => {
+const PeriodController = ({ period, isFetchingData, dispatch }) => {
   let [oned, fived, onem, threem, sixm, ytd, oney, twoy, fivey] = [
     'outline-secondary',
     'outline-secondary',
@@ -124,12 +125,21 @@ const PeriodController = ({ period, dispatch }) => {
           5y
         </Button>
       </ButtonGroup>
+      <Button
+        className="refresh-button"
+        size="sm"
+        onClick={() => dispatch(fireTimer())}
+        variant="info"
+      >
+        refresh <Badge variant="light">{isFetchingData && '...'}</Badge>
+      </Button>
     </div>
   );
 };
 
 const mapStateToProps = state => ({
   period: state.periodController.period,
+  isFetchingData: state.appStatus.isFetchingData,
 });
 
 export default connect(mapStateToProps)(PeriodController);

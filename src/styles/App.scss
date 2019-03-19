@@ -97,15 +97,30 @@ body {
   padding-top: 20px;
 }
 
+.refresh-button {
+  margin-top: 20px;
+  display: block;
+  @include lg {
+    display: inline-block;
+    margin-left: 20px;
+    margin-top: 0px;
+  }
+}
+
 .chart-container {
   box-shadow: 0 2px 8px 0 $shadow;
   border-radius: 5px;
   max-width: 800px;
   margin: 0 auto;
-  margin-left: 10px;
-  margin-right: 10px;
+  margin-left: 0px;
+  margin-right: 0px;
   margin-top: 20px;
   padding-top: 15px;
+
+  @include lg {
+    margin-left: 10px;
+    margin-right: 10px;
+  }
 
   .chart-header {
     margin-left: 28px;

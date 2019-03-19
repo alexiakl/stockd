@@ -219,7 +219,7 @@ class PortfolioComponent extends Component {
           <Badge variant="warning">{transaction}</Badge>
         </td>
         <td>{item.quantity}</td>
-        <td>{item.unitPrice}</td>
+        <td>{item.unitPrice.toFixed(2)}</td>
         <td className={totalClassName}>
           {totalObject.profits[item.symbol][index]}
         </td>
@@ -421,7 +421,7 @@ class PortfolioComponent extends Component {
                   variant="info"
                   onClick={() => runQuery(symbols, dispatch)}
                 >
-                  sync
+                  refresh
                 </Badge>
               </th>
               <th>Quantity</th>

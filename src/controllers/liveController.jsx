@@ -1,11 +1,7 @@
 import axios from 'axios';
 import { IEXAPI, IEXTOKEN, OPEN, PRE_OPEN } from '../constants';
 import { setIsFetchingData } from '../actions/appStatus';
-import {
-  setQueryResult,
-  setSymbolsData,
-  fireTimer,
-} from '../actions/symbolsData';
+import { setQueryResult, setSymbolsData } from '../actions/symbolsData';
 import { options } from '../utils/chartVars';
 import { getMarketState } from '../utils/utils';
 
@@ -176,8 +172,8 @@ const processResult = props => {
     if (timerId) {
       clearInterval(timerId);
     }
-    console.log(`Timer set: ${timerInterval}`);
-    timerId = setInterval(() => dispatch(fireTimer()), timerInterval);
+    // console.log(`Timer set: ${timerInterval}`);
+    // timerId = setInterval(() => dispatch(fireTimer()), timerInterval);
   }
 
   dispatch(setSymbolsData(data));
