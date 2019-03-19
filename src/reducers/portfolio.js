@@ -17,31 +17,10 @@ const portfolio = (state = [], action) => {
     }
 
     case ADD_PORTFOLIO_RECORD: {
-      if (!state.data || !state.data[action.symbol]) {
-        let newPortfolio = {};
-        if (state.data) {
-          newPortfolio = cloneDeep(state.data);
-        }
-        const object = {};
-        object.symbol = action.symbol;
-        object.records = [];
-        object.records.push({
-          symbol: action.symbol,
-          buy: true,
-          quantity: 0,
-          unitPrice: 0,
-          fees: 0,
-          total: 0,
-        });
-        newPortfolio[action.symbol] = object;
-
-        savePortfolio(newPortfolio);
-        return {
-          ...state,
-          data: newPortfolio,
-        };
-      }
-      return state;
+      return {
+        ...state,
+        openModalWithSymbol: action.symbol,
+      };
     }
 
     case ADD_SYMBOL_RECORD: {
@@ -52,7 +31,13 @@ const portfolio = (state = [], action) => {
       fees = parseFloat(fees);
       quantity = parseFloat(quantity);
 
-      const object = newPortfolio[symbol];
+      let object = newPortfolio[symbol];
+      if (!object) {
+        object = {};
+        object.symbol = symbol;
+        object.records = [];
+        newPortfolio[symbol] = object;
+      }
       const total = (unitPrice * quantity + fees).toFixed(2);
       object.records.push({
         symbol,

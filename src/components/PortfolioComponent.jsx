@@ -3,7 +3,11 @@ import { connect } from 'react-redux';
 import { Table, Form, Badge, Button } from 'react-bootstrap';
 import Modal from 'react-modal';
 import { confirmAlert } from 'react-confirm-alert';
-import { addSymbolRecord, removeSymbolRecord } from '../actions/portfolio';
+import {
+  addSymbolRecord,
+  removeSymbolRecord,
+  addPortfolioRecord,
+} from '../actions/portfolio';
 import runQuery from '../controllers/portfolioController';
 import 'react-confirm-alert/src/react-confirm-alert.css';
 
@@ -46,6 +50,19 @@ class PortfolioComponent extends Component {
         symbols.push(symbol);
       });
       runQuery(symbols, dispatch);
+    }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const { openModalWithSymbol: nextOpenModalWithSymbol } = nextProps;
+    const { modalIsOpen } = this.state;
+    const { dispatch } = this.props;
+
+    if (nextOpenModalWithSymbol.length > 0) {
+      dispatch(addPortfolioRecord(''));
+      if (!modalIsOpen) {
+        this.openModal(nextOpenModalWithSymbol);
+      }
     }
   }
 
@@ -439,6 +456,7 @@ class PortfolioComponent extends Component {
 
 const mapStateToProps = state => ({
   data: state.portfolio.data,
+  openModalWithSymbol: state.portfolio.openModalWithSymbol,
   quotes: state.portfolio.quotes,
   theme: state.appStatus.theme,
 });

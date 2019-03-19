@@ -32,6 +32,7 @@ const initialState = {
   portfolio: {
     data: JSON.parse(localStorage.getItem(PORTFOLIO)),
     quotes: {},
+    openModalWithSymbol: '',
   },
   compareData: {
     data: {},
