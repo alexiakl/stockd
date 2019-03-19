@@ -97,9 +97,42 @@ const savePortfolio = (portfolio, transaction) => {
     });
 };
 
+const getPortfolio = () => {
+  const url = `${API}user/portfolio`;
+  const token = localStorage.getItem(TOKEN);
+  if (!token) {
+    return;
+  }
+  const AuthStr = `Bearer ${token}`;
+
+  axios
+    .get(url, {
+      headers: {
+        Authorization: AuthStr,
+      },
+    })
+    .then(res => {
+      if (res.data.success === 1) {
+        localStorage.setItem(PORTFOLIO, res.data.data.portfolio);
+      } else {
+        toast.warn('Could not save', {
+          position: toast.POSITION.BOTTOM_CENTER,
+          hideProgressBar: true,
+        });
+      }
+    })
+    .catch(() => {
+      toast.warn('Could not save', {
+        position: toast.POSITION.BOTTOM_CENTER,
+        hideProgressBar: true,
+      });
+    });
+};
+
 export {
   getMarketStateDescription,
   getMarketState,
   getChartDimensions,
   savePortfolio,
+  getPortfolio,
 };

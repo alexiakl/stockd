@@ -9,6 +9,7 @@ import {
   addPortfolioRecord,
 } from '../actions/portfolio';
 import runQuery from '../controllers/portfolioController';
+import { getPortfolio } from '../utils/utils';
 import 'react-confirm-alert/src/react-confirm-alert.css';
 
 const modalStyles = {
@@ -41,6 +42,7 @@ class PortfolioComponent extends Component {
   }
 
   componentDidMount() {
+    getPortfolio();
     Modal.setAppElement('body');
     const { data, dispatch } = this.props;
 
