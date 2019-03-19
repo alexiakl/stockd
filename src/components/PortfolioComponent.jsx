@@ -1,18 +1,22 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Table, Form, Badge, Button } from 'react-bootstrap';
+import Modal from 'react-modal';
 import { confirmAlert } from 'react-confirm-alert';
-import {
-  addSymbolRecord,
-  removeSymbolRecord,
-  setFees,
-  setQuantity,
-  setUnitPrice,
-  setBuy,
-} from '../actions/portfolio';
+import { addSymbolRecord, removeSymbolRecord } from '../actions/portfolio';
 import runQuery from '../controllers/portfolioController';
 import 'react-confirm-alert/src/react-confirm-alert.css';
-import sync from '../static/images/sync.svg';
+
+const modalStyles = {
+  content: {
+    top: '50%',
+    left: '50%',
+    right: 'auto',
+    bottom: 'auto',
+    marginRight: '-50%',
+    transform: 'translate(-50%, -50%)',
+  },
+};
 
 class PortfolioComponent extends Component {
   constructor() {
@@ -20,10 +24,20 @@ class PortfolioComponent extends Component {
 
     this.state = {
       expandedRows: [],
+      modalIsOpen: false,
+      readOnly: true,
+      index: -1,
+      addSymbol: '',
+      addBuy: true,
+      addQuantity: undefined,
+      addUnitPrice: undefined,
+      addFees: undefined,
+      addDate: undefined,
     };
   }
 
   componentDidMount() {
+    Modal.setAppElement('body');
     const { data, dispatch } = this.props;
 
     const symbols = [];
@@ -33,6 +47,49 @@ class PortfolioComponent extends Component {
       });
       runQuery(symbols, dispatch);
     }
+  }
+
+  today = () => {
+    const today = new Date();
+    const mm = today.getMonth() + 1;
+    const dd = today.getDate();
+
+    return [
+      today.getFullYear(),
+      (mm > 9 ? '' : '0') + mm,
+      (dd > 9 ? '' : '0') + dd,
+    ].join('-');
+  };
+
+  closeModal() {
+    this.setState({ modalIsOpen: false });
+  }
+
+  openModal(symbol) {
+    this.setState({
+      addSymbol: symbol,
+      modalIsOpen: true,
+      readOnly: false,
+      index: -1,
+      addBuy: true,
+      addQuantity: undefined,
+      addUnitPrice: undefined,
+      addFees: undefined,
+      addDate: undefined,
+    });
+  }
+
+  openModalInfo(item, index) {
+    this.setState({
+      addSymbol: item.symbol,
+      modalIsOpen: true,
+      readOnly: true,
+      index,
+      addQuantity: item.quantity,
+      addUnitPrice: item.unitPrice,
+      addFees: item.fees,
+      addDate: item.date,
+    });
   }
 
   handleRowClick(rowId) {
@@ -46,60 +103,87 @@ class PortfolioComponent extends Component {
     this.setState({ expandedRows: newExpandedRows });
   }
 
+  addTransactionRecord() {
+    const { dispatch } = this.props;
+    let { addDate: date, addFees: fees } = this.state;
+    const {
+      addSymbol: symbol,
+      addBuy: buy,
+      addUnitPrice: unitPrice,
+      addQuantity: quantity,
+    } = this.state;
+    this.handleRowClick(symbol);
+
+    if (!date) {
+      date = this.today();
+    }
+    if (!fees) {
+      fees = 0;
+    }
+    if (!unitPrice || !quantity) {
+      return;
+    }
+
+    const record = {
+      symbol,
+      buy,
+      fees,
+      unitPrice,
+      quantity,
+      date,
+    };
+    this.setState({ modalIsOpen: false });
+    dispatch(addSymbolRecord(record));
+  }
+
   calculatePortfolioQuotes() {
-    const { data, quotes, theme } = this.props;
+    const { data, quotes } = this.props;
 
     const totals = [];
+    const quantities = [];
+    const unitPrices = [];
+    const profits = [];
     let total = 0;
     if (data) {
       Object.keys(data).forEach(symbol => {
+        profits[symbol] = [];
         const item = data[symbol];
-        let b = 0;
-        let s = 0;
+        let symbolbuy = 0;
+        let symbolsell = 0;
+        let symbolquantity = 0;
+        let symbolunitprices = 0;
         item.records.forEach((record, index) => {
           if (quotes.data && quotes.data[symbol]) {
-            b += record.quantity * record.unitPrice + record.fees;
-            s +=
+            const transactionbuy =
+              record.quantity * record.unitPrice + record.fees;
+            const transactionsell =
               record.quantity * quotes.data[symbol].quote.latestPrice -
               record.fees;
+            symbolbuy += transactionbuy;
+            symbolsell += transactionsell;
+
+            profits[symbol][index] = (transactionsell - transactionbuy).toFixed(
+              2,
+            );
+            symbolquantity += record.quantity;
+            symbolunitprices += record.unitPrice;
           }
         });
-        const result = s - b;
-        totals[symbol] = result.toFixed(2);
-        total += parseFloat(result.toFixed(2));
+        totals[symbol] = (symbolsell - symbolbuy).toFixed(2);
+        quantities[symbol] = (symbolquantity / item.records.length).toFixed(2);
+        unitPrices[symbol] = (symbolunitprices / item.records.length).toFixed(
+          2,
+        );
+        total += parseFloat((symbolsell - symbolbuy).toFixed(2));
       });
     }
 
-    return { total, totals };
+    return { total, totals, profits, quantities, unitPrices };
   }
 
-  updateQuantity(symbol, index, quantity) {
-    const { dispatch } = this.props;
-    dispatch(setQuantity({ symbol, index, quantity }));
-  }
-
-  updateFees(symbol, index, fees) {
-    const { dispatch } = this.props;
-    dispatch(setFees({ symbol, index, fees }));
-  }
-
-  updateBuy(symbol, index, buy) {
-    const { dispatch } = this.props;
-    dispatch(setBuy({ symbol, index, buy }));
-  }
-
-  updateUnitPrice(symbol, index, unitPrice) {
-    const { dispatch } = this.props;
-    dispatch(setUnitPrice({ symbol, index, unitPrice }));
-  }
-
-  addRecord(symbol) {
-    const { dispatch } = this.props;
-    this.handleRowClick(symbol);
-    dispatch(addSymbolRecord(symbol));
-  }
-
-  confirmRemoval(symbol, index) {
+  confirmRemoval(e, symbol, index) {
+    e.preventDefault();
+    this.closeModal();
     confirmAlert({
       title: 'Are you sure?',
       message: 'You cannot undo this action.',
@@ -119,79 +203,33 @@ class PortfolioComponent extends Component {
     });
   }
 
-  renderSubItem(item, index) {
-    let buyVariant = 'light';
-    let sellVariant = 'light';
+  renderSubItem(item, totalObject, index) {
+    let totalClassName = 'green';
+    if (totalObject.profits[item.symbol][index] < 0) {
+      totalClassName = 'red';
+    }
+
+    let transaction = 'sell';
     if (item.buy) {
-      buyVariant = 'warning';
-    } else {
-      sellVariant = 'warning';
+      transaction = 'buy';
     }
     return (
       <tr key={`row-expanded-${item.symbol}-${index}`}>
         <td>
-          <Badge
-            variant={buyVariant}
-            onClick={() => this.updateBuy(item.symbol, index, true)}
-          >
-            bought
-          </Badge>{' '}
-          <Badge
-            variant={sellVariant}
-            onClick={() => this.updateBuy(item.symbol, index, false)}
-          >
-            sold
-          </Badge>
+          <Badge variant="warning">{transaction}</Badge>
         </td>
-        <td>
-          <Form.Control
-            size="sm"
-            type="number"
-            placeholder="0"
-            defaultValue={item.quantity}
-            onChange={evt =>
-              this.updateQuantity(item.symbol, index, evt.target.value)
-            }
-          />
-        </td>
-        <td>
-          <Form.Control
-            size="sm"
-            type="number"
-            placeholder="0"
-            defaultValue={item.unitPrice}
-            onChange={evt =>
-              this.updateUnitPrice(item.symbol, index, evt.target.value)
-            }
-          />
-        </td>
-        <td>
-          <Form.Control
-            size="sm"
-            type="number"
-            placeholder="0"
-            defaultValue={item.fees}
-            onChange={evt =>
-              this.updateFees(item.symbol, index, evt.target.value)
-            }
-          />
-        </td>
-        <td>
-          <Form.Control
-            size="sm"
-            type="number"
-            placeholder="0"
-            disabled
-            value={item.total}
-          />
+        <td>{item.quantity}</td>
+        <td>{item.unitPrice}</td>
+        <td className={totalClassName}>
+          {totalObject.profits[item.symbol][index]}
         </td>
         <td className="center">
           <Badge
             variant="warning"
             className="action"
-            onClick={() => this.confirmRemoval(item.symbol, index)}
+            onClick={() => this.openModalInfo(item, index)}
           >
-            -
+            ...
           </Badge>
         </td>
       </tr>
@@ -212,16 +250,15 @@ class PortfolioComponent extends Component {
             {item.symbol} <Badge variant="light">{item.records.length}</Badge>
           </Button>
         </td>
-        <td />
-        <td />
-        <td />
+        <td>{totalObject.quantities[item.symbol]}</td>
+        <td>{totalObject.unitPrices[item.symbol]}</td>
         <td className={totalClassName}>{totalObject.totals[item.symbol]}</td>
         <td className="center">
           <Badge
             key={item.symbol}
             variant="info"
             className="action"
-            onClick={() => this.addRecord(item.symbol)}
+            onClick={() => this.openModal(item.symbol)}
           >
             +
           </Badge>
@@ -231,7 +268,7 @@ class PortfolioComponent extends Component {
 
     let allSubItemRows = [];
     item.records.forEach((record, index) => {
-      const perItemRows = this.renderSubItem(record, index);
+      const perItemRows = this.renderSubItem(record, totalObject, index);
       allSubItemRows = allSubItemRows.concat(perItemRows);
     });
 
@@ -244,6 +281,18 @@ class PortfolioComponent extends Component {
 
   render() {
     const { data, theme, dispatch } = this.props;
+    const {
+      modalIsOpen,
+      addSymbol,
+      addQuantity,
+      addFees,
+      addUnitPrice,
+      addBuy,
+      addDate,
+      readOnly,
+      index,
+    } = this.state;
+
     let allItemRows = [];
 
     const symbols = [];
@@ -257,25 +306,128 @@ class PortfolioComponent extends Component {
       });
     }
 
+    let buychecked = true;
+    let sellchecked = false;
+    if (readOnly && !addBuy) {
+      buychecked = false;
+      sellchecked = true;
+    }
+
     return (
       <React.Fragment>
+        <Modal
+          isOpen={modalIsOpen}
+          onRequestClose={() => this.closeModal()}
+          style={modalStyles}
+          contentLabel="Add transaction"
+        >
+          <h2>{addSymbol} Add Transaction</h2>
+          <Form className={theme}>
+            <Form.Group controlId="transactionType">
+              <Form.Label>Type</Form.Label>
+              <Form.Check
+                defaultChecked={buychecked}
+                name="transactionType"
+                id="transactionTypeBuy"
+                type="radio"
+                label="Buy"
+                disabled={readOnly}
+                onClick={() => this.setState({ addBuy: true })}
+              />
+              <Form.Check
+                defaultChecked={sellchecked}
+                name="transactionType"
+                id="transactionTypeSell"
+                type="radio"
+                label="Sell"
+                disabled={readOnly}
+                onClick={() => this.setState({ addBuy: false })}
+              />
+            </Form.Group>
+
+            <Form.Group controlId="formQuantity">
+              <Form.Label>Quantity</Form.Label>
+              <Form.Control
+                defaultValue={addQuantity}
+                disabled={readOnly}
+                type="number"
+                placeholder="Number of shares"
+                onChange={evt =>
+                  this.setState({ addQuantity: evt.target.value })
+                }
+              />
+            </Form.Group>
+
+            <Form.Group controlId="formUnitPrice">
+              <Form.Label>Unit Price</Form.Label>
+              <Form.Control
+                defaultValue={addUnitPrice}
+                disabled={readOnly}
+                type="number"
+                placeholder="Price per share"
+                onChange={evt =>
+                  this.setState({ addUnitPrice: evt.target.value })
+                }
+              />
+            </Form.Group>
+
+            <Form.Group controlId="formFees">
+              <Form.Label>Fees</Form.Label>
+              <Form.Control
+                defaultValue={addFees}
+                disabled={readOnly}
+                type="number"
+                placeholder="Commission, fees or other costs"
+                onChange={evt => this.setState({ addFees: evt.target.value })}
+              />
+            </Form.Group>
+
+            <Form.Group controlId="formDate">
+              <Form.Label>Date</Form.Label>
+              <Form.Control
+                defaultValue={addDate}
+                disabled={readOnly}
+                type="date"
+                placeholder="Commission, fees or other costs"
+                onChange={evt => this.setState({ addDate: evt.target.value })}
+              />
+            </Form.Group>
+
+            {!readOnly ? (
+              <Button
+                variant="outline-info"
+                type="submit"
+                onClick={() => this.addTransactionRecord()}
+              >
+                Add
+              </Button>
+            ) : (
+              <Button
+                variant="outline-warning"
+                type="submit"
+                onClick={e => this.confirmRemoval(e, addSymbol, index)}
+              >
+                Delete
+              </Button>
+            )}
+          </Form>
+        </Modal>
         <Table hover variant={theme}>
           <thead>
             <tr>
-              <th />
+              <th>
+                <Badge
+                  className="sync-badge"
+                  variant="info"
+                  onClick={() => runQuery(symbols, dispatch)}
+                >
+                  sync
+                </Badge>
+              </th>
               <th>Quantity</th>
               <th>Unit Price</th>
-              <th>Fees</th>
-              <th>Total</th>
-              <th className="th-small">
-                <Button
-                  size="sm"
-                  onClick={() => runQuery(symbols, dispatch)}
-                  variant="secondary"
-                >
-                  <img alt="sync" src={sync} width="22" height="22" />
-                </Button>
-              </th>
+              <th>Profit</th>
+              <th className="th-small" />
             </tr>
           </thead>
           <tbody>{allItemRows}</tbody>

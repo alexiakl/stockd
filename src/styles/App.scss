@@ -31,7 +31,19 @@ body {
   cursor: pointer;
 }
 
+.ReactModal__Content,
+.react-confirm-alert-body {
+  background: $darkbackgroud !important;
+  color: $darkfont;
+}
+
+.ReactModal__Overlay,
+.react-confirm-alert-overlay {
+  background: #00000099 !important;
+}
+
 .table {
+  font-weight: bold;
   .th-small {
     padding: 0px 0px;
     max-width: 90%;
@@ -61,11 +73,12 @@ body {
       text-align: center;
     }
     font-size: 14px;
-    padding-left: 4px;
+    padding-left: 10px;
     padding-right: 0px;
     vertical-align: unset;
   }
   input {
+    font-weight: bold;
     border: 0;
     padding-left: 3px;
     padding-right: 3px;
@@ -238,8 +251,13 @@ body {
   }
 }
 
+.sync-badge {
+  font-size: 12px;
+}
+
 .navbar-collapse {
   .active {
-    border-bottom: 2px solid $active;
+    font-weight: bold;
+    color: $active !important;
   }
 }

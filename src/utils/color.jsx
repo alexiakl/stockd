@@ -46,7 +46,7 @@ const getPerformanceColorHex = value => {
     return '#24a321';
   }
   if (value < 0) {
-    return '#af2725';
+    return '#ff6249';
   }
   return '#666';
 };
