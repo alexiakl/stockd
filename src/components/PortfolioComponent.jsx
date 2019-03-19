@@ -25,12 +25,14 @@ class PortfolioComponent extends Component {
     this.state = {
       expandedRows: [],
       modalIsOpen: false,
+      readOnly: true,
+      index: -1,
       addSymbol: '',
       addBuy: true,
-      addQuantity: 0,
-      addUnitPrice: 0,
-      addFees: 0,
-      addDate: new Date(),
+      addQuantity: undefined,
+      addUnitPrice: undefined,
+      addFees: undefined,
+      addDate: undefined,
     };
   }
 
@@ -53,10 +55,10 @@ class PortfolioComponent extends Component {
     const dd = today.getDate();
 
     return [
+      today.getFullYear(),
       (mm > 9 ? '' : '0') + mm,
       (dd > 9 ? '' : '0') + dd,
-      today.getFullYear(),
-    ].join('/');
+    ].join('-');
   };
 
   closeModal() {
@@ -64,7 +66,30 @@ class PortfolioComponent extends Component {
   }
 
   openModal(symbol) {
-    this.setState({ addSymbol: symbol, modalIsOpen: true });
+    this.setState({
+      addSymbol: symbol,
+      modalIsOpen: true,
+      readOnly: false,
+      index: -1,
+      addBuy: true,
+      addQuantity: undefined,
+      addUnitPrice: undefined,
+      addFees: undefined,
+      addDate: undefined,
+    });
+  }
+
+  openModalInfo(item, index) {
+    this.setState({
+      addSymbol: item.symbol,
+      modalIsOpen: true,
+      readOnly: true,
+      index,
+      addQuantity: item.quantity,
+      addUnitPrice: item.unitPrice,
+      addFees: item.fees,
+      addDate: item.date,
+    });
   }
 
   handleRowClick(rowId) {
@@ -141,7 +166,9 @@ class PortfolioComponent extends Component {
     return { total, totals, profits };
   }
 
-  confirmRemoval(symbol, index) {
+  confirmRemoval(e, symbol, index) {
+    e.preventDefault();
+    this.closeModal();
     confirmAlert({
       title: 'Are you sure?',
       message: 'You cannot undo this action.',
@@ -178,7 +205,6 @@ class PortfolioComponent extends Component {
         </td>
         <td>{item.quantity}</td>
         <td>{item.unitPrice}</td>
-        <td>{item.fees}</td>
         <td className={totalClassName}>
           {totalObject.profits[item.symbol][index]}
         </td>
@@ -186,9 +212,9 @@ class PortfolioComponent extends Component {
           <Badge
             variant="warning"
             className="action"
-            onClick={() => this.confirmRemoval(item.symbol, index)}
+            onClick={() => this.openModalInfo(item, index)}
           >
-            -
+            ...
           </Badge>
         </td>
       </tr>
@@ -209,7 +235,6 @@ class PortfolioComponent extends Component {
             {item.symbol} <Badge variant="light">{item.records.length}</Badge>
           </Button>
         </td>
-        <td />
         <td />
         <td />
         <td className={totalClassName}>{totalObject.totals[item.symbol]}</td>
@@ -241,7 +266,17 @@ class PortfolioComponent extends Component {
 
   render() {
     const { data, theme, dispatch } = this.props;
-    const { modalIsOpen, addSymbol } = this.state;
+    const {
+      modalIsOpen,
+      addSymbol,
+      addQuantity,
+      addFees,
+      addUnitPrice,
+      addBuy,
+      addDate,
+      readOnly,
+      index,
+    } = this.state;
 
     let allItemRows = [];
 
@@ -254,6 +289,13 @@ class PortfolioComponent extends Component {
         const perItemRows = this.renderItem(record, totalObject);
         allItemRows = allItemRows.concat(perItemRows);
       });
+    }
+
+    let buychecked = true;
+    let sellchecked = false;
+    if (readOnly && !addBuy) {
+      buychecked = false;
+      sellchecked = true;
     }
 
     return (
@@ -269,18 +311,21 @@ class PortfolioComponent extends Component {
             <Form.Group controlId="transactionType">
               <Form.Label>Type</Form.Label>
               <Form.Check
-                defaultChecked
+                defaultChecked={buychecked}
                 name="transactionType"
                 id="transactionTypeBuy"
                 type="radio"
                 label="Buy"
+                disabled={readOnly}
                 onClick={() => this.setState({ addBuy: true })}
               />
               <Form.Check
+                defaultChecked={sellchecked}
                 name="transactionType"
                 id="transactionTypeSell"
                 type="radio"
                 label="Sell"
+                disabled={readOnly}
                 onClick={() => this.setState({ addBuy: false })}
               />
             </Form.Group>
@@ -288,6 +333,8 @@ class PortfolioComponent extends Component {
             <Form.Group controlId="formQuantity">
               <Form.Label>Quantity</Form.Label>
               <Form.Control
+                defaultValue={addQuantity}
+                disabled={readOnly}
                 type="number"
                 placeholder="Number of shares"
                 onChange={evt =>
@@ -299,6 +346,8 @@ class PortfolioComponent extends Component {
             <Form.Group controlId="formUnitPrice">
               <Form.Label>Unit Price</Form.Label>
               <Form.Control
+                defaultValue={addUnitPrice}
+                disabled={readOnly}
                 type="number"
                 placeholder="Price per share"
                 onChange={evt =>
@@ -310,6 +359,8 @@ class PortfolioComponent extends Component {
             <Form.Group controlId="formFees">
               <Form.Label>Fees</Form.Label>
               <Form.Control
+                defaultValue={addFees}
+                disabled={readOnly}
                 type="number"
                 placeholder="Commission, fees or other costs"
                 onChange={evt => this.setState({ addFees: evt.target.value })}
@@ -319,19 +370,31 @@ class PortfolioComponent extends Component {
             <Form.Group controlId="formDate">
               <Form.Label>Date</Form.Label>
               <Form.Control
+                defaultValue={addDate}
+                disabled={readOnly}
                 type="date"
                 placeholder="Commission, fees or other costs"
                 onChange={evt => this.setState({ addDate: evt.target.value })}
               />
             </Form.Group>
 
-            <Button
-              variant="outline-info"
-              type="submit"
-              onClick={() => this.addTransactionRecord()}
-            >
-              Add
-            </Button>
+            {!readOnly ? (
+              <Button
+                variant="outline-info"
+                type="submit"
+                onClick={() => this.addTransactionRecord()}
+              >
+                Add
+              </Button>
+            ) : (
+              <Button
+                variant="outline-warning"
+                type="submit"
+                onClick={e => this.confirmRemoval(e, addSymbol, index)}
+              >
+                Delete
+              </Button>
+            )}
           </Form>
         </Modal>
         <Table hover variant={theme}>
@@ -348,7 +411,6 @@ class PortfolioComponent extends Component {
               </th>
               <th>Quantity</th>
               <th>Unit Price</th>
-              <th>Fees</th>
               <th>Profit</th>
               <th className="th-small" />
             </tr>
