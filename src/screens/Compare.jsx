@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import '../styles/App.scss';
 import { connect } from 'react-redux';
-import { PulseLoader } from 'react-spinners';
 import { Redirect } from 'react-router-dom';
 import SymbolsPicker from '../components/symbolsPicker/SymbolsPicker';
 import PeriodController from '../components/PeriodController';
@@ -51,7 +50,7 @@ class Compare extends Component {
   }
 
   render() {
-    const { theme, isFetchingData } = this.props;
+    const { theme } = this.props;
 
     const token = localStorage.getItem(TOKEN);
     if (!token) {
@@ -61,11 +60,6 @@ class Compare extends Component {
       <div className={theme}>
         <SymbolsPicker />
         <PeriodController />
-        {isFetchingData && (
-          <div className="loader">
-            <PulseLoader color="#5c646d" />
-          </div>
-        )}
         <CompareChart />
       </div>
     );
