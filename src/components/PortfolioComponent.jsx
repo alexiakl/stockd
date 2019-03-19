@@ -50,9 +50,11 @@ class PortfolioComponent extends Component {
     const { data, quotes, theme } = this.props;
 
     const totals = [];
+    const profits = [];
     let total = 0;
     if (data) {
       Object.keys(data).forEach(symbol => {
+        profits[symbol] = [];
         const item = data[symbol];
         let b = 0;
         let s = 0;
@@ -62,6 +64,7 @@ class PortfolioComponent extends Component {
             s +=
               record.quantity * quotes.data[symbol].quote.latestPrice -
               record.fees;
+            profits[symbol][index] = (s - b).toFixed(2);
           }
         });
         const result = s - b;
@@ -70,7 +73,7 @@ class PortfolioComponent extends Component {
       });
     }
 
-    return { total, totals };
+    return { total, totals, profits };
   }
 
   updateQuantity(symbol, index, quantity) {
@@ -119,7 +122,11 @@ class PortfolioComponent extends Component {
     });
   }
 
-  renderSubItem(item, index) {
+  renderSubItem(item, totalObject, index) {
+    let totalClassName = 'green';
+    if (totalObject.profits[item.symbol][index] < 0) {
+      totalClassName = 'red';
+    }
     let buyVariant = 'light';
     let sellVariant = 'light';
     if (item.buy) {
@@ -143,47 +150,11 @@ class PortfolioComponent extends Component {
             sold
           </Badge>
         </td>
-        <td>
-          <Form.Control
-            size="sm"
-            type="number"
-            placeholder="0"
-            defaultValue={item.quantity}
-            onChange={evt =>
-              this.updateQuantity(item.symbol, index, evt.target.value)
-            }
-          />
-        </td>
-        <td>
-          <Form.Control
-            size="sm"
-            type="number"
-            placeholder="0"
-            defaultValue={item.unitPrice}
-            onChange={evt =>
-              this.updateUnitPrice(item.symbol, index, evt.target.value)
-            }
-          />
-        </td>
-        <td>
-          <Form.Control
-            size="sm"
-            type="number"
-            placeholder="0"
-            defaultValue={item.fees}
-            onChange={evt =>
-              this.updateFees(item.symbol, index, evt.target.value)
-            }
-          />
-        </td>
-        <td>
-          <Form.Control
-            size="sm"
-            type="number"
-            placeholder="0"
-            disabled
-            value={item.total}
-          />
+        <td>{item.quantity}</td>
+        <td>{item.unitPrice}</td>
+        <td>{item.fees}</td>
+        <td className={totalClassName}>
+          {totalObject.profits[item.symbol][index]}
         </td>
         <td className="center">
           <Badge
@@ -231,7 +202,7 @@ class PortfolioComponent extends Component {
 
     let allSubItemRows = [];
     item.records.forEach((record, index) => {
-      const perItemRows = this.renderSubItem(record, index);
+      const perItemRows = this.renderSubItem(record, totalObject, index);
       allSubItemRows = allSubItemRows.concat(perItemRows);
     });
 
@@ -262,20 +233,20 @@ class PortfolioComponent extends Component {
         <Table hover variant={theme}>
           <thead>
             <tr>
-              <th />
+              <th>
+                <Badge
+                  className="sync-badge"
+                  variant="info"
+                  onClick={() => runQuery(symbols, dispatch)}
+                >
+                  sync
+                </Badge>
+              </th>
               <th>Quantity</th>
               <th>Unit Price</th>
               <th>Fees</th>
-              <th>Total</th>
-              <th className="th-small">
-                <Button
-                  size="sm"
-                  onClick={() => runQuery(symbols, dispatch)}
-                  variant="secondary"
-                >
-                  <img alt="sync" src={sync} width="22" height="22" />
-                </Button>
-              </th>
+              <th>Profit</th>
+              <th className="th-small" />
             </tr>
           </thead>
           <tbody>{allItemRows}</tbody>
