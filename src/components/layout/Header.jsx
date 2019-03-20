@@ -85,6 +85,26 @@ const Header = ({ theme, dispatch }) => {
     addClass = 'active';
   }
 
+  const settings = (
+    <React.Fragment>
+      <Dropdown.Toggle size="sm" variant="outline-info" id="dropdown-settings">
+        Settings
+      </Dropdown.Toggle>
+
+      <Dropdown.Menu>
+        {themeButton}
+        <Dropdown.Divider />
+        <Dropdown.Item onClick={logout}>Logout</Dropdown.Item>
+        <Dropdown.Item onClick={logoutAll}>Logout Everywhere</Dropdown.Item>
+      </Dropdown.Menu>
+    </React.Fragment>
+  );
+
+  let dropdown = <Dropdown alignRight>{settings}</Dropdown>;
+  if (window.innerWidth < 992) {
+    dropdown = <Dropdown>{settings}</Dropdown>;
+  }
+
   return (
     <Navbar expand="lg" bg={bg} variant={bg} className={theme}>
       <Helmet>
@@ -108,22 +128,7 @@ const Header = ({ theme, dispatch }) => {
             <Nav.Link className="menu-item">portfolio</Nav.Link>
           </LinkContainer>
         </Nav>
-        <Dropdown drop="left">
-          <Dropdown.Toggle
-            size="sm"
-            variant="outline-info"
-            id="dropdown-settings"
-          >
-            Settings
-          </Dropdown.Toggle>
-
-          <Dropdown.Menu>
-            {themeButton}
-            <Dropdown.Divider />
-            <Dropdown.Item onClick={logout}>Logout</Dropdown.Item>
-            <Dropdown.Item onClick={logoutAll}>Logout Everywhere</Dropdown.Item>
-          </Dropdown.Menu>
-        </Dropdown>
+        {dropdown}
       </Navbar.Collapse>
     </Navbar>
   );
