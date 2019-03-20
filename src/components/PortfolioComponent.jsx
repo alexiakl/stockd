@@ -123,7 +123,7 @@ class PortfolioComponent extends Component {
   }
 
   addTransactionRecord() {
-    const { dispatch } = this.props;
+    const { dispatch, data } = this.props;
     let { addDate: date, addFees: fees } = this.state;
     const {
       addSymbol: symbol,
@@ -131,7 +131,6 @@ class PortfolioComponent extends Component {
       addUnitPrice: unitPrice,
       addQuantity: quantity,
     } = this.state;
-    this.handleRowClick(symbol);
 
     if (!date) {
       date = this.today();
@@ -153,6 +152,18 @@ class PortfolioComponent extends Component {
     };
     this.setState({ modalIsOpen: false });
     dispatch(addSymbolRecord(record));
+    this.handleRowClick(symbol);
+
+    const symbols = [];
+    if (data) {
+      Object.keys(data).forEach(xsymbol => {
+        symbols.push(xsymbol);
+      });
+    }
+    if (!symbols.includes(symbol)) {
+      symbols.push(symbol);
+    }
+    runQuery(symbols, dispatch);
   }
 
   calculatePortfolioQuotes() {
