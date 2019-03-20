@@ -440,7 +440,7 @@ class PortfolioComponent extends Component {
                   variant="info"
                   onClick={() => runQuery(symbols, dispatch)}
                 >
-                  refresh
+                  recalculate
                 </Badge>
               </th>
               <th>Quantity</th>

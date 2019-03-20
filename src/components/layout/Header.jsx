@@ -74,7 +74,7 @@ const Header = ({ theme, dispatch }) => {
   }
 
   return (
-    <Navbar expand="lg" bg={bg} variant={bg}>
+    <Navbar expand="lg" bg={bg} variant={bg} className={theme}>
       <Helmet>
         <style>
           {theme === 'dark-mode' ? 'body { background-color: #303030; }' : ''}

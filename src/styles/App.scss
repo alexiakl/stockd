@@ -19,7 +19,7 @@ body {
 
 .sdcontainer {
   flex-wrap: wrap;
-  padding: 20px 40px;
+  padding: 20px 10px;
   border-bottom: 1px solid $seperator;
 }
 
@@ -199,6 +199,12 @@ body {
       border-left: 1px solid $darkseperator;
     }
   }
+
+  .navbar-collapse {
+    .active {
+      color: $darkactive !important;
+    }
+  }
 }
 
 .mr-sm-2 {
@@ -233,13 +239,13 @@ body {
 
 .stock-button {
   margin-top: 20px;
-  margin-right: 20px;
+  margin-right: 10px;
   border: 1px solid $seperator;
   border-radius: 5px;
   padding: 3px 6px;
   @include lg {
     margin-top: 0px;
-    margin-left: 20px;
+    margin-left: 10px;
     margin-right: 0px;
   }
 }
@@ -247,9 +253,9 @@ body {
 .results {
   width: 100%;
   .stock-button {
-    margin-right: 20px;
+    margin-right: 10px;
     margin-left: 0px;
-    margin-top: 20px;
+    margin-top: 10px;
   }
 }
 
