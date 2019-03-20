@@ -2,6 +2,11 @@ export const ADD_PORTFOLIO_RECORD = 'ADD_PORTFOLIO_RECORD';
 export const ADD_SYMBOL_RECORD = 'ADD_SYMBOL_RECORD';
 export const REMOVE_SYMBOL_RECORD = 'REMOVE_SYMBOL_RECORD';
 export const PORTFOLIO_QUOTES = 'PORTFOLIO_QUOTES';
+export const SET_PORTFOLIO = 'SET_PORTFOLIO';
+
+export function setPortfolio(portfolio) {
+  return { type: SET_PORTFOLIO, portfolio };
+}
 
 export function addPortfolioRecord(symbol) {
   return { type: ADD_PORTFOLIO_RECORD, symbol };

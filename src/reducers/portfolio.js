@@ -5,6 +5,7 @@ import {
   ADD_SYMBOL_RECORD,
   REMOVE_SYMBOL_RECORD,
   PORTFOLIO_QUOTES,
+  SET_PORTFOLIO,
 } from '../actions/portfolio';
 
 const portfolio = (state = [], action) => {
@@ -20,6 +21,13 @@ const portfolio = (state = [], action) => {
       return {
         ...state,
         openModalWithSymbol: action.symbol,
+      };
+    }
+
+    case SET_PORTFOLIO: {
+      return {
+        ...state,
+        data: action.portfolio,
       };
     }
 
@@ -51,7 +59,7 @@ const portfolio = (state = [], action) => {
       };
       object.records.push(transaction);
 
-      savePortfolio(newPortfolio, transaction);
+      savePortfolio(newPortfolio);
       return {
         ...state,
         data: newPortfolio,
@@ -68,11 +76,7 @@ const portfolio = (state = [], action) => {
       if (object.records.length === 0) {
         delete newPortfolio[action.record.symbol];
       }
-      const transaction = {
-        action: 'delete',
-        symbol: action.record.symbol,
-      };
-      savePortfolio(newPortfolio, transaction);
+      savePortfolio(newPortfolio);
       return {
         ...state,
         data: newPortfolio,

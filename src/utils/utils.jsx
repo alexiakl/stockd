@@ -10,6 +10,7 @@ import {
   TOKEN,
 } from '../constants';
 import { setLoggedin } from '../actions/appStatus';
+import { setPortfolio } from '../actions/portfolio';
 
 const getMarketStateDescription = (value, quote) => {
   let marketStateSentence = '';
@@ -59,7 +60,7 @@ const getChartDimensions = value => {
   return [width, height];
 };
 
-const savePortfolio = (portfolio, transaction) => {
+const savePortfolio = portfolio => {
   const portfolioString = JSON.stringify(portfolio);
   localStorage.setItem(PORTFOLIO, portfolioString);
 
@@ -84,14 +85,14 @@ const savePortfolio = (portfolio, transaction) => {
     )
     .then(res => {
       if (res.data.success !== 1) {
-        toast.warn('Could not save', {
+        toast.warn('Could not save portfolio', {
           position: toast.POSITION.BOTTOM_CENTER,
           hideProgressBar: true,
         });
       }
     })
     .catch(() => {
-      toast.warn('Could not save', {
+      toast.warn('Could not save portfolio', {
         position: toast.POSITION.BOTTOM_CENTER,
         hideProgressBar: true,
       });
@@ -114,6 +115,7 @@ const getPortfolio = dispatch => {
     })
     .then(res => {
       if (res.data.success === 1) {
+        dispatch(setPortfolio(JSON.parse(res.data.data.portfolio)));
         localStorage.setItem(PORTFOLIO, res.data.data.portfolio);
       } else {
         toast.warn('Could not get portfolio', {

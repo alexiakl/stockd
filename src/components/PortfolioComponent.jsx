@@ -56,9 +56,22 @@ class PortfolioComponent extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    const { openModalWithSymbol: nextOpenModalWithSymbol } = nextProps;
+    const {
+      openModalWithSymbol: nextOpenModalWithSymbol,
+      data: nextData,
+    } = nextProps;
     const { modalIsOpen } = this.state;
-    const { dispatch } = this.props;
+    const { dispatch, data } = this.props;
+
+    if (JSON.stringify(data) !== JSON.stringify(nextData)) {
+      const symbols = [];
+      if (nextData) {
+        Object.keys(nextData).forEach(xsymbol => {
+          symbols.push(xsymbol);
+        });
+      }
+      runQuery(symbols, dispatch);
+    }
 
     if (nextOpenModalWithSymbol.length > 0) {
       dispatch(addPortfolioRecord(''));
