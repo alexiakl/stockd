@@ -42,9 +42,9 @@ class PortfolioComponent extends Component {
   }
 
   componentDidMount() {
-    getPortfolio();
-    Modal.setAppElement('body');
     const { data, dispatch } = this.props;
+    getPortfolio(dispatch);
+    Modal.setAppElement('body');
 
     const symbols = [];
     if (data) {

@@ -42,7 +42,7 @@ const initialState = {
     isFetchingData: false,
     email: localStorage.getItem(EMAIL),
     name: localStorage.getItem(NAME),
-    token: localStorage.getItem(TOKEN),
+    loggedin: localStorage.getItem(TOKEN),
   },
 };
 const store = createStore(rootReducer, initialState);

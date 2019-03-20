@@ -4,7 +4,9 @@ import '../styles/App.scss';
 import { connect } from 'react-redux';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import { Redirect } from 'react-router-dom';
 import { API, EMAIL, NAME, TOKEN } from '../constants';
+import { setLoggedin } from '../actions/appStatus';
 
 class Login extends Component {
   constructor(props) {
@@ -33,6 +35,7 @@ class Login extends Component {
 
   login() {
     const { login, password } = this.state;
+    const { dispatch } = this.props;
     const url = `${API}login`;
 
     axios({
@@ -52,6 +55,7 @@ class Login extends Component {
           localStorage.setItem(TOKEN, jwtToken);
           localStorage.setItem(NAME, firstname);
           localStorage.setItem(EMAIL, email);
+          dispatch(setLoggedin(true));
         } else {
           toast.warn('Wrong email / password combination', {
             position: toast.POSITION.BOTTOM_CENTER,
@@ -69,7 +73,10 @@ class Login extends Component {
 
   render() {
     const { login, password } = this.state;
-    const { theme } = this.props;
+    const { theme, loggedin } = this.props;
+    if (loggedin) {
+      return <Redirect to="/live" />;
+    }
     return (
       <div className={`${theme} login`}>
         <form onSubmit={this.handleSubmit}>
@@ -108,6 +115,7 @@ class Login extends Component {
 
 const mapStateToProps = state => ({
   theme: state.appStatus.theme,
+  loggedin: state.appStatus.loggedin,
 });
 
 export default connect(mapStateToProps)(Login);

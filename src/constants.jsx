@@ -4,7 +4,7 @@ export const IEXAPI = 'https://api.iextrading.com/1.0/';
 export const API = 'https://api.stockd.xyz/';
 export const IEXTOKEN = '';
 
-export const TOKEN = 'TOKEN';
+export const TOKEN = 'USER_JWT_TOKEN';
 export const NAME = 'NAME';
 export const EMAIL = 'EMAIL';
 export const PORTFOLIO = 'PORTFOLIO';

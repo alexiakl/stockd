@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { Redirect } from 'react-router-dom';
 import '../styles/App.scss';
 import { connect } from 'react-redux';
-import { TOKEN } from '../constants';
 import StandardCharts from '../components/charts/StandardCharts';
 import SymbolsPicker from '../components/symbolsPicker/SymbolsPicker';
 import PeriodController from '../components/PeriodController';
@@ -61,9 +60,8 @@ class Live extends Component {
   }
 
   render() {
-    const { theme } = this.props;
-    const token = localStorage.getItem(TOKEN);
-    if (!token) {
+    const { theme, loggedin } = this.props;
+    if (!loggedin) {
       return <Redirect to="/login" />;
     }
     return (
@@ -82,6 +80,7 @@ const mapStateToProps = state => ({
   queryResult: state.symbolsData.queryResult,
   fireTimer: state.symbolsData.fireTimer,
   theme: state.appStatus.theme,
+  loggedin: state.appStatus.loggedin,
 });
 
 export default connect(mapStateToProps)(Live);

@@ -4,9 +4,16 @@ import { LinkContainer } from 'react-router-bootstrap';
 import { connect } from 'react-redux';
 import Helmet from 'react-helmet';
 import axios from 'axios';
-import { setTheme } from '../../actions/appStatus';
+import { setTheme, setLoggedin } from '../../actions/appStatus';
 import logo from '../../static/images/logo/Stockd_1024.png';
-import { SYMBOLS_MAP, SYMBOLS_EXPIRY, IEXAPI, IEXTOKEN } from '../../constants';
+import {
+  SYMBOLS_MAP,
+  SYMBOLS_EXPIRY,
+  IEXAPI,
+  IEXTOKEN,
+  TOKEN,
+} from '../../constants';
+import { logoutEverywhere } from '../../utils/utils';
 import { setMap, addSymbol } from '../../actions/symbolsPicker';
 
 const runQuery = dispatch => {
@@ -50,6 +57,17 @@ const Header = ({ theme, dispatch }) => {
     } else {
       dispatch(setTheme('dark-mode'));
     }
+  }
+
+  function logout(e) {
+    e.preventDefault();
+    localStorage.removeItem(TOKEN);
+    dispatch(setLoggedin(false));
+  }
+
+  function logoutAll(e) {
+    e.preventDefault();
+    logoutEverywhere(dispatch);
   }
 
   let themeButton = (
@@ -102,8 +120,8 @@ const Header = ({ theme, dispatch }) => {
           <Dropdown.Menu>
             {themeButton}
             <Dropdown.Divider />
-            <Dropdown.Item>Logout</Dropdown.Item>
-            <Dropdown.Item>Logout Everywhere</Dropdown.Item>
+            <Dropdown.Item onClick={logout}>Logout</Dropdown.Item>
+            <Dropdown.Item onClick={logoutAll}>Logout Everywhere</Dropdown.Item>
           </Dropdown.Menu>
         </Dropdown>
       </Navbar.Collapse>

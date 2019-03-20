@@ -9,6 +9,7 @@ import {
   API,
   TOKEN,
 } from '../constants';
+import { setLoggedin } from '../actions/appStatus';
 
 const getMarketStateDescription = (value, quote) => {
   let marketStateSentence = '';
@@ -97,7 +98,7 @@ const savePortfolio = (portfolio, transaction) => {
     });
 };
 
-const getPortfolio = () => {
+const getPortfolio = dispatch => {
   const url = `${API}user/portfolio`;
   const token = localStorage.getItem(TOKEN);
   if (!token) {
@@ -121,11 +122,53 @@ const getPortfolio = () => {
         });
         if (res.data.data && res.data.data.logout) {
           localStorage.removeItem(TOKEN);
+          dispatch(setLoggedin(false));
         }
       }
     })
-    .catch(err => {
+    .catch(() => {
       toast.warn('Warning: could not get portfolio', {
+        position: toast.POSITION.BOTTOM_CENTER,
+        hideProgressBar: true,
+      });
+    });
+};
+
+const logoutEverywhere = dispatch => {
+  const url = `${API}user/logout`;
+  const token = localStorage.getItem(TOKEN);
+  if (!token) {
+    return;
+  }
+  const AuthStr = `Bearer ${token}`;
+
+  axios
+    .post(
+      url,
+      {},
+      {
+        headers: {
+          Authorization: AuthStr,
+        },
+      },
+    )
+    .then(res => {
+      if (res.data.success === 1) {
+        localStorage.removeItem(TOKEN);
+        dispatch(setLoggedin(false));
+      } else {
+        toast.warn('Warning: could not log you out everywhere', {
+          position: toast.POSITION.BOTTOM_CENTER,
+          hideProgressBar: true,
+        });
+        if (res.data.data && res.data.data.logout) {
+          localStorage.removeItem(TOKEN);
+          dispatch(setLoggedin(false));
+        }
+      }
+    })
+    .catch(() => {
+      toast.warn('Warning: could not log you out everywhere', {
         position: toast.POSITION.BOTTOM_CENTER,
         hideProgressBar: true,
       });
@@ -138,4 +181,5 @@ export {
   getChartDimensions,
   savePortfolio,
   getPortfolio,
+  logoutEverywhere,
 };

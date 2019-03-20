@@ -3,11 +3,9 @@ import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
 import PortfolioSymbolsPicker from '../components/symbolsPicker/PortfolioSymbolsPicker';
 import PortfolioComponent from '../components/PortfolioComponent';
-import { TOKEN } from '../constants';
 
-const Portfolio = ({ theme }) => {
-  const token = localStorage.getItem(TOKEN);
-  if (!token) {
+const Portfolio = ({ theme, loggedin }) => {
+  if (!loggedin) {
     return <Redirect to="/login" />;
   }
   return (
@@ -20,6 +18,7 @@ const Portfolio = ({ theme }) => {
 
 const mapStateToProps = state => ({
   theme: state.appStatus.theme,
+  loggedin: state.appStatus.loggedin,
 });
 
 export default connect(mapStateToProps)(Portfolio);

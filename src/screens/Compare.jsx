@@ -7,7 +7,6 @@ import PeriodController from '../components/PeriodController';
 import { processResult } from '../controllers/compareController';
 import { runQuery } from '../controllers/liveController';
 import CompareChart from '../components/charts/CompareChart';
-import { TOKEN } from '../constants';
 
 class Compare extends Component {
   componentDidMount() {
@@ -50,10 +49,9 @@ class Compare extends Component {
   }
 
   render() {
-    const { theme } = this.props;
+    const { theme, loggedin } = this.props;
 
-    const token = localStorage.getItem(TOKEN);
-    if (!token) {
+    if (!loggedin) {
       return <Redirect to="/login" />;
     }
     return (
@@ -73,6 +71,7 @@ const mapStateToProps = state => ({
   queryResult: state.symbolsData.queryResult,
   fireTimer: state.symbolsData.fireTimer,
   theme: state.appStatus.theme,
+  loggedin: state.appStatus.loggedin,
 });
 
 export default connect(mapStateToProps)(Compare);
