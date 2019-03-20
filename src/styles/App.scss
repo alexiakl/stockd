@@ -261,8 +261,10 @@ body {
 
 .navbar {
   .menu-item {
-    margin-left: 20px;
     cursor: pointer;
+    @include lg {
+      margin-left: 20px;
+    }
   }
 }
 

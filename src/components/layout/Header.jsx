@@ -53,16 +53,26 @@ const Header = ({ theme, dispatch }) => {
   }
 
   let themeButton = (
-    <Button onClick={handleClick} className="menu-item" variant="secondary">
-      dark
+    <Button
+      size="sm"
+      onClick={handleClick}
+      className="menu-item"
+      variant="secondary"
+    >
+      night
     </Button>
   );
 
   let bg = 'light';
   if (theme === 'dark-mode') {
     themeButton = (
-      <Button onClick={handleClick} className="menu-item" variant="secondary">
-        light
+      <Button
+        size="sm"
+        onClick={handleClick}
+        className="menu-item"
+        variant="secondary"
+      >
+        day
       </Button>
     );
     bg = 'dark';
@@ -80,11 +90,9 @@ const Header = ({ theme, dispatch }) => {
           {theme === 'dark-mode' ? 'body { background-color: #303030; }' : ''}
         </style>
       </Helmet>
-      <LinkContainer to="/">
-        <NavItem>
-          <img alt="logo" width="40" height="40" src={logo} />
-        </NavItem>
-      </LinkContainer>
+      <NavItem>
+        <img alt="logo" width="40" height="40" src={logo} />
+      </NavItem>
       <Navbar.Toggle aria-controls="basic-navbar-nav" />
       <Navbar.Collapse id="basic-navbar-nav">
         <Nav className="mr-auto">
