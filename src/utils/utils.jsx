@@ -115,14 +115,17 @@ const getPortfolio = () => {
       if (res.data.success === 1) {
         localStorage.setItem(PORTFOLIO, res.data.data.portfolio);
       } else {
-        toast.warn('Could not save', {
+        toast.warn('Could not get portfolio', {
           position: toast.POSITION.BOTTOM_CENTER,
           hideProgressBar: true,
         });
+        if (res.data.data && res.data.data.logout) {
+          localStorage.removeItem(TOKEN);
+        }
       }
     })
-    .catch(() => {
-      toast.warn('Could not save', {
+    .catch(err => {
+      toast.warn('Warning: could not get portfolio', {
         position: toast.POSITION.BOTTOM_CENTER,
         hideProgressBar: true,
       });
