@@ -165,6 +165,14 @@ body {
 .dark-mode {
   background: $darkbackgroud;
   color: $darkfont;
+
+  .dropdown-item {
+    color: $darkfont;
+  }
+  .dropdown-menu {
+    background: $darkbackgroud;
+  }
+
   .stock-button,
   .period-button {
     color: $darkfont;

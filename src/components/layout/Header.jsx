@@ -1,5 +1,5 @@
 import React from 'react';
-import { Nav, Navbar, NavItem, Button } from 'react-bootstrap';
+import { Nav, Navbar, NavItem, Dropdown } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import { connect } from 'react-redux';
 import Helmet from 'react-helmet';
@@ -53,28 +53,12 @@ const Header = ({ theme, dispatch }) => {
   }
 
   let themeButton = (
-    <Button
-      size="sm"
-      onClick={handleClick}
-      className="menu-item"
-      variant="secondary"
-    >
-      night
-    </Button>
+    <Dropdown.Item onClick={handleClick}>Night Mode</Dropdown.Item>
   );
 
   let bg = 'light';
   if (theme === 'dark-mode') {
-    themeButton = (
-      <Button
-        size="sm"
-        onClick={handleClick}
-        className="menu-item"
-        variant="secondary"
-      >
-        day
-      </Button>
-    );
+    themeButton = <Dropdown.Item onClick={handleClick}>Day Mode</Dropdown.Item>;
     bg = 'dark';
   }
 
@@ -106,7 +90,22 @@ const Header = ({ theme, dispatch }) => {
             <Nav.Link className="menu-item">portfolio</Nav.Link>
           </LinkContainer>
         </Nav>
-        {themeButton}
+        <Dropdown drop="left">
+          <Dropdown.Toggle
+            size="sm"
+            variant="outline-info"
+            id="dropdown-settings"
+          >
+            Settings
+          </Dropdown.Toggle>
+
+          <Dropdown.Menu>
+            {themeButton}
+            <Dropdown.Divider />
+            <Dropdown.Item>Logout</Dropdown.Item>
+            <Dropdown.Item>Logout Everywhere</Dropdown.Item>
+          </Dropdown.Menu>
+        </Dropdown>
       </Navbar.Collapse>
     </Navbar>
   );
