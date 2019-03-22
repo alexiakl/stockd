@@ -93,16 +93,22 @@ const processResult = props => {
         entryindex % skip === 0 ||
         entryindex === chart.length - 1
       ) {
+        if (value) {
+          dataset.data.push(value.toFixed(3));
+          data.labels[symbol].push(entry.label);
+        }
         if (entryindex === chart.length - 1) {
           value = latestPrice;
           if (marketState === OPEN) {
             latestValue = value;
             tempTimerInterval = 300000; // 5 minutes
+            dataset.data.push(value.toFixed(3));
+            if (period === '1d') {
+              data.labels[symbol].push(entry.label);
+            } else {
+              data.labels[symbol].push('Today');
+            }
           }
-        }
-        if (value) {
-          dataset.data.push(value.toFixed(3));
-          data.labels[symbol].push(entry.label);
         }
       }
     });

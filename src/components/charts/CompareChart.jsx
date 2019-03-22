@@ -17,10 +17,14 @@ const CompareChart = ({ data, period }) => {
     dimensions = getChartDimensions(window.innerWidth);
   }
 
+  let periodText = `${period} ago`;
+  if (period === '1d') {
+    periodText = 'when the market opened today';
+  }
   return (
     <div className="container">
       <Alert dismissible variant="dark">
-        If you bought 1000$ worth of stock {period} ago, how much would it be
+        If you bought 1000$ worth of stock {periodText}, how much would it be
         worth now?
       </Alert>
       <div className="chart">

@@ -1,9 +1,11 @@
 import { setCompareData } from '../actions/compareData';
 import { options } from '../utils/chartVars';
 import { getRandomColor } from '../utils/color';
+import { getMarketState } from '../utils/utils';
+import { OPEN } from '../constants';
 
 const processResult = props => {
-  const { symbols, theme, queryResult, dispatch } = props;
+  const { symbols, theme, queryResult, period, dispatch } = props;
   if (
     Object.entries(queryResult).length === 0 &&
     queryResult.constructor === Object
@@ -41,7 +43,9 @@ const processResult = props => {
   });
 
   symbols.forEach((symbol, index) => {
-    const { chart } = queryResult.data[symbol];
+    const { chart, quote } = queryResult.data[symbol];
+    const { latestPrice, latestSource } = quote;
+    const marketState = getMarketState(latestSource);
     const symbolColor = getRandomColor(theme, index);
     const dataset = {
       label: symbol,
@@ -83,6 +87,19 @@ const processResult = props => {
           dataset.data.push(((value * 1000) / startingPoint).toFixed(3));
           if (index === 0) {
             options.scales.xAxes[0].labels.push(entry.label);
+          }
+
+          if (
+            entryindex === chart.length - 1 &&
+            marketState === OPEN &&
+            period !== '1d'
+          ) {
+            if (index === 0) {
+              options.scales.xAxes[0].labels.push('Today');
+            }
+            dataset.data.push(
+              ((latestPrice * 1000) / startingPoint).toFixed(3),
+            );
           }
         }
       }
