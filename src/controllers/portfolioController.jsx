@@ -8,7 +8,7 @@ const runQuery = (symbols, dispatch) => {
     const allsymbols = symbols.join(',');
     const url = `${IEXAPI}stock/market/batch?symbols=${allsymbols}&types=quote`;
     // eslint-disable-next-line no-console
-    console.log(`RQ: Live ${url}`);
+    console.log(`RQ: Portfolio ${url}`);
 
     dispatch(setIsFetchingData(true));
 

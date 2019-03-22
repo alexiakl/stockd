@@ -22,7 +22,8 @@ const StandardCharts = ({ data, period }) => {
       const foptions = cloneDeep(options);
 
       const { quote, latestValue, marketState } = info[symbol];
-      const { close, change, changePercent } = quote;
+      const { close, changePercent } = quote;
+      let { change } = quote;
       const changePercentString = (changePercent * 100).toFixed(3);
       foptions.legend.display = false;
       foptions.annotation = annotations[symbol];
@@ -40,6 +41,9 @@ const StandardCharts = ({ data, period }) => {
         longChangePercent = ((longChange * 100) / chartData[0]).toFixed(2);
         symbolColor = getPerformanceColorHex(longChange);
         longData = true;
+      }
+      if (change === undefined || change === null) {
+        change = '';
       }
       const isMarketClosed = marketState === CLOSED;
       const isManyDaysOpen = !isMarketClosed && longData;

@@ -100,8 +100,10 @@ const processResult = props => {
             tempTimerInterval = 300000; // 5 minutes
           }
         }
-        dataset.data.push(value.toFixed(3));
-        data.labels[symbol].push(entry.label);
+        if (value) {
+          dataset.data.push(value.toFixed(3));
+          data.labels[symbol].push(entry.label);
+        }
       }
     });
 

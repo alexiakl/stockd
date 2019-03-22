@@ -31,7 +31,7 @@ const runQuery = dispatch => {
   ) {
     const map = [];
     const url = `${IEXAPI}ref-data/symbols?filter=symbol,name${IEXTOKEN}`;
-    console.log(`RQ: Home ${url}`);
+    console.log(`RQ: Header ${url}`);
     axios.get(url).then(res => {
       res.data.forEach(symbol => {
         map.push(`${symbol.symbol} ${symbol.name}`);
