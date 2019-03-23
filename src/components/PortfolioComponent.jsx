@@ -256,9 +256,9 @@ class PortfolioComponent extends Component {
       totalClassName = 'red';
     }
 
-    let transaction = 'sell';
+    let transaction = 'Sell';
     if (item.buy) {
-      transaction = 'buy';
+      transaction = 'Buy';
     }
 
     const actionsOverlayRef = React.createRef();
@@ -272,7 +272,7 @@ class PortfolioComponent extends Component {
               this.openModal(item, true, false, index, actionsOverlayRef)
             }
           >
-            info
+            INFO
           </Badge>
           <Badge
             variant="info"
@@ -281,7 +281,7 @@ class PortfolioComponent extends Component {
               this.openModal(item, false, true, index, actionsOverlayRef)
             }
           >
-            sell
+            SELL
           </Badge>
         </div>
       </Popover>
@@ -383,9 +383,9 @@ class PortfolioComponent extends Component {
       });
     }
 
-    let transactionType = 'buy';
+    let transactionType = 'Buy';
     if (!addBuy) {
-      transactionType = 'sell';
+      transactionType = 'Sell';
     }
 
     return (
