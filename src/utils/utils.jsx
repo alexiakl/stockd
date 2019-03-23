@@ -60,13 +60,13 @@ const getChartDimensions = value => {
   return [width, height];
 };
 
-const savePortfolio = portfolio => {
+const savePortfolio = (portfolio, online = true) => {
   const portfolioString = JSON.stringify(portfolio);
   localStorage.setItem(PORTFOLIO, portfolioString);
 
   const url = `${API}user/portfolio`;
   const token = localStorage.getItem(TOKEN);
-  if (!token) {
+  if (!token || !online) {
     return;
   }
   const AuthStr = `Bearer ${token}`;

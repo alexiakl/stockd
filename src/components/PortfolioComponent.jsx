@@ -12,6 +12,7 @@ import Modal from 'react-modal';
 import { confirmAlert } from 'react-confirm-alert';
 import {
   addSymbolRecord,
+  updateSymbolRecord,
   removeSymbolRecord,
   addPortfolioRecord,
 } from '../actions/portfolio';
@@ -39,12 +40,16 @@ class PortfolioComponent extends Component {
       modalIsOpen: false,
       readOnly: true,
       index: -1,
-      addSymbol: '',
-      addBuy: true,
+      transactionSymbol: '',
+      isBuy: true,
       addQuantity: undefined,
       addUnitPrice: undefined,
       addFees: undefined,
       addDate: undefined,
+      sellQuantity: undefined,
+      sellUnitPrice: undefined,
+      sellFees: undefined,
+      sellDate: undefined,
     };
   }
 
@@ -106,25 +111,39 @@ class PortfolioComponent extends Component {
   }
 
   openModal(item, readOnly = false, sell = false, index = -1, ref) {
-    const { symbol, quantity, unitPrice, fees, date } = item;
+    const {
+      symbol,
+      quantity,
+      unitPrice,
+      fees,
+      date,
+      squantity,
+      sunitPrice,
+      sfees,
+      sdate,
+    } = item;
     if (ref) {
       ref.current.hide();
     }
-    let addBuy = true;
+    let isBuy = true;
     if (sell) {
-      addBuy = false;
+      isBuy = false;
     }
 
     this.setState({
-      addSymbol: symbol,
+      transactionSymbol: symbol,
       modalIsOpen: true,
       readOnly,
       index,
-      addBuy,
+      isBuy,
       addQuantity: quantity,
       addUnitPrice: unitPrice,
       addFees: fees,
       addDate: date,
+      sellQuantity: squantity,
+      sellUnitPrice: sunitPrice,
+      sellFees: sfees,
+      sellDate: sdate,
     });
   }
 
@@ -139,24 +158,44 @@ class PortfolioComponent extends Component {
     this.setState({ expandedRows: newExpandedRows });
   }
 
-  addTransactionRecord() {
+  addTransactionRecord(e) {
+    e.preventDefault();
     const { dispatch, data } = this.props;
-    let { addDate: date, addFees: fees } = this.state;
+    let {
+      addDate: date,
+      addFees: fees,
+      sellDate: sdate,
+      sellFees: sfees,
+    } = this.state;
     const {
-      addSymbol: symbol,
-      addBuy: buy,
+      transactionSymbol: symbol,
+      isBuy: buy,
       addUnitPrice: unitPrice,
       addQuantity: quantity,
+      sellUnitPrice: sunitPrice,
+      sellQuantity: squantity,
+      index,
     } = this.state;
 
     if (!date) {
       date = this.today();
     }
+    if (!sdate) {
+      sdate = this.today();
+    }
     if (!fees) {
       fees = 0;
     }
+    if (!sfees) {
+      sfees = 0;
+    }
     if (!unitPrice || !quantity) {
       return;
+    }
+    if (!buy) {
+      if (!sunitPrice || !squantity) {
+        return;
+      }
     }
 
     const record = {
@@ -166,21 +205,35 @@ class PortfolioComponent extends Component {
       unitPrice,
       quantity,
       date,
+      sfees,
+      sunitPrice,
+      squantity,
+      sdate,
+      index,
     };
     this.setState({ modalIsOpen: false });
-    dispatch(addSymbolRecord(record));
-    this.handleRowClick(symbol);
-
-    const symbols = [];
-    if (data) {
-      Object.keys(data).forEach(xsymbol => {
-        symbols.push(xsymbol);
-      });
+    if (buy) {
+      dispatch(addSymbolRecord(record));
+      this.handleRowClick(symbol);
+      const symbols = [];
+      if (data) {
+        Object.keys(data).forEach(xsymbol => {
+          symbols.push(xsymbol);
+        });
+      }
+      if (!symbols.includes(symbol)) {
+        symbols.push(symbol);
+      }
+      runQuery(symbols, dispatch);
+    } else {
+      const newQuantity = quantity - squantity;
+      if (newQuantity < 0) {
+        return;
+      }
+      record.quantity = newQuantity;
+      dispatch(updateSymbolRecord(record));
+      dispatch(addSymbolRecord(record));
     }
-    if (!symbols.includes(symbol)) {
-      symbols.push(symbol);
-    }
-    runQuery(symbols, dispatch);
   }
 
   calculatePortfolioQuotes() {
@@ -201,11 +254,17 @@ class PortfolioComponent extends Component {
         let symbolunitprices = 0;
         item.records.forEach((record, index) => {
           if (quotes.data && quotes.data[symbol]) {
-            const transactionbuy =
+            let transactionbuy =
               record.quantity * record.unitPrice + record.fees;
-            const transactionsell =
+            let transactionsell =
               record.quantity * quotes.data[symbol].quote.latestPrice -
               record.fees;
+            if (!record.buy) {
+              transactionbuy =
+                record.squantity * record.unitPrice + record.fees;
+              transactionsell =
+                record.squantity * record.sunitPrice - record.sfees;
+            }
             symbolbuy += transactionbuy;
             symbolsell += transactionsell;
 
@@ -217,7 +276,7 @@ class PortfolioComponent extends Component {
           }
         });
         totals[symbol] = (symbolsell - symbolbuy).toFixed(2);
-        quantities[symbol] = (symbolquantity / item.records.length).toFixed(2);
+        quantities[symbol] = symbolquantity;
         unitPrices[symbol] = (symbolunitprices / item.records.length).toFixed(
           2,
         );
@@ -256,9 +315,14 @@ class PortfolioComponent extends Component {
       totalClassName = 'red';
     }
 
-    let transaction = 'Sell';
+    let transaction = 'SOLD';
+    let variant = 'info';
+    let quantity = item.squantity;
+    let unitPrice = item.sunitPrice;
     if (item.buy) {
-      transaction = 'Buy';
+      transaction = 'ACTIVE';
+      variant = 'warning';
+      ({ quantity, unitPrice } = item);
     }
 
     const actionsOverlayRef = React.createRef();
@@ -269,30 +333,32 @@ class PortfolioComponent extends Component {
             variant="warning"
             className="action"
             onClick={() =>
-              this.openModal(item, true, false, index, actionsOverlayRef)
+              this.openModal(item, true, !item.buy, index, actionsOverlayRef)
             }
           >
             INFO
           </Badge>
-          <Badge
-            variant="info"
-            className="action"
-            onClick={() =>
-              this.openModal(item, false, true, index, actionsOverlayRef)
-            }
-          >
-            SELL
-          </Badge>
+          {item.buy && (
+            <Badge
+              variant="info"
+              className="action"
+              onClick={() =>
+                this.openModal(item, false, true, index, actionsOverlayRef)
+              }
+            >
+              SELL
+            </Badge>
+          )}
         </div>
       </Popover>
     );
     return (
       <tr key={`row-expanded-${item.symbol}-${index}`}>
         <td>
-          <Badge variant="warning">{transaction}</Badge>
+          <Badge variant={variant}>{transaction}</Badge>
         </td>
-        <td>{item.quantity}</td>
-        <td>{item.unitPrice.toFixed(2)}</td>
+        <td>{quantity}</td>
+        <td>{unitPrice.toFixed(2)}</td>
         <td className={totalClassName}>
           {totalObject.profits[item.symbol][index]}
         </td>
@@ -360,12 +426,16 @@ class PortfolioComponent extends Component {
     const { data, theme, dispatch } = this.props;
     const {
       modalIsOpen,
-      addSymbol,
+      transactionSymbol,
       addQuantity,
       addFees,
       addUnitPrice,
-      addBuy,
       addDate,
+      sellQuantity,
+      sellUnitPrice,
+      sellFees,
+      sellDate,
+      isBuy,
       readOnly,
       index,
     } = this.state;
@@ -384,8 +454,22 @@ class PortfolioComponent extends Component {
     }
 
     let transactionType = 'Buy';
-    if (!addBuy) {
+    let unitPrice = addUnitPrice;
+    let date = addDate;
+    let quantity = addQuantity;
+    let fees = addFees;
+    let unitPriceDesc = '';
+    let feesDesc = '';
+    let dateDesc = '';
+    if (!isBuy) {
       transactionType = 'Sell';
+      unitPrice = sellUnitPrice;
+      date = sellDate;
+      quantity = sellQuantity;
+      fees = sellFees;
+      unitPriceDesc = ` (on purchase: ${addUnitPrice})`;
+      feesDesc = ` (Purchase fees: ${addFees})`;
+      dateDesc = ` (Purchased: ${addDate})`;
     }
 
     return (
@@ -397,54 +481,74 @@ class PortfolioComponent extends Component {
           contentLabel="Transaction"
         >
           <h2>
-            {addSymbol} {transactionType} Transaction
+            {transactionSymbol} {transactionType} Transaction
           </h2>
           <Form className={theme}>
             <Form.Group controlId="formQuantity">
               <Form.Label>Quantity</Form.Label>
               <Form.Control
-                defaultValue={addQuantity}
+                defaultValue={quantity}
                 disabled={readOnly}
                 type="number"
                 placeholder="Number of shares"
-                onChange={evt =>
-                  this.setState({ addQuantity: evt.target.value })
-                }
+                onChange={evt => {
+                  if (isBuy) {
+                    this.setState({ addQuantity: evt.target.value });
+                  } else {
+                    this.setState({ sellQuantity: evt.target.value });
+                  }
+                }}
               />
             </Form.Group>
 
             <Form.Group controlId="formUnitPrice">
-              <Form.Label>Unit Price</Form.Label>
+              <Form.Label>Unit Price{unitPriceDesc}</Form.Label>
               <Form.Control
-                defaultValue={addUnitPrice}
+                defaultValue={unitPrice}
                 disabled={readOnly}
                 type="number"
                 placeholder="Price per share"
-                onChange={evt =>
-                  this.setState({ addUnitPrice: evt.target.value })
-                }
+                onChange={evt => {
+                  if (isBuy) {
+                    this.setState({ addUnitPrice: evt.target.value });
+                  } else {
+                    this.setState({ sellUnitPrice: evt.target.value });
+                  }
+                }}
               />
             </Form.Group>
 
             <Form.Group controlId="formFees">
-              <Form.Label>Fees</Form.Label>
+              <Form.Label>Fees{feesDesc}</Form.Label>
               <Form.Control
-                defaultValue={addFees}
+                defaultValue={fees}
                 disabled={readOnly}
                 type="number"
                 placeholder="Commission, fees or other costs"
-                onChange={evt => this.setState({ addFees: evt.target.value })}
+                onChange={evt => {
+                  if (isBuy) {
+                    this.setState({ addFees: evt.target.value });
+                  } else {
+                    this.setState({ sellFees: evt.target.value });
+                  }
+                }}
               />
             </Form.Group>
 
             <Form.Group controlId="formDate">
-              <Form.Label>Date</Form.Label>
+              <Form.Label>Date{dateDesc}</Form.Label>
               <Form.Control
-                defaultValue={addDate}
+                defaultValue={date}
                 disabled={readOnly}
                 type="date"
                 placeholder="Commission, fees or other costs"
-                onChange={evt => this.setState({ addDate: evt.target.value })}
+                onChange={evt => {
+                  if (isBuy) {
+                    this.setState({ addDate: evt.target.value });
+                  } else {
+                    this.setState({ sellDate: evt.target.value });
+                  }
+                }}
               />
             </Form.Group>
 
@@ -452,15 +556,15 @@ class PortfolioComponent extends Component {
               <Button
                 variant="outline-info"
                 type="submit"
-                onClick={() => this.addTransactionRecord()}
+                onClick={e => this.addTransactionRecord(e)}
               >
-                Add
+                {transactionType}
               </Button>
             ) : (
               <Button
                 variant="outline-warning"
                 type="submit"
-                onClick={e => this.confirmRemoval(e, addSymbol, index)}
+                onClick={e => this.confirmRemoval(e, transactionSymbol, index)}
               >
                 Delete
               </Button>

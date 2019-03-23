@@ -3,6 +3,7 @@ import { savePortfolio } from '../utils/utils';
 import {
   ADD_PORTFOLIO_RECORD,
   ADD_SYMBOL_RECORD,
+  UPDATE_SYMBOL_RECORD,
   REMOVE_SYMBOL_RECORD,
   PORTFOLIO_QUOTES,
   SET_PORTFOLIO,
@@ -33,11 +34,21 @@ const portfolio = (state = [], action) => {
 
     case ADD_SYMBOL_RECORD: {
       const newPortfolio = cloneDeep(state.data);
-      let { unitPrice, fees, quantity } = action.record;
-      const { symbol, buy, date } = action.record;
+      let {
+        unitPrice,
+        fees,
+        quantity,
+        squantity,
+        sfees,
+        sunitPrice,
+      } = action.record;
+      const { symbol, buy, date, sdate } = action.record;
       unitPrice = parseFloat(unitPrice);
       fees = parseFloat(fees);
       quantity = parseFloat(quantity);
+      sunitPrice = parseFloat(sunitPrice);
+      sfees = parseFloat(sfees);
+      squantity = parseFloat(squantity);
 
       let object = newPortfolio[symbol];
       if (!object) {
@@ -47,15 +58,21 @@ const portfolio = (state = [], action) => {
         newPortfolio[symbol] = object;
       }
       const total = (unitPrice * quantity + fees).toFixed(2);
+      const stotal = (sunitPrice * squantity + sfees).toFixed(2);
       const transaction = {
         action: 'add',
         symbol,
         buy,
         quantity,
+        squantity,
         unitPrice,
+        sunitPrice,
         fees,
+        sfees,
         total,
+        stotal,
         date,
+        sdate,
       };
       object.records.push(transaction);
 
@@ -77,6 +94,17 @@ const portfolio = (state = [], action) => {
         delete newPortfolio[action.record.symbol];
       }
       savePortfolio(newPortfolio);
+      return {
+        ...state,
+        data: newPortfolio,
+      };
+    }
+
+    case UPDATE_SYMBOL_RECORD: {
+      const newPortfolio = cloneDeep(state.data);
+      const object = newPortfolio[action.record.symbol];
+      object.records[action.record.index].quantity = action.record.quantity;
+      savePortfolio(newPortfolio, false);
       return {
         ...state,
         data: newPortfolio,
