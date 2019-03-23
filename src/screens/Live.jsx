@@ -9,6 +9,7 @@ import {
   resetTimer,
   runQuery,
   processResult,
+  calibrateTimer,
 } from '../controllers/liveController';
 import 'chartjs-plugin-annotation';
 
@@ -25,18 +26,32 @@ class Live extends Component {
       runQuery(this.props);
     } else {
       processResult(this.props);
+      calibrateTimer(this.props, false);
     }
   }
 
   componentWillReceiveProps(nextProps) {
-    const { symbols, period, queryResult, theme, fireTimer } = this.props;
+    const {
+      symbols,
+      period,
+      queryResult,
+      theme,
+      fireTimer,
+      timerInterval,
+    } = this.props;
     const {
       symbols: nextSymbols,
       period: nextPeriod,
       queryResult: nextQueryResult,
       theme: nextTheme,
       fireTimer: nextFireTimer,
+      timerInterval: nextTimerInterval,
     } = nextProps;
+
+    if (timerInterval !== nextTimerInterval) {
+      this.props = nextProps;
+      calibrateTimer(this.props);
+    }
 
     if (
       nextSymbols.length > symbols.length ||
@@ -56,7 +71,8 @@ class Live extends Component {
   }
 
   componentWillUnmount() {
-    resetTimer();
+    const { timerId } = this.props;
+    resetTimer(timerId);
   }
 
   render() {
@@ -79,6 +95,8 @@ const mapStateToProps = state => ({
   symbols: state.symbolsPicker.symbols,
   queryResult: state.symbolsData.queryResult,
   fireTimer: state.symbolsData.fireTimer,
+  timerInterval: state.appStatus.timerInterval,
+  timerId: state.appStatus.timerId,
   theme: state.appStatus.theme,
   loggedin: state.appStatus.loggedin,
 });

@@ -13,6 +13,7 @@ import {
   TOKEN,
   NAME,
   PORTFOLIO,
+  ONE_HOUR,
 } from './constants';
 
 const initialState = {
@@ -43,6 +44,8 @@ const initialState = {
     email: localStorage.getItem(EMAIL),
     name: localStorage.getItem(NAME),
     loggedin: localStorage.getItem(TOKEN),
+    timerInterval: ONE_HOUR,
+    timerId: 0,
   },
 };
 const store = createStore(rootReducer, initialState);

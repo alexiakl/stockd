@@ -17,3 +17,7 @@ export const UNDEFINED = 'UNDEFINED';
 export const OPEN = 'OPEN';
 export const CLOSED = 'CLOSED';
 export const PRE_OPEN = 'PRE_OPEN';
+export const FIVE_MINS = 300000;
+export const TEN_MINS = 600000;
+export const FIFTEEN_MINS = 900000;
+export const ONE_HOUR = 3600000;

@@ -1,19 +1,30 @@
 import axios from 'axios';
 import { IEXAPI, IEXTOKEN, OPEN, PRE_OPEN } from '../constants';
-import { setIsFetchingData } from '../actions/appStatus';
-import { setQueryResult, setSymbolsData } from '../actions/symbolsData';
+import { setIsFetchingData, setTimerId } from '../actions/appStatus';
+import {
+  setQueryResult,
+  setSymbolsData,
+  fireTimer,
+} from '../actions/symbolsData';
 import { options } from '../utils/chartVars';
 import { getMarketState } from '../utils/utils';
 
-let timerId = 0;
-let timerInterval = 0;
-
-const resetTimer = () => {
+const resetTimer = timerId => {
   if (timerId) {
     clearInterval(timerId);
   }
-  timerId = 0;
-  timerInterval = 0;
+};
+
+const calibrateTimer = (props, fire = true) => {
+  const { timerId, timerInterval, dispatch } = props;
+  if (timerId) {
+    clearInterval(timerId);
+  }
+  const newTimerId = setInterval(() => dispatch(fireTimer()), timerInterval);
+  if (fire) {
+    dispatch(fireTimer());
+  }
+  dispatch(setTimerId(newTimerId));
 };
 
 const runQuery = props => {
@@ -46,7 +57,6 @@ const processResult = props => {
   ) {
     return;
   }
-  let tempTimerInterval = 900000;
   const data = {
     symbols: [],
     labels: [],
@@ -101,7 +111,6 @@ const processResult = props => {
           value = latestPrice;
           if (marketState === OPEN) {
             latestValue = value;
-            tempTimerInterval = 300000; // 5 minutes
             dataset.data.push(value.toFixed(3));
             if (period === '1d') {
               data.labels[symbol].push(entry.label);
@@ -114,9 +123,6 @@ const processResult = props => {
     });
 
     if (marketState === PRE_OPEN && period === '1d') {
-      if (tempTimerInterval === 0) {
-        tempTimerInterval = 600000; // 10 minutes
-      }
       const dupLabels = data.labels[symbol];
       if (dupLabels && dupLabels.length > 0) {
         dupLabels.forEach(() => {
@@ -171,20 +177,7 @@ const processResult = props => {
     },
   };
 
-  const defaultIntervalTemp = 900000; // 15 mins
-  if (timerInterval === 0 || timerInterval !== tempTimerInterval) {
-    timerInterval = defaultIntervalTemp;
-    if (tempTimerInterval > 0) {
-      timerInterval = tempTimerInterval;
-    }
-    if (timerId) {
-      clearInterval(timerId);
-    }
-    // console.log(`Timer set: ${timerInterval}`);
-    // timerId = setInterval(() => dispatch(fireTimer()), timerInterval);
-  }
-
   dispatch(setSymbolsData(data));
 };
 
-export { runQuery, processResult, resetTimer };
+export { runQuery, processResult, resetTimer, calibrateTimer };

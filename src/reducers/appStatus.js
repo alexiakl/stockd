@@ -2,6 +2,8 @@ import {
   SET_THEME,
   SET_IS_FETCHING_DATA,
   SET_LOGGEDIN,
+  SET_TIMER_ID,
+  SET_TIMER_INTERVAL,
 } from '../actions/appStatus';
 import { THEME } from '../constants';
 
@@ -26,6 +28,19 @@ const appStatus = (state = [], action) => {
         loggedin: action.loggedin,
       };
     }
+    case SET_TIMER_ID: {
+      return {
+        ...state,
+        timerId: action.timerId,
+      };
+    }
+    case SET_TIMER_INTERVAL: {
+      return {
+        ...state,
+        timerInterval: action.timerInterval,
+      };
+    }
+
     default:
       return state;
   }

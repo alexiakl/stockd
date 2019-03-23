@@ -1,10 +1,17 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { ButtonGroup, Button, Badge } from 'react-bootstrap';
+import { ButtonGroup, Button, Dropdown, SplitButton } from 'react-bootstrap';
 import { updatePeriod } from '../actions/periodController';
 import { fireTimer } from '../actions/symbolsData';
+import { setTimerInterval } from '../actions/appStatus';
+import { FIVE_MINS, TEN_MINS, FIFTEEN_MINS, ONE_HOUR } from '../constants';
 
-const PeriodController = ({ period, isFetchingData, dispatch }) => {
+const PeriodController = ({
+  period,
+  isFetchingData,
+  timerInterval,
+  dispatch,
+}) => {
   let [oned, fived, onem, threem, sixm, ytd, oney, twoy, fivey] = [
     'outline-secondary',
     'outline-secondary',
@@ -46,6 +53,22 @@ const PeriodController = ({ period, isFetchingData, dispatch }) => {
       break;
     default:
       // code block
+      break;
+  }
+
+  let refreshTitle = 'Refresh';
+  switch (timerInterval) {
+    case FIFTEEN_MINS:
+      refreshTitle = '15 Mins';
+      break;
+    case TEN_MINS:
+      refreshTitle = '10 Mins';
+      break;
+    case FIVE_MINS:
+      refreshTitle = '5 Mins';
+      break;
+
+    default:
       break;
   }
 
@@ -125,14 +148,27 @@ const PeriodController = ({ period, isFetchingData, dispatch }) => {
           5y
         </Button>
       </ButtonGroup>
-      <Button
+      <SplitButton
         className="refresh-button"
         size="sm"
-        onClick={() => dispatch(fireTimer())}
+        title={isFetchingData ? 'Loading' : refreshTitle}
         variant="info"
+        onClick={() => dispatch(fireTimer())}
       >
-        refresh <Badge variant="light">{isFetchingData && '...'}</Badge>
-      </Button>
+        <Dropdown.Item onClick={() => dispatch(setTimerInterval(FIVE_MINS))}>
+          Every 5 Mins
+        </Dropdown.Item>
+        <Dropdown.Item onClick={() => dispatch(setTimerInterval(TEN_MINS))}>
+          Every 10 Mins
+        </Dropdown.Item>
+        <Dropdown.Item onClick={() => dispatch(setTimerInterval(FIFTEEN_MINS))}>
+          Every 15 Mins
+        </Dropdown.Item>
+        <Dropdown.Divider />
+        <Dropdown.Item onClick={() => dispatch(setTimerInterval(ONE_HOUR))}>
+          Every 1 Hour
+        </Dropdown.Item>
+      </SplitButton>
     </div>
   );
 };
@@ -140,6 +176,7 @@ const PeriodController = ({ period, isFetchingData, dispatch }) => {
 const mapStateToProps = state => ({
   period: state.periodController.period,
   isFetchingData: state.appStatus.isFetchingData,
+  timerInterval: state.appStatus.timerInterval,
 });
 
 export default connect(mapStateToProps)(PeriodController);
