@@ -1,6 +1,13 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Table, Form, Badge, Button } from 'react-bootstrap';
+import {
+  Table,
+  Form,
+  Badge,
+  Button,
+  OverlayTrigger,
+  Popover,
+} from 'react-bootstrap';
 import Modal from 'react-modal';
 import { confirmAlert } from 'react-confirm-alert';
 import {
@@ -76,7 +83,8 @@ class PortfolioComponent extends Component {
     if (nextOpenModalWithSymbol.length > 0) {
       dispatch(addPortfolioRecord(''));
       if (!modalIsOpen) {
-        this.openModal(nextOpenModalWithSymbol);
+        const item = { symbol: nextOpenModalWithSymbol };
+        this.openModal(item);
       }
     }
   }
@@ -97,30 +105,26 @@ class PortfolioComponent extends Component {
     this.setState({ modalIsOpen: false });
   }
 
-  openModal(symbol) {
+  openModal(item, readOnly = false, sell = false, index = -1, ref) {
+    const { symbol, quantity, unitPrice, fees, date } = item;
+    if (ref) {
+      ref.current.hide();
+    }
+    let addBuy = true;
+    if (sell) {
+      addBuy = false;
+    }
+
     this.setState({
       addSymbol: symbol,
       modalIsOpen: true,
-      readOnly: false,
-      index: -1,
-      addBuy: true,
-      addQuantity: undefined,
-      addUnitPrice: undefined,
-      addFees: undefined,
-      addDate: undefined,
-    });
-  }
-
-  openModalInfo(item, index) {
-    this.setState({
-      addSymbol: item.symbol,
-      modalIsOpen: true,
-      readOnly: true,
+      readOnly,
       index,
-      addQuantity: item.quantity,
-      addUnitPrice: item.unitPrice,
-      addFees: item.fees,
-      addDate: item.date,
+      addBuy,
+      addQuantity: quantity,
+      addUnitPrice: unitPrice,
+      addFees: fees,
+      addDate: date,
     });
   }
 
@@ -256,6 +260,32 @@ class PortfolioComponent extends Component {
     if (item.buy) {
       transaction = 'buy';
     }
+
+    const actionsOverlayRef = React.createRef();
+    const popover = (
+      <Popover id="popover-basic">
+        <div className="popover-actions">
+          <Badge
+            variant="warning"
+            className="action"
+            onClick={() =>
+              this.openModal(item, true, false, index, actionsOverlayRef)
+            }
+          >
+            info
+          </Badge>
+          <Badge
+            variant="info"
+            className="action"
+            onClick={() =>
+              this.openModal(item, false, true, index, actionsOverlayRef)
+            }
+          >
+            sell
+          </Badge>
+        </div>
+      </Popover>
+    );
     return (
       <tr key={`row-expanded-${item.symbol}-${index}`}>
         <td>
@@ -267,13 +297,17 @@ class PortfolioComponent extends Component {
           {totalObject.profits[item.symbol][index]}
         </td>
         <td className="center">
-          <Badge
-            variant="warning"
-            className="action"
-            onClick={() => this.openModalInfo(item, index)}
+          <OverlayTrigger
+            trigger="click"
+            placement="left"
+            overlay={popover}
+            rootClose
+            ref={actionsOverlayRef}
           >
-            ...
-          </Badge>
+            <Badge variant="warning" className="action">
+              ...
+            </Badge>
+          </OverlayTrigger>
         </td>
       </tr>
     );
@@ -301,7 +335,7 @@ class PortfolioComponent extends Component {
             key={item.symbol}
             variant="info"
             className="action"
-            onClick={() => this.openModal(item.symbol)}
+            onClick={() => this.openModal(item)}
           >
             +
           </Badge>
@@ -349,11 +383,9 @@ class PortfolioComponent extends Component {
       });
     }
 
-    let buychecked = true;
-    let sellchecked = false;
-    if (readOnly && !addBuy) {
-      buychecked = false;
-      sellchecked = true;
+    let transactionType = 'buy';
+    if (!addBuy) {
+      transactionType = 'sell';
     }
 
     return (
@@ -362,32 +394,12 @@ class PortfolioComponent extends Component {
           isOpen={modalIsOpen}
           onRequestClose={() => this.closeModal()}
           style={modalStyles}
-          contentLabel="Add transaction"
+          contentLabel="Transaction"
         >
-          <h2>{addSymbol} Add Transaction</h2>
+          <h2>
+            {addSymbol} {transactionType} Transaction
+          </h2>
           <Form className={theme}>
-            <Form.Group controlId="transactionType">
-              <Form.Label>Type</Form.Label>
-              <Form.Check
-                defaultChecked={buychecked}
-                name="transactionType"
-                id="transactionTypeBuy"
-                type="radio"
-                label="Buy"
-                disabled={readOnly}
-                onClick={() => this.setState({ addBuy: true })}
-              />
-              <Form.Check
-                defaultChecked={sellchecked}
-                name="transactionType"
-                id="transactionTypeSell"
-                type="radio"
-                label="Sell"
-                disabled={readOnly}
-                onClick={() => this.setState({ addBuy: false })}
-              />
-            </Form.Group>
-
             <Form.Group controlId="formQuantity">
               <Form.Label>Quantity</Form.Label>
               <Form.Control

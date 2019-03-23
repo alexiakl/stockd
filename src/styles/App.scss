@@ -85,6 +85,14 @@ body {
   }
 }
 
+.popover-actions {
+  display: flex;
+  flex-direction: column;
+  .badge + .badge {
+    margin-top: 5px;
+  }
+}
+
 .chart {
   max-width: 100%;
   max-height: 100%;
