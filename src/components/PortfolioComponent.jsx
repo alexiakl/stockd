@@ -95,19 +95,23 @@ class PortfolioComponent extends Component {
       calibrateTimer(this.props);
     }
 
-    if (
-      JSON.stringify(nextData[activePortfolio].portfolio) !==
-        JSON.stringify(data[activePortfolio].portfolio) ||
-      fireTimer !== nextFireTimer ||
-      activePortfolio !== nextActivePortfolio
-    ) {
-      const symbols = [];
-      if (nextData && nextData.length > 0) {
-        Object.keys(nextData[nextActivePortfolio].portfolio).forEach(symbol => {
-          symbols.push(symbol);
-        });
+    if (nextData) {
+      if (
+        JSON.stringify(nextData[activePortfolio].portfolio) !==
+          JSON.stringify(data[activePortfolio].portfolio) ||
+        fireTimer !== nextFireTimer ||
+        activePortfolio !== nextActivePortfolio
+      ) {
+        const symbols = [];
+        if (nextData && nextData.length > 0) {
+          Object.keys(nextData[nextActivePortfolio].portfolio).forEach(
+            symbol => {
+              symbols.push(symbol);
+            },
+          );
+        }
+        runQuery(symbols, dispatch);
       }
-      runQuery(symbols, dispatch);
     }
 
     if (nextOpenModalWithSymbol.length > 0) {
@@ -621,7 +625,7 @@ class PortfolioComponent extends Component {
         </Modal>
         <Tabs onSelect={e => dispatch(setActivePortfolio(e.split('-')[1] - 1))}>
           {tabs}
-          <Tab key="new-portfolio" title="+" onClick={() => {}} />
+          <Tab key="new-portfolio" title="..." onClick={() => {}} />
         </Tabs>
       </React.Fragment>
     );
