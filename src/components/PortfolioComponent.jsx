@@ -79,6 +79,7 @@ class PortfolioComponent extends Component {
       data: nextData,
       fireTimer: nextFireTimer,
       timerInterval: nextTimerInterval,
+      activePortfolio: nextActivePortfolio,
     } = nextProps;
     const { modalIsOpen } = this.state;
     const {
@@ -97,11 +98,12 @@ class PortfolioComponent extends Component {
     if (
       JSON.stringify(nextData[activePortfolio].portfolio) !==
         JSON.stringify(data[activePortfolio].portfolio) ||
-      fireTimer !== nextFireTimer
+      fireTimer !== nextFireTimer ||
+      activePortfolio !== nextActivePortfolio
     ) {
       const symbols = [];
       if (nextData && nextData.length > 0) {
-        Object.keys(nextData[activePortfolio].portfolio).forEach(symbol => {
+        Object.keys(nextData[nextActivePortfolio].portfolio).forEach(symbol => {
           symbols.push(symbol);
         });
       }
