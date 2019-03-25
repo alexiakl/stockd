@@ -78,7 +78,10 @@ class PortfolioComponent extends Component {
     const { modalIsOpen } = this.state;
     const { dispatch, data, activePortfolio } = this.props;
 
-    if (JSON.stringify(data) !== JSON.stringify(nextData)) {
+    if (
+      JSON.stringify(nextData[activePortfolio].portfolio) !==
+      JSON.stringify(data[activePortfolio].portfolio)
+    ) {
       const symbols = [];
       if (nextData && nextData.length > 0) {
         Object.keys(nextData[activePortfolio].portfolio).forEach(symbol => {
@@ -163,7 +166,7 @@ class PortfolioComponent extends Component {
 
   addTransactionRecord(e) {
     e.preventDefault();
-    const { dispatch, activePortfolio, data } = this.props;
+    const { dispatch } = this.props;
     let {
       addDate: date,
       addFees: fees,
@@ -218,16 +221,6 @@ class PortfolioComponent extends Component {
     if (buy) {
       dispatch(addSymbolRecord(record));
       this.handleRowClick(symbol);
-      const symbols = [];
-      if (data && data.length > 0) {
-        Object.keys(data[activePortfolio].portfolio).forEach(xsymbol => {
-          symbols.push(xsymbol);
-        });
-      }
-      if (!symbols.includes(symbol)) {
-        symbols.push(symbol);
-      }
-      runQuery(symbols, dispatch);
     } else {
       const newQuantity = quantity - squantity;
       if (newQuantity < 0) {
@@ -391,9 +384,6 @@ class PortfolioComponent extends Component {
     let totalClassName = 'green';
     if (totalObject.totals[item.symbol] < 0) {
       totalClassName = 'red';
-    }
-    if (!item.records) {
-      return;
     }
     const { expandedRows } = this.state;
     const clickCallback = () => this.handleRowClick(item.symbol);

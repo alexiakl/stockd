@@ -107,7 +107,7 @@ const portfolio = (state = [], action) => {
         ...object.records.slice(action.record.index + 1),
       ];
       if (object.records.length === 0) {
-        delete newPortfolio[activePortfolio][action.record.symbol];
+        delete newPortfolio[activePortfolio].portfolio[action.record.symbol];
       }
       savePortfolio(newPortfolio, activePortfolio);
       return {
