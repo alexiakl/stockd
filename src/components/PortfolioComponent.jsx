@@ -20,6 +20,7 @@ import {
   setActivePortfolio,
 } from '../actions/portfolio';
 import runQuery from '../controllers/portfolioController';
+import { resetTimer, calibrateTimer } from '../controllers/liveController';
 import { getPortfolio } from '../utils/utils';
 import 'react-confirm-alert/src/react-confirm-alert.css';
 
@@ -67,6 +68,8 @@ class PortfolioComponent extends Component {
         symbols.push(symbol);
       });
       runQuery(symbols, dispatch);
+    } else {
+      calibrateTimer(this.props, false);
     }
   }
 
@@ -74,13 +77,27 @@ class PortfolioComponent extends Component {
     const {
       openModalWithSymbol: nextOpenModalWithSymbol,
       data: nextData,
+      fireTimer: nextFireTimer,
+      timerInterval: nextTimerInterval,
     } = nextProps;
     const { modalIsOpen } = this.state;
-    const { dispatch, data, activePortfolio } = this.props;
+    const {
+      dispatch,
+      data,
+      activePortfolio,
+      fireTimer,
+      timerInterval,
+    } = this.props;
+
+    if (timerInterval !== nextTimerInterval) {
+      this.props = nextProps;
+      calibrateTimer(this.props);
+    }
 
     if (
       JSON.stringify(nextData[activePortfolio].portfolio) !==
-      JSON.stringify(data[activePortfolio].portfolio)
+        JSON.stringify(data[activePortfolio].portfolio) ||
+      fireTimer !== nextFireTimer
     ) {
       const symbols = [];
       if (nextData && nextData.length > 0) {
@@ -98,6 +115,11 @@ class PortfolioComponent extends Component {
         this.openModal(item);
       }
     }
+  }
+
+  componentWillUnmount() {
+    const { timerId } = this.props;
+    resetTimer(timerId);
   }
 
   today = () => {
@@ -443,13 +465,11 @@ class PortfolioComponent extends Component {
 
     const tabs = [];
 
-    const symbols = [];
     if (data && data.length > 0) {
       data.forEach(element => {
         let allItemRows = [];
         const totalObject = this.calculatePortfolioQuotes();
         Object.keys(element.portfolio).forEach(symbol => {
-          symbols.push(symbol);
           const record = element.portfolio[symbol];
           const perItemRows = this.renderItem(record, totalObject);
           allItemRows = allItemRows.concat(perItemRows);
@@ -465,15 +485,7 @@ class PortfolioComponent extends Component {
             <Table hover variant={theme}>
               <thead>
                 <tr>
-                  <th>
-                    <Badge
-                      className="sync-badge"
-                      variant="info"
-                      onClick={() => runQuery(symbols, dispatch)}
-                    >
-                      REFRESH
-                    </Badge>
-                  </th>
+                  <th />
                   <th>Quantity</th>
                   <th>Unit Price</th>
                   <th>Profit</th>
@@ -620,6 +632,9 @@ const mapStateToProps = state => ({
   quotes: state.portfolio.quotes,
   activePortfolio: state.portfolio.activePortfolio,
   theme: state.appStatus.theme,
+  fireTimer: state.symbolsData.fireTimer,
+  timerInterval: state.appStatus.timerInterval,
+  timerId: state.appStatus.timerId,
 });
 
 export default connect(mapStateToProps)(PortfolioComponent);

@@ -87,20 +87,11 @@ body {
 
 .nav-link,
 .nav-tabs {
-  border: 0px !important;
-  border-color: unset;
-  background: unset;
+  margin-top: 10px;
   color: $font;
-  .active {
-    border: 0px;
-    color: $active;
-    font-weight: bold;
-    background: unset;
-  }
+  border-bottom: 0;
   :hover {
-    border: 0px;
     color: $font;
-    background: unset;
   }
 }
 
@@ -200,7 +191,6 @@ body {
       background: unset;
     }
     :hover {
-      border: 0px;
       color: $darkfont;
     }
   }
