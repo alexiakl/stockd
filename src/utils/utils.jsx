@@ -60,22 +60,22 @@ const getChartDimensions = value => {
   return [width, height];
 };
 
-const savePortfolio = (portfolio, online = true) => {
-  const portfolioString = JSON.stringify(portfolio);
-  localStorage.setItem(PORTFOLIO, portfolioString);
+const savePortfolio = (portfolio, activePortfolio) => {
+  localStorage.setItem(PORTFOLIO, JSON.stringify(portfolio));
 
   const url = `${API}user/portfolio`;
   const token = localStorage.getItem(TOKEN);
-  if (!token || !online) {
+  if (!token) {
     return;
   }
-  const AuthStr = `Bearer ${token}`;
 
+  const AuthStr = `Bearer ${token}`;
   axios
     .put(
       url,
       {
-        portfolio: portfolioString,
+        portfolio: JSON.stringify(portfolio[activePortfolio].portfolio),
+        id: portfolio[activePortfolio].id,
       },
       {
         headers: {
@@ -115,8 +115,8 @@ const getPortfolio = dispatch => {
     })
     .then(res => {
       if (res.data.success === 1) {
-        dispatch(setPortfolio(JSON.parse(res.data.data.portfolio)));
-        localStorage.setItem(PORTFOLIO, res.data.data.portfolio);
+        dispatch(setPortfolio(res.data.data));
+        localStorage.setItem(PORTFOLIO, JSON.stringify(res.data.data));
       } else {
         toast.warn('Could not get portfolio', {
           position: toast.POSITION.BOTTOM_CENTER,

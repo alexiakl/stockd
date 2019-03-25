@@ -7,6 +7,8 @@ import {
   Button,
   OverlayTrigger,
   Popover,
+  Tabs,
+  Tab,
 } from 'react-bootstrap';
 import Modal from 'react-modal';
 import { confirmAlert } from 'react-confirm-alert';
@@ -15,6 +17,7 @@ import {
   updateSymbolRecord,
   removeSymbolRecord,
   addPortfolioRecord,
+  setActivePortfolio,
 } from '../actions/portfolio';
 import runQuery from '../controllers/portfolioController';
 import { getPortfolio } from '../utils/utils';
@@ -54,13 +57,13 @@ class PortfolioComponent extends Component {
   }
 
   componentDidMount() {
-    const { data, dispatch } = this.props;
+    const { data, activePortfolio, dispatch } = this.props;
     getPortfolio(dispatch);
     Modal.setAppElement('body');
 
     const symbols = [];
-    if (data) {
-      Object.keys(data).forEach(symbol => {
+    if (data && data.length > 0) {
+      Object.keys(data[activePortfolio].portfolio).forEach(symbol => {
         symbols.push(symbol);
       });
       runQuery(symbols, dispatch);
@@ -73,13 +76,13 @@ class PortfolioComponent extends Component {
       data: nextData,
     } = nextProps;
     const { modalIsOpen } = this.state;
-    const { dispatch, data } = this.props;
+    const { dispatch, data, activePortfolio } = this.props;
 
     if (JSON.stringify(data) !== JSON.stringify(nextData)) {
       const symbols = [];
-      if (nextData) {
-        Object.keys(nextData).forEach(xsymbol => {
-          symbols.push(xsymbol);
+      if (nextData && nextData.length > 0) {
+        Object.keys(nextData[activePortfolio].portfolio).forEach(symbol => {
+          symbols.push(symbol);
         });
       }
       runQuery(symbols, dispatch);
@@ -160,7 +163,7 @@ class PortfolioComponent extends Component {
 
   addTransactionRecord(e) {
     e.preventDefault();
-    const { dispatch, data } = this.props;
+    const { dispatch, activePortfolio, data } = this.props;
     let {
       addDate: date,
       addFees: fees,
@@ -216,8 +219,8 @@ class PortfolioComponent extends Component {
       dispatch(addSymbolRecord(record));
       this.handleRowClick(symbol);
       const symbols = [];
-      if (data) {
-        Object.keys(data).forEach(xsymbol => {
+      if (data && data.length > 0) {
+        Object.keys(data[activePortfolio].portfolio).forEach(xsymbol => {
           symbols.push(xsymbol);
         });
       }
@@ -237,50 +240,52 @@ class PortfolioComponent extends Component {
   }
 
   calculatePortfolioQuotes() {
-    const { data, quotes } = this.props;
+    const { data, quotes, activePortfolio } = this.props;
 
     const totals = [];
     const quantities = [];
     const unitPrices = [];
     const profits = [];
     let total = 0;
-    if (data) {
-      Object.keys(data).forEach(symbol => {
+    if (data && data.length > 0 && data[activePortfolio]) {
+      Object.keys(data[activePortfolio].portfolio).forEach(symbol => {
         profits[symbol] = [];
-        const item = data[symbol];
+        const item = data[activePortfolio].portfolio[symbol];
         let symbolbuy = 0;
         let symbolsell = 0;
         let symbolquantity = 0;
         let symbolunitprices = 0;
-        item.records.forEach((record, index) => {
-          if (quotes.data && quotes.data[symbol]) {
-            let transactionbuy =
-              record.quantity * record.unitPrice + record.fees;
-            let transactionsell =
-              record.quantity * quotes.data[symbol].quote.latestPrice -
-              record.fees;
-            if (!record.buy) {
-              transactionbuy =
-                record.squantity * record.unitPrice + record.fees;
-              transactionsell =
-                record.squantity * record.sunitPrice - record.sfees;
-            }
-            symbolbuy += transactionbuy;
-            symbolsell += transactionsell;
+        if (item.records) {
+          item.records.forEach((record, index) => {
+            if (quotes.data && quotes.data[symbol]) {
+              let transactionbuy =
+                record.quantity * record.unitPrice + record.fees;
+              let transactionsell =
+                record.quantity * quotes.data[symbol].quote.latestPrice -
+                record.fees;
+              if (!record.buy) {
+                transactionbuy =
+                  record.squantity * record.unitPrice + record.fees;
+                transactionsell =
+                  record.squantity * record.sunitPrice - record.sfees;
+              }
+              symbolbuy += transactionbuy;
+              symbolsell += transactionsell;
 
-            profits[symbol][index] = (transactionsell - transactionbuy).toFixed(
-              2,
-            );
-            symbolquantity += record.quantity;
-            symbolunitprices += record.unitPrice;
-          }
-        });
-        totals[symbol] = (symbolsell - symbolbuy).toFixed(2);
-        quantities[symbol] = symbolquantity;
-        unitPrices[symbol] = (symbolunitprices / item.records.length).toFixed(
-          2,
-        );
-        total += parseFloat((symbolsell - symbolbuy).toFixed(2));
+              profits[symbol][index] = (
+                transactionsell - transactionbuy
+              ).toFixed(2);
+              symbolquantity += record.quantity;
+              symbolunitprices += record.unitPrice;
+            }
+          });
+          totals[symbol] = (symbolsell - symbolbuy).toFixed(2);
+          quantities[symbol] = symbolquantity;
+          unitPrices[symbol] = (symbolunitprices / item.records.length).toFixed(
+            2,
+          );
+          total += parseFloat((symbolsell - symbolbuy).toFixed(2));
+        }
       });
     }
 
@@ -311,6 +316,9 @@ class PortfolioComponent extends Component {
 
   renderSubItem(item, totalObject, index) {
     let totalClassName = 'green';
+    if (!totalObject.profits[item.symbol]) {
+      return '';
+    }
     if (totalObject.profits[item.symbol][index] < 0) {
       totalClassName = 'red';
     }
@@ -384,6 +392,9 @@ class PortfolioComponent extends Component {
     if (totalObject.totals[item.symbol] < 0) {
       totalClassName = 'red';
     }
+    if (!item.records) {
+      return;
+    }
     const { expandedRows } = this.state;
     const clickCallback = () => this.handleRowClick(item.symbol);
     const itemRows = [
@@ -440,16 +451,49 @@ class PortfolioComponent extends Component {
       index,
     } = this.state;
 
-    let allItemRows = [];
+    const tabs = [];
 
     const symbols = [];
-    if (data) {
-      const totalObject = this.calculatePortfolioQuotes();
-      Object.keys(data).forEach(symbol => {
-        symbols.push(symbol);
-        const record = data[symbol];
-        const perItemRows = this.renderItem(record, totalObject);
-        allItemRows = allItemRows.concat(perItemRows);
+    if (data && data.length > 0) {
+      data.forEach(element => {
+        let allItemRows = [];
+        const totalObject = this.calculatePortfolioQuotes();
+        Object.keys(element.portfolio).forEach(symbol => {
+          symbols.push(symbol);
+          const record = element.portfolio[symbol];
+          const perItemRows = this.renderItem(record, totalObject);
+          allItemRows = allItemRows.concat(perItemRows);
+        });
+        const key = `tab-${element.id}`;
+        let title = element.name;
+        if (!title) {
+          title = 'Untitled';
+        }
+
+        tabs.push(
+          <Tab key={key} eventKey={key} title={title}>
+            <Table hover variant={theme}>
+              <thead>
+                <tr>
+                  <th>
+                    <Badge
+                      className="sync-badge"
+                      variant="info"
+                      onClick={() => runQuery(symbols, dispatch)}
+                    >
+                      REFRESH
+                    </Badge>
+                  </th>
+                  <th>Quantity</th>
+                  <th>Unit Price</th>
+                  <th>Profit</th>
+                  <th className="th-small" />
+                </tr>
+              </thead>
+              <tbody>{allItemRows}</tbody>
+            </Table>
+          </Tab>,
+        );
       });
     }
 
@@ -571,26 +615,10 @@ class PortfolioComponent extends Component {
             )}
           </Form>
         </Modal>
-        <Table hover variant={theme}>
-          <thead>
-            <tr>
-              <th>
-                <Badge
-                  className="sync-badge"
-                  variant="info"
-                  onClick={() => runQuery(symbols, dispatch)}
-                >
-                  REFRESH
-                </Badge>
-              </th>
-              <th>Quantity</th>
-              <th>Unit Price</th>
-              <th>Profit</th>
-              <th className="th-small" />
-            </tr>
-          </thead>
-          <tbody>{allItemRows}</tbody>
-        </Table>
+        <Tabs onSelect={e => dispatch(setActivePortfolio(e.split('-')[1] - 1))}>
+          {tabs}
+          <Tab key="new-portfolio" title="+" onClick={() => {}} />
+        </Tabs>
       </React.Fragment>
     );
   }
@@ -600,6 +628,7 @@ const mapStateToProps = state => ({
   data: state.portfolio.data,
   openModalWithSymbol: state.portfolio.openModalWithSymbol,
   quotes: state.portfolio.quotes,
+  activePortfolio: state.portfolio.activePortfolio,
   theme: state.appStatus.theme,
 });
 

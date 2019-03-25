@@ -7,7 +7,9 @@ import {
   REMOVE_SYMBOL_RECORD,
   PORTFOLIO_QUOTES,
   SET_PORTFOLIO,
+  SET_ACTIVE_PORTFOLIO,
 } from '../actions/portfolio';
+import { PORTFOLIO } from '../constants';
 
 const portfolio = (state = [], action) => {
   switch (action.type) {
@@ -26,14 +28,26 @@ const portfolio = (state = [], action) => {
     }
 
     case SET_PORTFOLIO: {
+      const map = action.portfolio.map(element => {
+        element.portfolio = JSON.parse(element.portfolio);
+        return element;
+      });
       return {
         ...state,
-        data: action.portfolio,
+        data: map,
+      };
+    }
+
+    case SET_ACTIVE_PORTFOLIO: {
+      return {
+        ...state,
+        activePortfolio: action.activePortfolio,
       };
     }
 
     case ADD_SYMBOL_RECORD: {
       const newPortfolio = cloneDeep(state.data);
+      const { activePortfolio } = state;
       let {
         unitPrice,
         fees,
@@ -50,12 +64,12 @@ const portfolio = (state = [], action) => {
       sfees = parseFloat(sfees);
       squantity = parseFloat(squantity);
 
-      let object = newPortfolio[symbol];
+      let object = newPortfolio[activePortfolio].portfolio[symbol];
       if (!object) {
         object = {};
         object.symbol = symbol;
         object.records = [];
-        newPortfolio[symbol] = object;
+        newPortfolio[activePortfolio].portfolio[symbol] = object;
       }
       const total = (unitPrice * quantity + fees).toFixed(2);
       const stotal = (sunitPrice * squantity + sfees).toFixed(2);
@@ -76,7 +90,7 @@ const portfolio = (state = [], action) => {
       };
       object.records.push(transaction);
 
-      savePortfolio(newPortfolio);
+      savePortfolio(newPortfolio, activePortfolio);
       return {
         ...state,
         data: newPortfolio,
@@ -85,15 +99,17 @@ const portfolio = (state = [], action) => {
 
     case REMOVE_SYMBOL_RECORD: {
       const newPortfolio = cloneDeep(state.data);
-      const object = newPortfolio[action.record.symbol];
+      const { activePortfolio } = state;
+      const object =
+        newPortfolio[activePortfolio].portfolio[action.record.symbol];
       object.records = [
         ...object.records.slice(0, action.record.index),
         ...object.records.slice(action.record.index + 1),
       ];
       if (object.records.length === 0) {
-        delete newPortfolio[action.record.symbol];
+        delete newPortfolio[activePortfolio][action.record.symbol];
       }
-      savePortfolio(newPortfolio);
+      savePortfolio(newPortfolio, activePortfolio);
       return {
         ...state,
         data: newPortfolio,
@@ -102,9 +118,11 @@ const portfolio = (state = [], action) => {
 
     case UPDATE_SYMBOL_RECORD: {
       const newPortfolio = cloneDeep(state.data);
-      const object = newPortfolio[action.record.symbol];
+      const { activePortfolio } = state;
+      const object =
+        newPortfolio[activePortfolio].portfolio[action.record.symbol];
       object.records[action.record.index].quantity = action.record.quantity;
-      savePortfolio(newPortfolio, false);
+      localStorage.setItem(PORTFOLIO, JSON.stringify(newPortfolio));
       return {
         ...state,
         data: newPortfolio,

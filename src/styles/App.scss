@@ -85,6 +85,25 @@ body {
   }
 }
 
+.nav-link,
+.nav-tabs {
+  border: 0px !important;
+  border-color: unset;
+  background: unset;
+  color: $font;
+  .active {
+    border: 0px;
+    color: $active;
+    font-weight: bold;
+    background: unset;
+  }
+  :hover {
+    border: 0px;
+    color: $font;
+    background: unset;
+  }
+}
+
 .popover-actions {
   display: flex;
   flex-direction: column;
@@ -173,9 +192,21 @@ body {
 .dark-mode {
   background: $darkbackgroud;
   color: $darkfont;
-
+  .nav-link,
+  .nav-tabs {
+    color: $darkfont;
+    .active {
+      color: $darkactive;
+      background: unset;
+    }
+    :hover {
+      border: 0px;
+      color: $darkfont;
+    }
+  }
   .dropdown-item {
     color: $darkfont;
+    background: $darkbackgroud;
   }
   .dropdown-menu {
     background: $darkbackgroud;

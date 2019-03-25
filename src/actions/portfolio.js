@@ -4,9 +4,14 @@ export const UPDATE_SYMBOL_RECORD = 'UPDATE_SYMBOL_RECORD';
 export const REMOVE_SYMBOL_RECORD = 'REMOVE_SYMBOL_RECORD';
 export const PORTFOLIO_QUOTES = 'PORTFOLIO_QUOTES';
 export const SET_PORTFOLIO = 'SET_PORTFOLIO';
+export const SET_ACTIVE_PORTFOLIO = 'SET_ACTIVE_PORTFOLIO';
 
 export function setPortfolio(portfolio) {
   return { type: SET_PORTFOLIO, portfolio };
+}
+
+export function setActivePortfolio(activePortfolio) {
+  return { type: SET_ACTIVE_PORTFOLIO, activePortfolio };
 }
 
 export function addPortfolioRecord(symbol) {

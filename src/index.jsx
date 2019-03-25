@@ -32,6 +32,7 @@ const initialState = {
   },
   portfolio: {
     data: JSON.parse(localStorage.getItem(PORTFOLIO)),
+    activePortfolio: 0,
     quotes: {},
     openModalWithSymbol: '',
   },
