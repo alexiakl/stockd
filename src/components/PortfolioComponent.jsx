@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { toast } from 'react-toastify';
 import {
   Table,
   Form,
@@ -140,6 +141,18 @@ class PortfolioComponent extends Component {
     ].join('-');
   };
 
+  validate = date => {
+    let dateArr = date.split('-');
+    if (dateArr.length !== 3) {
+      dateArr = date.split('/');
+      if (dateArr.length !== 3) {
+        return false;
+      }
+    }
+
+    return true;
+  };
+
   closeModal() {
     this.setState({ modalIsOpen: false });
   }
@@ -217,6 +230,20 @@ class PortfolioComponent extends Component {
     if (!sdate) {
       sdate = this.today();
     }
+    if (!this.validate(date)) {
+      toast.warn('Wrong date format', {
+        position: toast.POSITION.BOTTOM_CENTER,
+        hideProgressBar: true,
+      });
+      return;
+    }
+    if (!this.validate(sdate)) {
+      toast.warn('Wrong date format', {
+        position: toast.POSITION.BOTTOM_CENTER,
+        hideProgressBar: true,
+      });
+      return;
+    }
     if (!fees) {
       fees = 0;
     }
@@ -224,10 +251,18 @@ class PortfolioComponent extends Component {
       sfees = 0;
     }
     if (!unitPrice || !quantity) {
+      toast.warn('Please provide unit price and quantity', {
+        position: toast.POSITION.BOTTOM_CENTER,
+        hideProgressBar: true,
+      });
       return;
     }
     if (!buy) {
       if (!sunitPrice || !squantity) {
+        toast.warn('Please provide unit price and quantity', {
+          position: toast.POSITION.BOTTOM_CENTER,
+          hideProgressBar: true,
+        });
         return;
       }
     }
@@ -315,7 +350,6 @@ class PortfolioComponent extends Component {
 
   confirmRemoval(e, symbol, index) {
     e.preventDefault();
-    this.closeModal();
     confirmAlert({
       title: 'Are you sure?',
       message: 'You cannot undo this action.',
@@ -378,6 +412,13 @@ class PortfolioComponent extends Component {
               SELL
             </Badge>
           )}
+          <Badge
+            variant="danger"
+            className="action"
+            onClick={e => this.confirmRemoval(e, item.symbol, index)}
+          >
+            DELETE
+          </Badge>
         </div>
       </Popover>
     );
@@ -466,7 +507,6 @@ class PortfolioComponent extends Component {
       sellDate,
       isBuy,
       readOnly,
-      index,
     } = this.state;
 
     const tabs = [];
@@ -522,6 +562,9 @@ class PortfolioComponent extends Component {
       unitPriceDesc = ` (on purchase: ${addUnitPrice})`;
       feesDesc = ` (Purchase fees: ${addFees})`;
       dateDesc = ` (Purchased: ${addDate})`;
+    }
+    if (!date) {
+      date = this.today();
     }
 
     return (
@@ -593,7 +636,7 @@ class PortfolioComponent extends Component {
                 defaultValue={date}
                 disabled={readOnly}
                 type="date"
-                placeholder="Commission, fees or other costs"
+                placeholder="yyyy-mm-dd"
                 onChange={evt => {
                   if (isBuy) {
                     this.setState({ addDate: evt.target.value });
@@ -604,21 +647,13 @@ class PortfolioComponent extends Component {
               />
             </Form.Group>
 
-            {!readOnly ? (
+            {!readOnly && (
               <Button
                 variant="outline-info"
                 type="submit"
                 onClick={e => this.addTransactionRecord(e)}
               >
                 {transactionType}
-              </Button>
-            ) : (
-              <Button
-                variant="outline-warning"
-                type="submit"
-                onClick={e => this.confirmRemoval(e, transactionSymbol, index)}
-              >
-                Delete
               </Button>
             )}
           </Form>
