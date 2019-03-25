@@ -38,6 +38,7 @@ class Login extends Component {
     const { dispatch } = this.props;
     const url = `${API}login`;
 
+    console.log(`RQ: Login ${url}`);
     axios({
       method: 'post',
       url,

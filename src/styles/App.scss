@@ -43,6 +43,7 @@ body {
 }
 
 .table {
+  border-top: 2px solid transparent;
   font-weight: bold;
   .th-small {
     padding: 0px 0px;
@@ -89,7 +90,6 @@ body {
 .nav-tabs {
   margin-top: 10px;
   color: $font;
-  border-bottom: 0;
   :hover {
     color: $font;
   }
@@ -116,6 +116,17 @@ body {
     display: inline-block;
     margin-left: 20px;
     margin-top: 0px;
+  }
+}
+
+.settings-container {
+  padding: 10px 10px;
+}
+
+.small-settings {
+  width: 300px;
+  button {
+    margin-left: 10px;
   }
 }
 

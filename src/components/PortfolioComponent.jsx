@@ -10,6 +10,7 @@ import {
   Popover,
   Tabs,
   Tab,
+  InputGroup,
 } from 'react-bootstrap';
 import Modal from 'react-modal';
 import { confirmAlert } from 'react-confirm-alert';
@@ -22,7 +23,12 @@ import {
 } from '../actions/portfolio';
 import runQuery from '../controllers/portfolioController';
 import { resetTimer, calibrateTimer } from '../controllers/liveController';
-import { getPortfolio } from '../utils/utils';
+import {
+  getPortfolio,
+  updatePortfolioName,
+  deletePortfolio,
+  addPortfolio,
+} from '../utils/utils';
 import 'react-confirm-alert/src/react-confirm-alert.css';
 
 const modalStyles = {
@@ -42,6 +48,7 @@ class PortfolioComponent extends Component {
 
     this.state = {
       expandedRows: [],
+      newPortfolioName: '',
       modalIsOpen: false,
       readOnly: true,
       index: -1,
@@ -203,6 +210,38 @@ class PortfolioComponent extends Component {
       : expandedRows.concat(rowId);
 
     this.setState({ expandedRows: newExpandedRows });
+  }
+
+  tabSelected(e) {
+    const { dispatch } = this.props;
+    this.setState({ newPortfolioName: '' });
+    if (e !== 'new-portfolio') {
+      const activePortfolio = e.split('-')[1] - 1;
+      dispatch(setActivePortfolio(activePortfolio));
+    }
+  }
+
+  addPortfolio(e) {
+    e.preventDefault();
+    const { newPortfolioName } = this.state;
+    const { dispatch } = this.props;
+
+    addPortfolio(newPortfolioName, dispatch);
+  }
+
+  applyPortfolio(e) {
+    e.preventDefault();
+    const { newPortfolioName } = this.state;
+    const { dispatch, data, activePortfolio } = this.props;
+
+    updatePortfolioName(data[activePortfolio].id, newPortfolioName, dispatch);
+  }
+
+  deletePortfolio(e) {
+    e.preventDefault();
+    const { dispatch, data, activePortfolio } = this.props;
+
+    deletePortfolio(data[activePortfolio].id, dispatch);
   }
 
   addTransactionRecord(e) {
@@ -540,6 +579,39 @@ class PortfolioComponent extends Component {
               </thead>
               <tbody>{allItemRows}</tbody>
             </Table>
+            <Form className="settings-container">
+              <InputGroup size="sm" className="mb-3 small-settings">
+                <InputGroup.Prepend>
+                  <InputGroup.Text id="portfolio-name">Name</InputGroup.Text>
+                </InputGroup.Prepend>
+
+                <Form.Control
+                  defaultValue={title}
+                  aria-label="Name"
+                  aria-describedby="portfolio-name"
+                  onChange={evt =>
+                    this.setState({ newPortfolioName: evt.target.value })
+                  }
+                />
+
+                <Button
+                  size="sm"
+                  variant="outline-info"
+                  type="submit"
+                  onClick={e => this.applyPortfolio(e)}
+                >
+                  Apply
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline-info"
+                  type="submit"
+                  onClick={e => this.deletePortfolio(e)}
+                >
+                  Delete
+                </Button>
+              </InputGroup>
+            </Form>
           </Tab>,
         );
       });
@@ -658,9 +730,35 @@ class PortfolioComponent extends Component {
             )}
           </Form>
         </Modal>
-        <Tabs onSelect={e => dispatch(setActivePortfolio(e.split('-')[1] - 1))}>
+        <Tabs onSelect={e => this.tabSelected(e)}>
           {tabs}
-          <Tab key="new-portfolio" title="..." onClick={() => {}} />
+          <Tab key="new-portfolio" eventKey="new-portfolio" title="...">
+            <Form className="settings-container">
+              <InputGroup size="sm" className="mb-3 small-settings">
+                <InputGroup.Prepend>
+                  <InputGroup.Text id="portfolio-name">New</InputGroup.Text>
+                </InputGroup.Prepend>
+
+                <Form.Control
+                  placeholder="My US Portfolio"
+                  aria-label="New Portfolio"
+                  aria-describedby="portfolio-name"
+                  onChange={evt =>
+                    this.setState({ newPortfolioName: evt.target.value })
+                  }
+                />
+
+                <Button
+                  size="sm"
+                  variant="outline-info"
+                  type="submit"
+                  onClick={e => this.addPortfolio(e)}
+                >
+                  Create
+                </Button>
+              </InputGroup>
+            </Form>
+          </Tab>
         </Tabs>
       </React.Fragment>
     );

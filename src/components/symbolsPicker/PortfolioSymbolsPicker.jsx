@@ -40,7 +40,7 @@ const portfolioSymbolsPicker = ({
       <Form inline>
         <FormControl
           type="text"
-          placeholder="symbol"
+          placeholder="Add Symbol to Portfolio"
           className="mr-sm-2"
           onChange={evt => dispatch(filterSymbols(evt.target.value))}
         />

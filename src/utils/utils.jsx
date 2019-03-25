@@ -60,6 +60,171 @@ const getChartDimensions = value => {
   return [width, height];
 };
 
+const getPortfolio = dispatch => {
+  const url = `${API}user/portfolio`;
+  const token = localStorage.getItem(TOKEN);
+  if (!token) {
+    return;
+  }
+  const AuthStr = `Bearer ${token}`;
+
+  console.log(`RQ: Get Portfolio ${url}`);
+  axios
+    .get(url, {
+      headers: {
+        Authorization: AuthStr,
+      },
+    })
+    .then(res => {
+      if (res.data.success === 1) {
+        dispatch(setPortfolio(res.data.data));
+        localStorage.setItem(PORTFOLIO, JSON.stringify(res.data.data));
+      } else {
+        toast.warn('Could not get portfolio', {
+          position: toast.POSITION.BOTTOM_CENTER,
+          hideProgressBar: true,
+        });
+        if (res.data.data && res.data.data.logout) {
+          localStorage.removeItem(TOKEN);
+          dispatch(setLoggedin(false));
+        }
+      }
+    })
+    .catch(() => {
+      toast.warn('Warning: could not get portfolio', {
+        position: toast.POSITION.BOTTOM_CENTER,
+        hideProgressBar: true,
+      });
+    });
+};
+
+const addPortfolio = (name, dispatch) => {
+  const url = `${API}user/portfolio`;
+  const token = localStorage.getItem(TOKEN);
+  if (!token) {
+    return;
+  }
+  console.log(`RQ: Add portfolio ${url}`);
+  const AuthStr = `Bearer ${token}`;
+  axios
+    .post(
+      url,
+      { name },
+      {
+        headers: {
+          Authorization: AuthStr,
+        },
+      },
+    )
+    .then(res => {
+      if (res.data.success === 1) {
+        getPortfolio(dispatch);
+      } else {
+        console.log(res);
+        toast.warn('Could not add portfolio', {
+          position: toast.POSITION.BOTTOM_CENTER,
+          hideProgressBar: true,
+        });
+        if (res.data.data && res.data.data.logout) {
+          localStorage.removeItem(TOKEN);
+          dispatch(setLoggedin(false));
+        }
+      }
+    })
+    .catch(() => {
+      toast.warn('Could not add portfolio', {
+        position: toast.POSITION.BOTTOM_CENTER,
+        hideProgressBar: true,
+      });
+    });
+};
+
+const deletePortfolio = (id, dispatch) => {
+  const url = `${API}user/portfolio/delete`;
+  const token = localStorage.getItem(TOKEN);
+  if (!token) {
+    return;
+  }
+
+  console.log(`RQ: Delete Portfolio ${url}`);
+  const AuthStr = `Bearer ${token}`;
+  axios
+    .put(
+      url,
+      {
+        id,
+      },
+      {
+        headers: {
+          Authorization: AuthStr,
+        },
+      },
+    )
+    .then(res => {
+      console.log(res);
+      if (res.data.success === 1) {
+      } else {
+        toast.warn('Could not delete portfolio', {
+          position: toast.POSITION.BOTTOM_CENTER,
+          hideProgressBar: true,
+        });
+        if (res.data.data && res.data.data.logout) {
+          localStorage.removeItem(TOKEN);
+          dispatch(setLoggedin(false));
+        }
+      }
+    })
+    .catch(() => {
+      toast.warn('Could not delete portfolio', {
+        position: toast.POSITION.BOTTOM_CENTER,
+        hideProgressBar: true,
+      });
+    });
+};
+
+const updatePortfolioName = (id, name, dispatch) => {
+  const url = `${API}user/portfolio/name`;
+  const token = localStorage.getItem(TOKEN);
+  if (!token) {
+    return;
+  }
+
+  console.log(`RQ: Update Portfolio Name ${url}`);
+  const AuthStr = `Bearer ${token}`;
+  axios
+    .put(
+      url,
+      {
+        name,
+        id,
+      },
+      {
+        headers: {
+          Authorization: AuthStr,
+        },
+      },
+    )
+    .then(res => {
+      if (res.data.success === 1) {
+      } else {
+        toast.warn('Could not save portfolio', {
+          position: toast.POSITION.BOTTOM_CENTER,
+          hideProgressBar: true,
+        });
+        if (res.data.data && res.data.data.logout) {
+          localStorage.removeItem(TOKEN);
+          dispatch(setLoggedin(false));
+        }
+      }
+    })
+    .catch(() => {
+      toast.warn('Could not save portfolio', {
+        position: toast.POSITION.BOTTOM_CENTER,
+        hideProgressBar: true,
+      });
+    });
+};
+
 const savePortfolio = (portfolio, activePortfolio) => {
   localStorage.setItem(PORTFOLIO, JSON.stringify(portfolio));
 
@@ -69,6 +234,7 @@ const savePortfolio = (portfolio, activePortfolio) => {
     return;
   }
 
+  console.log(`RQ: Save Portfolio ${url}`);
   const AuthStr = `Bearer ${token}`;
   axios
     .put(
@@ -99,43 +265,6 @@ const savePortfolio = (portfolio, activePortfolio) => {
     });
 };
 
-const getPortfolio = dispatch => {
-  const url = `${API}user/portfolio`;
-  const token = localStorage.getItem(TOKEN);
-  if (!token) {
-    return;
-  }
-  const AuthStr = `Bearer ${token}`;
-
-  axios
-    .get(url, {
-      headers: {
-        Authorization: AuthStr,
-      },
-    })
-    .then(res => {
-      if (res.data.success === 1) {
-        dispatch(setPortfolio(res.data.data));
-        localStorage.setItem(PORTFOLIO, JSON.stringify(res.data.data));
-      } else {
-        toast.warn('Could not get portfolio', {
-          position: toast.POSITION.BOTTOM_CENTER,
-          hideProgressBar: true,
-        });
-        if (res.data.data && res.data.data.logout) {
-          localStorage.removeItem(TOKEN);
-          dispatch(setLoggedin(false));
-        }
-      }
-    })
-    .catch(() => {
-      toast.warn('Warning: could not get portfolio', {
-        position: toast.POSITION.BOTTOM_CENTER,
-        hideProgressBar: true,
-      });
-    });
-};
-
 const logoutEverywhere = dispatch => {
   const url = `${API}user/logout`;
   const token = localStorage.getItem(TOKEN);
@@ -144,6 +273,7 @@ const logoutEverywhere = dispatch => {
   }
   const AuthStr = `Bearer ${token}`;
 
+  console.log(`RQ: Logout ${url}`);
   axios
     .post(
       url,
@@ -182,6 +312,9 @@ export {
   getMarketState,
   getChartDimensions,
   savePortfolio,
+  updatePortfolioName,
+  deletePortfolio,
+  addPortfolio,
   getPortfolio,
   logoutEverywhere,
 };
