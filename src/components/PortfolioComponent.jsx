@@ -216,7 +216,7 @@ class PortfolioComponent extends Component {
     const { dispatch } = this.props;
     this.setState({ newPortfolioName: '' });
     if (e !== 'new-portfolio') {
-      const activePortfolio = e.split('-')[1] - 1;
+      const activePortfolio = e.split('-')[1];
       dispatch(setActivePortfolio(activePortfolio));
     }
   }
@@ -551,7 +551,7 @@ class PortfolioComponent extends Component {
     const tabs = [];
 
     if (data && data.length > 0) {
-      data.forEach(element => {
+      data.forEach((element, index) => {
         let allItemRows = [];
         const totalObject = this.calculatePortfolioQuotes();
         Object.keys(element.portfolio).forEach(symbol => {
@@ -559,7 +559,7 @@ class PortfolioComponent extends Component {
           const perItemRows = this.renderItem(record, totalObject);
           allItemRows = allItemRows.concat(perItemRows);
         });
-        const key = `tab-${element.id}`;
+        const key = `tab-${index}`;
         let title = element.name;
         if (!title) {
           title = 'Untitled';
