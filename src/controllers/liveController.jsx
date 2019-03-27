@@ -24,6 +24,7 @@ const calibrateTimer = (props, fire = true) => {
   if (fire) {
     dispatch(fireTimer());
   }
+  console.log(`Timer: ${timerInterval}`);
   dispatch(setTimerId(newTimerId));
 };
 

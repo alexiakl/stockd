@@ -66,19 +66,23 @@ class PortfolioComponent extends Component {
   }
 
   componentDidMount() {
-    const { data, activePortfolio, dispatch } = this.props;
+    const { data, activePortfolio, quotes, dispatch } = this.props;
     getPortfolio(dispatch);
     Modal.setAppElement('body');
 
     const symbols = [];
     if (data && data.length > 0) {
-      Object.keys(data[activePortfolio].portfolio).forEach(symbol => {
-        symbols.push(symbol);
-      });
-      runQuery(symbols, dispatch);
-    } else {
-      calibrateTimer(this.props, false);
+      if (
+        !quotes ||
+        (Object.entries(quotes).length === 0 && quotes.constructor === Object)
+      ) {
+        Object.keys(data[activePortfolio].portfolio).forEach(symbol => {
+          symbols.push(symbol);
+        });
+        runQuery(symbols, dispatch);
+      }
     }
+    calibrateTimer(this.props, false);
   }
 
   componentWillReceiveProps(nextProps) {

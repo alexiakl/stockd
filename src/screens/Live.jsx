@@ -26,8 +26,8 @@ class Live extends Component {
       runQuery(this.props);
     } else {
       processResult(this.props);
-      calibrateTimer(this.props, false);
     }
+    calibrateTimer(this.props, false);
   }
 
   componentWillReceiveProps(nextProps) {
