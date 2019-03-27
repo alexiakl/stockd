@@ -105,6 +105,8 @@ class PortfolioComponent extends Component {
 
     if (nextData) {
       if (
+        !data ||
+        !data[activePortfolio] ||
         JSON.stringify(nextData[activePortfolio].portfolio) !==
           JSON.stringify(data[activePortfolio].portfolio) ||
         fireTimer !== nextFireTimer ||
@@ -532,7 +534,7 @@ class PortfolioComponent extends Component {
   }
 
   render() {
-    const { data, theme, dispatch } = this.props;
+    const { data, theme } = this.props;
     const {
       modalIsOpen,
       transactionSymbol,
