@@ -7,7 +7,7 @@ import {
   fireTimer,
 } from '../actions/symbolsData';
 import { options } from '../utils/chartVars';
-import { getMarketState } from '../utils/utils';
+import { getMarketState, log } from '../utils/utils';
 
 const resetTimer = timerId => {
   if (timerId) {
@@ -24,7 +24,7 @@ const calibrateTimer = (props, fire = true) => {
   if (fire) {
     dispatch(fireTimer());
   }
-  console.log(`Timer: ${timerInterval}`);
+  log(`Timer: ${timerInterval}`);
   dispatch(setTimerId(newTimerId));
 };
 
@@ -33,8 +33,7 @@ const runQuery = props => {
   if (symbols && symbols.length > 0) {
     const allsymbols = symbols.join(',');
     const url = `${IEXAPI}stock/market/batch?symbols=${allsymbols}&types=quote,chart&range=${period}${IEXTOKEN}`;
-    // eslint-disable-next-line no-console
-    console.log(`RQ: Live ${url}`);
+    log(`IEX: Live ${url}`);
 
     dispatch(setIsFetchingData(true));
 

@@ -7,6 +7,7 @@ import { toast } from 'react-toastify';
 import { Redirect } from 'react-router-dom';
 import { API, EMAIL, NAME, TOKEN } from '../constants';
 import { setLoggedin } from '../actions/appStatus';
+import { log } from '../utils/utils';
 
 class Login extends Component {
   constructor(props) {
@@ -38,7 +39,7 @@ class Login extends Component {
     const { dispatch } = this.props;
     const url = `${API}login`;
 
-    console.log(`RQ: Login ${url}`);
+    log(`STOCKD: Login ${url}`);
     axios({
       method: 'post',
       url,

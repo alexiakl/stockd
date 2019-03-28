@@ -21,14 +21,14 @@ import {
   addPortfolioRecord,
   setActivePortfolio,
 } from '../actions/portfolio';
-import runQuery from '../controllers/portfolioController';
-import { resetTimer, calibrateTimer } from '../controllers/liveController';
 import {
+  runQuery,
   getPortfolio,
   updatePortfolioName,
   deletePortfolio,
   addPortfolio,
-} from '../utils/utils';
+} from '../controllers/portfolioController';
+import { resetTimer, calibrateTimer } from '../controllers/liveController';
 import 'react-confirm-alert/src/react-confirm-alert.css';
 
 const modalStyles = {

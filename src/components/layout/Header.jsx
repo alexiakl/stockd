@@ -13,7 +13,7 @@ import {
   IEXTOKEN,
   TOKEN,
 } from '../../constants';
-import { logoutEverywhere } from '../../utils/utils';
+import { logoutEverywhere, log } from '../../utils/utils';
 import { setMap, addSymbol } from '../../actions/symbolsPicker';
 
 const runQuery = dispatch => {
@@ -31,7 +31,7 @@ const runQuery = dispatch => {
   ) {
     const map = [];
     const url = `${IEXAPI}ref-data/symbols?filter=symbol,name${IEXTOKEN}`;
-    console.log(`RQ: Header ${url}`);
+    log(`IEX: Header ${url}`);
     axios.get(url).then(res => {
       res.data.forEach(symbol => {
         map.push(`${symbol.symbol} ${symbol.name}`);

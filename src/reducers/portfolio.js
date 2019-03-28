@@ -1,5 +1,5 @@
 import { cloneDeep } from 'lodash';
-import { savePortfolio } from '../utils/utils';
+import { savePortfolio } from '../controllers/portfolioController';
 import {
   ADD_PORTFOLIO_RECORD,
   ADD_SYMBOL_RECORD,
