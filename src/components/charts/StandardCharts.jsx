@@ -7,7 +7,7 @@ import {
   getMarketStateDescription,
   getChartDimensions,
 } from '../../utils/utils';
-import { CLOSED } from '../../constants';
+import { CLOSED, PRE_OPEN } from '../../constants';
 
 const StandardCharts = ({ data, period }) => {
   const standardCharts = [];
@@ -22,9 +22,18 @@ const StandardCharts = ({ data, period }) => {
       const foptions = cloneDeep(options);
 
       const { quote, latestValue, marketState } = info[symbol];
-      const { close, changePercent } = quote;
+      const {
+        close,
+        changePercent,
+        extendedPrice,
+        extendedChangePercent,
+        extendedChange,
+      } = quote;
       let { change } = quote;
       const changePercentString = (changePercent * 100).toFixed(3);
+      const extendedChangePercentString = (extendedChangePercent * 100).toFixed(
+        3,
+      );
       foptions.legend.display = false;
       foptions.annotation = annotations[symbol];
       foptions.scales.xAxes[0].labels = labels[symbol];
@@ -50,6 +59,10 @@ const StandardCharts = ({ data, period }) => {
       const isOneDayOpen = !isMarketClosed && !longData;
       const isOneDayClosed = isMarketClosed && !longData;
       const isManyDaysClosed = isMarketClosed && longData;
+      const isOneDayPreOpenOrClosed =
+        (marketState === CLOSED || marketState === PRE_OPEN) &&
+        !longData &&
+        extendedChange;
 
       let textColor = getPerformanceColor(change);
       if (isManyDaysClosed) {
@@ -91,6 +104,12 @@ const StandardCharts = ({ data, period }) => {
                     )}`}
                   >
                     {period}: {longChange}$ {longChangePercent}%
+                  </span>
+                )}
+                {isOneDayPreOpenOrClosed && (
+                  <span className="chart-info horizontal-break low-importance">
+                    extended: {extendedPrice}$ {extendedChange}${' '}
+                    {extendedChangePercentString}%
                   </span>
                 )}
               </p>

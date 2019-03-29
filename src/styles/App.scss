@@ -158,6 +158,11 @@ body {
   }
 }
 
+.low-importance {
+  color: $active;
+  font-size: 12px !important;
+}
+
 .red {
   color: $red;
 }
