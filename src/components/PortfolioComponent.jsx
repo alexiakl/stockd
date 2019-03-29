@@ -207,9 +207,12 @@ class PortfolioComponent extends Component {
     });
   }
 
-  handleRowClick(rowId) {
+  handleRowClick(rowId, expand = false) {
     const { expandedRows } = this.state;
     const isRowCurrentlyExpanded = expandedRows.includes(rowId);
+    if (expand && isRowCurrentlyExpanded) {
+      return;
+    }
 
     const newExpandedRows = isRowCurrentlyExpanded
       ? expandedRows.filter(id => id !== rowId)
@@ -328,7 +331,7 @@ class PortfolioComponent extends Component {
     this.setState({ modalIsOpen: false });
     if (buy) {
       dispatch(addSymbolRecord(record));
-      this.handleRowClick(symbol);
+      this.handleRowClick(symbol, true);
     } else {
       const newQuantity = quantity - squantity;
       if (newQuantity < 0) {
@@ -343,54 +346,101 @@ class PortfolioComponent extends Component {
   calculatePortfolioQuotes() {
     const { data, quotes, activePortfolio } = this.props;
 
-    const totals = [];
-    const quantities = [];
-    const unitPrices = [];
-    const profits = [];
-    let total = 0;
+    const activetotals = [];
+    const activequantities = [];
+    const activeunitPrices = [];
+    const activeprofits = [];
+    let activetotal = 0;
+    const soldtotals = [];
+    const soldquantities = [];
+    const soldunitPrices = [];
+    const soldprofits = [];
+    let soldtotal = 0;
     if (data && data.length > 0 && data[activePortfolio]) {
       Object.keys(data[activePortfolio].portfolio).forEach(symbol => {
-        profits[symbol] = [];
+        activeprofits[symbol] = [];
+        soldprofits[symbol] = [];
         const item = data[activePortfolio].portfolio[symbol];
-        let symbolbuy = 0;
-        let symbolsell = 0;
-        let symbolquantity = 0;
-        let symbolunitprices = 0;
+        let activesymbolbuy = 0;
+        let activesymbolsell = 0;
+        let activesymbolquantity = 0;
+        let activesymbolunitprices = 0;
+        let activebuyitems = 0;
+        let soldsymbolbuy = 0;
+        let soldsymbolsell = 0;
+        let soldsymbolquantity = 0;
+        let soldsymbolunitprices = 0;
+        let soldbuyitems = 0;
         if (item.records) {
           item.records.forEach((record, index) => {
             if (quotes.data && quotes.data[symbol]) {
-              let transactionbuy =
-                record.quantity * record.unitPrice + record.fees;
-              let transactionsell =
-                record.quantity * quotes.data[symbol].quote.latestPrice -
-                record.fees;
               if (!record.buy) {
-                transactionbuy =
+                const transactionbuy =
                   record.squantity * record.unitPrice + record.fees;
-                transactionsell =
+                const transactionsell =
                   record.squantity * record.sunitPrice - record.sfees;
+                soldprofits[symbol][index] = (
+                  transactionsell - transactionbuy
+                ).toFixed(2);
+                soldsymbolquantity += record.squantity;
+                soldsymbolunitprices += record.sunitPrice;
+                soldbuyitems += 1;
+                soldsymbolbuy += transactionbuy;
+                soldsymbolsell += transactionsell;
+              } else {
+                const transactionbuy =
+                  record.quantity * record.unitPrice + record.fees;
+                const transactionsell =
+                  record.quantity * quotes.data[symbol].quote.latestPrice -
+                  record.fees;
+                activesymbolquantity += record.quantity;
+                activesymbolunitprices += record.unitPrice;
+                activebuyitems += 1;
+                activeprofits[symbol][index] = (
+                  transactionsell - transactionbuy
+                ).toFixed(2);
+                activesymbolbuy += transactionbuy;
+                activesymbolsell += transactionsell;
               }
-              symbolbuy += transactionbuy;
-              symbolsell += transactionsell;
-
-              profits[symbol][index] = (
-                transactionsell - transactionbuy
-              ).toFixed(2);
-              symbolquantity += record.quantity;
-              symbolunitprices += record.unitPrice;
             }
           });
-          totals[symbol] = (symbolsell - symbolbuy).toFixed(2);
-          quantities[symbol] = symbolquantity;
-          unitPrices[symbol] = (symbolunitprices / item.records.length).toFixed(
+          activetotals[symbol] = (activesymbolsell - activesymbolbuy).toFixed(
             2,
           );
-          total += parseFloat((symbolsell - symbolbuy).toFixed(2));
+          activequantities[symbol] = activesymbolquantity;
+          activeunitPrices[symbol] = (
+            activesymbolunitprices / activebuyitems
+          ).toFixed(2);
+          activetotal += parseFloat(
+            (activesymbolsell - activesymbolbuy).toFixed(2),
+          );
+
+          soldtotals[symbol] = (soldsymbolsell - soldsymbolbuy).toFixed(2);
+          soldquantities[symbol] = soldsymbolquantity;
+          soldunitPrices[symbol] = (
+            soldsymbolunitprices / soldbuyitems
+          ).toFixed(2);
+          soldtotal += parseFloat((soldsymbolsell - soldsymbolbuy).toFixed(2));
         }
       });
     }
 
-    return { total, totals, profits, quantities, unitPrices };
+    return {
+      active: {
+        total: activetotal,
+        totals: activetotals,
+        profits: activeprofits,
+        quantities: activequantities,
+        unitPrices: activeunitPrices,
+      },
+      sold: {
+        total: soldtotal,
+        totals: soldtotals,
+        profits: soldprofits,
+        quantities: soldquantities,
+        unitPrices: soldunitPrices,
+      },
+    };
   }
 
   confirmRemoval(e, symbol, index) {
@@ -414,12 +464,20 @@ class PortfolioComponent extends Component {
     });
   }
 
-  renderSubItem(item, totalObject, index) {
+  renderSubItem(item, totalObject, index, isBuy) {
     let totalClassName = 'green';
-    if (!totalObject.profits[item.symbol]) {
+    let profit = totalObject.active.profits[item.symbol];
+    if (!isBuy) {
+      profit = totalObject.sold.profits[item.symbol];
+    }
+    if (!profit) {
       return '';
     }
-    if (totalObject.profits[item.symbol][index] < 0) {
+    let itemProfit = totalObject.active.profits[item.symbol][index];
+    if (!isBuy) {
+      itemProfit = totalObject.sold.profits[item.symbol][index];
+    }
+    if (itemProfit < 0) {
       totalClassName = 'red';
     }
 
@@ -474,9 +532,7 @@ class PortfolioComponent extends Component {
         </td>
         <td>{quantity}</td>
         <td>{unitPrice.toFixed(2)}</td>
-        <td className={totalClassName}>
-          {totalObject.profits[item.symbol][index]}
-        </td>
+        <td className={totalClassName}>{itemProfit}</td>
         <td className="center">
           <OverlayTrigger
             trigger="click"
@@ -494,9 +550,18 @@ class PortfolioComponent extends Component {
     );
   }
 
-  renderItem(item, totalObject) {
+  renderItem(item, totalObject, isBuy) {
+    let symbolTotal = totalObject.active.totals[item.symbol];
+    let symbolQuantities = totalObject.active.quantities[item.symbol];
+    let symbolUnitPrices = totalObject.active.unitPrices[item.symbol];
+    if (!isBuy) {
+      symbolTotal = totalObject.sold.totals[item.symbol];
+      symbolQuantities = totalObject.sold.quantities[item.symbol];
+      symbolUnitPrices = totalObject.sold.unitPrices[item.symbol];
+    }
+
     let totalClassName = 'green';
-    if (totalObject.totals[item.symbol] < 0) {
+    if (symbolTotal < 0) {
       totalClassName = 'red';
     }
     const { expandedRows } = this.state;
@@ -505,12 +570,12 @@ class PortfolioComponent extends Component {
       <tr key={`row-data-${item.symbol}`}>
         <td>
           <Button size="sm" onClick={clickCallback} variant="secondary">
-            {item.symbol} <Badge variant="light">{item.records.length}</Badge>
+            {item.symbol}
           </Button>
         </td>
-        <td>{totalObject.quantities[item.symbol]}</td>
-        <td>{totalObject.unitPrices[item.symbol]}</td>
-        <td className={totalClassName}>{totalObject.totals[item.symbol]}</td>
+        <td>{symbolQuantities}</td>
+        <td>{symbolUnitPrices}</td>
+        <td className={totalClassName}>{symbolTotal}</td>
         <td className="center">
           <Badge
             key={item.symbol}
@@ -526,8 +591,15 @@ class PortfolioComponent extends Component {
 
     let allSubItemRows = [];
     item.records.forEach((record, index) => {
-      const perItemRows = this.renderSubItem(record, totalObject, index);
-      allSubItemRows = allSubItemRows.concat(perItemRows);
+      if (record.buy === isBuy) {
+        const perItemRows = this.renderSubItem(
+          record,
+          totalObject,
+          index,
+          isBuy,
+        );
+        allSubItemRows = allSubItemRows.concat(perItemRows);
+      }
     });
 
     if (expandedRows.includes(item.symbol)) {
@@ -558,12 +630,34 @@ class PortfolioComponent extends Component {
 
     if (data && data.length > 0) {
       data.forEach((element, index) => {
-        let allItemRows = [];
+        let allActiveItemRows = [];
         const totalObject = this.calculatePortfolioQuotes();
         Object.keys(element.portfolio).forEach(symbol => {
           const record = element.portfolio[symbol];
-          const perItemRows = this.renderItem(record, totalObject);
-          allItemRows = allItemRows.concat(perItemRows);
+          let hasBuy = false;
+          record.records.forEach(item => {
+            if (item.buy) {
+              hasBuy = true;
+            }
+          });
+          if (hasBuy) {
+            const perItemRows = this.renderItem(record, totalObject, true);
+            allActiveItemRows = allActiveItemRows.concat(perItemRows);
+          }
+        });
+        let allSoldItemRows = [];
+        Object.keys(element.portfolio).forEach(symbol => {
+          const record = element.portfolio[symbol];
+          let hasSold = false;
+          record.records.forEach(item => {
+            if (!item.buy) {
+              hasSold = true;
+            }
+          });
+          if (hasSold) {
+            const perItemRows = this.renderItem(record, totalObject, false);
+            allSoldItemRows = allSoldItemRows.concat(perItemRows);
+          }
         });
         const key = `tab-${index}`;
         let title = element.name;
@@ -573,18 +667,40 @@ class PortfolioComponent extends Component {
 
         tabs.push(
           <Tab key={key} eventKey={key} title={title}>
-            <Table hover variant={theme}>
-              <thead>
-                <tr>
-                  <th />
-                  <th>Quantity</th>
-                  <th>Unit Price</th>
-                  <th>Profit</th>
-                  <th className="th-small" />
-                </tr>
-              </thead>
-              <tbody>{allItemRows}</tbody>
-            </Table>
+            {allActiveItemRows.length > 0 && (
+              <React.Fragment>
+                <div className="div-title">ACTIVE</div>
+                <Table hover variant={theme}>
+                  <thead>
+                    <tr>
+                      <th />
+                      <th>Quantity</th>
+                      <th>Unit Price</th>
+                      <th>Profit</th>
+                      <th className="th-small" />
+                    </tr>
+                  </thead>
+                  <tbody>{allActiveItemRows}</tbody>
+                </Table>
+              </React.Fragment>
+            )}
+            {allSoldItemRows.length > 0 && (
+              <React.Fragment>
+                <div className="div-title">SOLD</div>
+                <Table hover variant={theme}>
+                  <thead>
+                    <tr>
+                      <th />
+                      <th>Quantity</th>
+                      <th>Unit Price</th>
+                      <th>Profit</th>
+                      <th className="th-small" />
+                    </tr>
+                  </thead>
+                  <tbody>{allSoldItemRows}</tbody>
+                </Table>
+              </React.Fragment>
+            )}
             <Form className="settings-container">
               <InputGroup size="sm" className="mb-3 small-settings">
                 <InputGroup.Prepend>
