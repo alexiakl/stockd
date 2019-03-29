@@ -31,7 +31,7 @@ const calibrateTimer = (props, fire = true) => {
 const runQuery = props => {
   const { symbols, period, dispatch } = props;
   if (symbols && symbols.length > 0) {
-    const allsymbols = symbols.join(',');
+    const allsymbols = encodeURIComponent(symbols.join(','));
     const url = `${IEXAPI}stock/market/batch?symbols=${allsymbols}&types=quote,chart&range=${period}${IEXTOKEN}`;
     log(`IEX: Live ${url}`);
 

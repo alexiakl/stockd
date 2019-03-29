@@ -7,7 +7,7 @@ import { log } from '../utils/utils';
 
 const runQuery = (symbols, dispatch) => {
   if (symbols && symbols.length > 0) {
-    const allsymbols = symbols.join(',');
+    const allsymbols = encodeURIComponent(symbols.join(','));
     const url = `${IEXAPI}stock/market/batch?symbols=${allsymbols}&types=quote`;
     log(`IEX: Portfolio ${url}`);
 
