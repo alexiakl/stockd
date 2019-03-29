@@ -122,6 +122,12 @@ const portfolio = (state = [], action) => {
       const object =
         newPortfolio[activePortfolio].portfolio[action.record.symbol];
       object.records[action.record.index].quantity = action.record.quantity;
+      if (object.records[action.record.index].quantity === 0) {
+        object.records = [
+          ...object.records.slice(0, action.record.index),
+          ...object.records.slice(action.record.index + 1),
+        ];
+      }
       localStorage.setItem(PORTFOLIO, JSON.stringify(newPortfolio));
       return {
         ...state,
