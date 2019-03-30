@@ -107,6 +107,13 @@ class PortfolioComponent extends Component {
       calibrateTimer(this.props);
     }
 
+    const symbols = [];
+    if (nextData && nextData.length > 0) {
+      Object.keys(nextData[nextActivePortfolio].portfolio).forEach(symbol => {
+        symbols.push(symbol);
+      });
+    }
+
     if (nextData) {
       if (
         !data ||
@@ -116,14 +123,6 @@ class PortfolioComponent extends Component {
         fireTimer !== nextFireTimer ||
         activePortfolio !== nextActivePortfolio
       ) {
-        const symbols = [];
-        if (nextData && nextData.length > 0) {
-          Object.keys(nextData[nextActivePortfolio].portfolio).forEach(
-            symbol => {
-              symbols.push(symbol);
-            },
-          );
-        }
         runQuery(symbols, dispatch);
       }
     }
@@ -347,19 +346,27 @@ class PortfolioComponent extends Component {
     const { data, quotes, activePortfolio } = this.props;
 
     const activetotals = [];
+    const activetotalspercentage = [];
     const activequantities = [];
     const activeunitPrices = [];
     const activeprofits = [];
+    const activeprofitspercentage = [];
     let activetotal = 0;
+    let activetotalpercentage = 0;
     const soldtotals = [];
+    const soldtotalspercentage = [];
     const soldquantities = [];
     const soldunitPrices = [];
     const soldprofits = [];
+    const soldprofitspercentage = [];
     let soldtotal = 0;
+    let soldtotalpercentage = 0;
     if (data && data.length > 0 && data[activePortfolio]) {
       Object.keys(data[activePortfolio].portfolio).forEach(symbol => {
         activeprofits[symbol] = [];
+        activeprofitspercentage[symbol] = [];
         soldprofits[symbol] = [];
+        soldprofitspercentage[symbol] = [];
         const item = data[activePortfolio].portfolio[symbol];
         let activesymbolbuy = 0;
         let activesymbolsell = 0;
@@ -382,6 +389,10 @@ class PortfolioComponent extends Component {
                 soldprofits[symbol][index] = (
                   transactionsell - transactionbuy
                 ).toFixed(2);
+                soldprofitspercentage[symbol][index] = (
+                  (100 * (transactionsell - transactionbuy)) /
+                  transactionbuy
+                ).toFixed(2);
                 soldsymbolquantity += record.squantity;
                 soldsymbolunitprices += record.sunitPrice;
                 soldbuyitems += 1;
@@ -399,6 +410,10 @@ class PortfolioComponent extends Component {
                 activeprofits[symbol][index] = (
                   transactionsell - transactionbuy
                 ).toFixed(2);
+                activeprofitspercentage[symbol][index] = (
+                  (100 * (transactionsell - transactionbuy)) /
+                  transactionbuy
+                ).toFixed(2);
                 activesymbolbuy += transactionbuy;
                 activesymbolsell += transactionsell;
               }
@@ -407,6 +422,10 @@ class PortfolioComponent extends Component {
           activetotals[symbol] = (activesymbolsell - activesymbolbuy).toFixed(
             2,
           );
+          activetotalspercentage[symbol] = (
+            (100 * (activesymbolsell - activesymbolbuy)) /
+            activesymbolbuy
+          ).toFixed(2);
           activequantities[symbol] = activesymbolquantity;
           activeunitPrices[symbol] = (
             activesymbolunitprices / activebuyitems
@@ -414,13 +433,28 @@ class PortfolioComponent extends Component {
           activetotal += parseFloat(
             (activesymbolsell - activesymbolbuy).toFixed(2),
           );
+          activetotalpercentage += parseFloat(
+            (
+              (100 * (activesymbolsell - activesymbolbuy)) /
+              activesymbolbuy
+            ).toFixed(2),
+          );
 
           soldtotals[symbol] = (soldsymbolsell - soldsymbolbuy).toFixed(2);
+          soldtotalspercentage[symbol] = (
+            (100 * (soldsymbolsell - soldsymbolbuy)) /
+            soldsymbolbuy
+          ).toFixed(2);
           soldquantities[symbol] = soldsymbolquantity;
           soldunitPrices[symbol] = (
             soldsymbolunitprices / soldbuyitems
           ).toFixed(2);
           soldtotal += parseFloat((soldsymbolsell - soldsymbolbuy).toFixed(2));
+          soldtotalpercentage += parseFloat(
+            ((100 * (soldsymbolsell - soldsymbolbuy)) / soldsymbolbuy).toFixed(
+              2,
+            ),
+          );
         }
       });
     }
@@ -428,15 +462,21 @@ class PortfolioComponent extends Component {
     return {
       active: {
         total: activetotal,
+        totalPercentage: activetotalpercentage,
         totals: activetotals,
+        totalsPercentage: activetotalspercentage,
         profits: activeprofits,
+        profitsPercentage: activeprofitspercentage,
         quantities: activequantities,
         unitPrices: activeunitPrices,
       },
       sold: {
         total: soldtotal,
+        totalPercentage: soldtotalpercentage,
         totals: soldtotals,
+        totalsPercentage: soldtotalspercentage,
         profits: soldprofits,
+        profitsPercentage: soldprofitspercentage,
         quantities: soldquantities,
         unitPrices: soldunitPrices,
       },
@@ -474,8 +514,12 @@ class PortfolioComponent extends Component {
       return '';
     }
     let itemProfit = totalObject.active.profits[item.symbol][index];
+    let itemProfitPercentage =
+      totalObject.active.profitsPercentage[item.symbol][index];
     if (!isBuy) {
       itemProfit = totalObject.sold.profits[item.symbol][index];
+      itemProfitPercentage =
+        totalObject.sold.profitsPercentage[item.symbol][index];
     }
     if (itemProfit < 0) {
       totalClassName = 'red';
@@ -532,7 +576,10 @@ class PortfolioComponent extends Component {
         </td>
         <td>{quantity}</td>
         <td>{unitPrice.toFixed(2)}</td>
-        <td className={totalClassName}>{itemProfit}</td>
+        <td className={totalClassName}>
+          {itemProfit}
+          <span className="profit-percentage">{itemProfitPercentage}%</span>
+        </td>
         <td className="center">
           <OverlayTrigger
             trigger="click"
@@ -552,10 +599,13 @@ class PortfolioComponent extends Component {
 
   renderItem(item, totalObject, isBuy) {
     let symbolTotal = totalObject.active.totals[item.symbol];
+    let symbolTotalPercentage =
+      totalObject.active.totalsPercentage[item.symbol];
     let symbolQuantities = totalObject.active.quantities[item.symbol];
     let symbolUnitPrices = totalObject.active.unitPrices[item.symbol];
     if (!isBuy) {
       symbolTotal = totalObject.sold.totals[item.symbol];
+      symbolTotalPercentage = totalObject.sold.totalsPercentage[item.symbol];
       symbolQuantities = totalObject.sold.quantities[item.symbol];
       symbolUnitPrices = totalObject.sold.unitPrices[item.symbol];
     }
@@ -575,7 +625,10 @@ class PortfolioComponent extends Component {
         </td>
         <td>{symbolQuantities}</td>
         <td>{symbolUnitPrices}</td>
-        <td className={totalClassName}>{symbolTotal}</td>
+        <td className={totalClassName}>
+          {symbolTotal}
+          <span className="profit-percentage">{symbolTotalPercentage}%</span>
+        </td>
         <td className="center">
           <Badge
             key={item.symbol}
@@ -610,7 +663,7 @@ class PortfolioComponent extends Component {
   }
 
   render() {
-    const { data, theme } = this.props;
+    const { data, theme, activePortfolio } = this.props;
     const {
       modalIsOpen,
       transactionSymbol,
@@ -859,7 +912,10 @@ class PortfolioComponent extends Component {
             )}
           </Form>
         </Modal>
-        <Tabs onSelect={e => this.tabSelected(e)}>
+        <Tabs
+          defaultActiveKey={`tab-${activePortfolio}`}
+          onSelect={e => this.tabSelected(e)}
+        >
           {tabs}
           <Tab key="new-portfolio" eventKey="new-portfolio" title="...">
             <div className="div-title">ADD NEW PORTFOLIO</div>

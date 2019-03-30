@@ -84,7 +84,9 @@ thead {
     font-size: 14px;
     padding-left: 10px;
     padding-right: 0px;
-    vertical-align: unset;
+    vertical-align: middle;
+    padding-top: 0px;
+    padding-bottom: 0px;
   }
   input {
     font-weight: bold;
@@ -375,4 +377,8 @@ thead {
 
 .footer {
   min-height: 40px;
+}
+
+.profit-percentage {
+  display: block;
 }
