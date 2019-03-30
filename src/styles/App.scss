@@ -127,7 +127,7 @@ thead {
   display: block;
   @include lg {
     display: inline-block;
-    margin-left: 20px;
+    margin-left: 10px;
     margin-top: 0px;
   }
 }
@@ -173,8 +173,14 @@ thead {
 
 .div-title {
   width: 100%;
-  font-size: 30px;
-  padding: 20px 20px;
+  font-size: 20px;
+  padding-left: 10px;
+  padding-top: 30px;
+}
+
+.div-sub-title {
+  font-size: 12px;
+  padding-left: 10px;
 }
 
 .low-importance {
@@ -365,4 +371,8 @@ thead {
     font-weight: bold;
     color: $active !important;
   }
+}
+
+.footer {
+  min-height: 40px;
 }

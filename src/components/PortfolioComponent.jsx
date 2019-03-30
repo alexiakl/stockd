@@ -667,39 +667,45 @@ class PortfolioComponent extends Component {
 
         tabs.push(
           <Tab key={key} eventKey={key} title={title}>
+            <div className="div-title">ACTIVE</div>
+            <div className="div-sub-title">
+              {allActiveItemRows.length > 0
+                ? 'Stocks you currently own'
+                : 'You did not add any stocks to your portfolio yet'}
+            </div>
             {allActiveItemRows.length > 0 && (
-              <React.Fragment>
-                <div className="div-title">ACTIVE</div>
-                <Table hover variant={theme}>
-                  <thead>
-                    <tr>
-                      <th />
-                      <th>Quantity</th>
-                      <th>Unit Price</th>
-                      <th>Profit</th>
-                      <th className="th-small" />
-                    </tr>
-                  </thead>
-                  <tbody>{allActiveItemRows}</tbody>
-                </Table>
-              </React.Fragment>
+              <Table hover variant={theme}>
+                <thead>
+                  <tr>
+                    <th />
+                    <th>Quantity</th>
+                    <th>Unit Price</th>
+                    <th>Profit</th>
+                    <th className="th-small" />
+                  </tr>
+                </thead>
+                <tbody>{allActiveItemRows}</tbody>
+              </Table>
             )}
+            <div className="div-title">SOLD</div>
+            <div className="div-sub-title">
+              {allSoldItemRows.length > 0
+                ? 'Stocks you already sold'
+                : 'You did not sell any stocks yet'}
+            </div>
             {allSoldItemRows.length > 0 && (
-              <React.Fragment>
-                <div className="div-title">SOLD</div>
-                <Table hover variant={theme}>
-                  <thead>
-                    <tr>
-                      <th />
-                      <th>Quantity</th>
-                      <th>Unit Price</th>
-                      <th>Profit</th>
-                      <th className="th-small" />
-                    </tr>
-                  </thead>
-                  <tbody>{allSoldItemRows}</tbody>
-                </Table>
-              </React.Fragment>
+              <Table hover variant={theme}>
+                <thead>
+                  <tr>
+                    <th />
+                    <th>Quantity</th>
+                    <th>Unit Price</th>
+                    <th>Profit</th>
+                    <th className="th-small" />
+                  </tr>
+                </thead>
+                <tbody>{allSoldItemRows}</tbody>
+              </Table>
             )}
             <div className="div-title">SETTINGS</div>
             <Form className="settings-container">
@@ -856,6 +862,7 @@ class PortfolioComponent extends Component {
         <Tabs onSelect={e => this.tabSelected(e)}>
           {tabs}
           <Tab key="new-portfolio" eventKey="new-portfolio" title="...">
+            <div className="div-title">ADD NEW PORTFOLIO</div>
             <Form className="settings-container">
               <InputGroup size="sm" className="mb-3 small-settings">
                 <InputGroup.Prepend>

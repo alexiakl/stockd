@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { Redirect } from 'react-router-dom';
+import Footer from '../components/layout/Footer';
 import { API, EMAIL, NAME, TOKEN } from '../constants';
 import { setLoggedin } from '../actions/appStatus';
 import { log } from '../utils/utils';
@@ -110,6 +111,7 @@ class Login extends Component {
             Login
           </Button>
         </form>
+        <Footer />
       </div>
     );
   }

@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Redirect } from 'react-router-dom';
 import '../styles/App.scss';
 import { connect } from 'react-redux';
+import Footer from '../components/layout/Footer';
 import StandardCharts from '../components/charts/StandardCharts';
 import SymbolsPicker from '../components/symbolsPicker/SymbolsPicker';
 import PeriodController from '../components/PeriodController';
@@ -85,6 +86,7 @@ class Live extends Component {
         <SymbolsPicker />
         <PeriodController />
         <StandardCharts />
+        <Footer />
       </div>
     );
   }

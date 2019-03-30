@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import '../styles/App.scss';
 import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
+import Footer from '../components/layout/Footer';
 import SymbolsPicker from '../components/symbolsPicker/SymbolsPicker';
 import PeriodController from '../components/PeriodController';
 import { processResult } from '../controllers/compareController';
@@ -59,6 +60,7 @@ class Compare extends Component {
         <SymbolsPicker />
         <PeriodController />
         <CompareChart />
+        <Footer />
       </div>
     );
   }
