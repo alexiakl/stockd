@@ -9,6 +9,14 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+tr {
+  border-bottom: 2px solid $separator;
+}
+thead {
+  border-bottom: 3px solid $separator;
+}
+
 .login {
   padding: 60px 0;
   form {
@@ -20,7 +28,7 @@ body {
 .sdcontainer {
   flex-wrap: wrap;
   padding: 20px 10px;
-  border-bottom: 1px solid $seperator;
+  border-bottom: 1px solid $separator;
 }
 
 .container {
@@ -88,6 +96,7 @@ body {
 
 .nav-link,
 .nav-tabs {
+  border-bottom: 1px solid $separator;
   margin-top: 10px;
   color: $font;
   :hover {
@@ -194,7 +203,7 @@ body {
   display: block;
   @include lg {
     display: inline-block;
-    border-left: 1px solid $seperator;
+    border-left: 1px solid $separator;
     margin-left: 10px;
     padding-left: 10px;
   }
@@ -206,15 +215,26 @@ body {
 .dark-mode {
   background: $darkbackgroud;
   color: $darkfont;
+
+  tr {
+    border-bottom: 2px solid $darkseparator;
+  }
+  thead {
+    border-bottom: 3px solid $darkseparator;
+  }
   .nav-link,
   .nav-tabs {
+    border-bottom: 1px solid $darkseparator;
     color: $darkfont;
     .active {
       color: $darkactive;
       background: unset;
+      border-color: $darkseparator;
+      border-bottom: 1px $darkbackgroud solid;
     }
     :hover {
       color: $darkfont;
+      border-color: $darkseparator;
     }
   }
   .dropdown-item {
@@ -228,7 +248,7 @@ body {
   .stock-button,
   .period-button {
     color: $darkfont;
-    border: 1px solid $darkseperator;
+    border: 1px solid $darkseparator;
   }
 
   .form-control {
@@ -245,7 +265,7 @@ body {
   }
   .sdcontainer,
   .period-buttons {
-    border-bottom: 1px solid $darkseperator;
+    border-bottom: 1px solid $darkseparator;
   }
 
   .alert-dark {
@@ -256,7 +276,7 @@ body {
 
   .horizontal-separator {
     @include lg {
-      border-left: 1px solid $darkseperator;
+      border-left: 1px solid $darkseparator;
     }
   }
 
@@ -294,13 +314,13 @@ body {
 .period-buttons {
   text-align: center;
   padding: 20px 20px;
-  border-bottom: 1px solid $seperator;
+  border-bottom: 1px solid $separator;
 }
 
 .stock-button {
   margin-top: 20px;
   margin-right: 10px;
-  border: 1px solid $seperator;
+  border: 1px solid $separator;
   border-radius: 5px;
   padding: 3px 6px;
   @include lg {
@@ -321,6 +341,7 @@ body {
 
 .navbar {
   .menu-item {
+    border-bottom: 0 !important;
     cursor: pointer;
     @include lg {
       margin-left: 20px;
