@@ -357,6 +357,7 @@ thead {
 .navbar {
   .menu-item {
     border-bottom: 0 !important;
+    font-size: 15px;
     cursor: pointer;
     @include lg {
       margin-left: 20px;
