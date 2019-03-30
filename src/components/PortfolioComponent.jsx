@@ -27,6 +27,7 @@ import {
   updatePortfolioName,
   deletePortfolio,
   addPortfolio,
+  calculatePortfolioQuotes,
 } from '../controllers/portfolioController';
 import { resetTimer, calibrateTimer } from '../controllers/liveController';
 import 'react-confirm-alert/src/react-confirm-alert.css';
@@ -342,147 +343,6 @@ class PortfolioComponent extends Component {
     }
   }
 
-  calculatePortfolioQuotes() {
-    const { data, quotes, activePortfolio } = this.props;
-
-    const activetotals = [];
-    const activetotalspercentage = [];
-    const activequantities = [];
-    const activeunitPrices = [];
-    const activeprofits = [];
-    const activeprofitspercentage = [];
-    let activetotal = 0;
-    let activetotalpercentage = 0;
-    const soldtotals = [];
-    const soldtotalspercentage = [];
-    const soldquantities = [];
-    const soldunitPrices = [];
-    const soldprofits = [];
-    const soldprofitspercentage = [];
-    let soldtotal = 0;
-    let soldtotalpercentage = 0;
-    if (data && data.length > 0 && data[activePortfolio]) {
-      Object.keys(data[activePortfolio].portfolio).forEach(symbol => {
-        activeprofits[symbol] = [];
-        activeprofitspercentage[symbol] = [];
-        soldprofits[symbol] = [];
-        soldprofitspercentage[symbol] = [];
-        const item = data[activePortfolio].portfolio[symbol];
-        let activesymbolbuy = 0;
-        let activesymbolsell = 0;
-        let activesymbolquantity = 0;
-        let activesymbolunitprices = 0;
-        let activebuyitems = 0;
-        let soldsymbolbuy = 0;
-        let soldsymbolsell = 0;
-        let soldsymbolquantity = 0;
-        let soldsymbolunitprices = 0;
-        let soldbuyitems = 0;
-        if (item.records) {
-          item.records.forEach((record, index) => {
-            if (quotes.data && quotes.data[symbol]) {
-              if (!record.buy) {
-                const transactionbuy =
-                  record.squantity * record.unitPrice + record.fees;
-                const transactionsell =
-                  record.squantity * record.sunitPrice - record.sfees;
-                soldprofits[symbol][index] = (
-                  transactionsell - transactionbuy
-                ).toFixed(2);
-                soldprofitspercentage[symbol][index] = (
-                  (100 * (transactionsell - transactionbuy)) /
-                  transactionbuy
-                ).toFixed(2);
-                soldsymbolquantity += record.squantity;
-                soldsymbolunitprices += record.sunitPrice;
-                soldbuyitems += 1;
-                soldsymbolbuy += transactionbuy;
-                soldsymbolsell += transactionsell;
-              } else {
-                const transactionbuy =
-                  record.quantity * record.unitPrice + record.fees;
-                const transactionsell =
-                  record.quantity * quotes.data[symbol].quote.latestPrice -
-                  record.fees;
-                activesymbolquantity += record.quantity;
-                activesymbolunitprices += record.unitPrice;
-                activebuyitems += 1;
-                activeprofits[symbol][index] = (
-                  transactionsell - transactionbuy
-                ).toFixed(2);
-                activeprofitspercentage[symbol][index] = (
-                  (100 * (transactionsell - transactionbuy)) /
-                  transactionbuy
-                ).toFixed(2);
-                activesymbolbuy += transactionbuy;
-                activesymbolsell += transactionsell;
-              }
-            }
-          });
-          activetotals[symbol] = (activesymbolsell - activesymbolbuy).toFixed(
-            2,
-          );
-          activetotalspercentage[symbol] = (
-            (100 * (activesymbolsell - activesymbolbuy)) /
-            activesymbolbuy
-          ).toFixed(2);
-          activequantities[symbol] = activesymbolquantity;
-          activeunitPrices[symbol] = (
-            activesymbolunitprices / activebuyitems
-          ).toFixed(2);
-          activetotal += parseFloat(
-            (activesymbolsell - activesymbolbuy).toFixed(2),
-          );
-          activetotalpercentage += parseFloat(
-            (
-              (100 * (activesymbolsell - activesymbolbuy)) /
-              activesymbolbuy
-            ).toFixed(2),
-          );
-
-          soldtotals[symbol] = (soldsymbolsell - soldsymbolbuy).toFixed(2);
-          soldtotalspercentage[symbol] = (
-            (100 * (soldsymbolsell - soldsymbolbuy)) /
-            soldsymbolbuy
-          ).toFixed(2);
-          soldquantities[symbol] = soldsymbolquantity;
-          soldunitPrices[symbol] = (
-            soldsymbolunitprices / soldbuyitems
-          ).toFixed(2);
-          soldtotal += parseFloat((soldsymbolsell - soldsymbolbuy).toFixed(2));
-          soldtotalpercentage += parseFloat(
-            ((100 * (soldsymbolsell - soldsymbolbuy)) / soldsymbolbuy).toFixed(
-              2,
-            ),
-          );
-        }
-      });
-    }
-
-    return {
-      active: {
-        total: activetotal,
-        totalPercentage: activetotalpercentage,
-        totals: activetotals,
-        totalsPercentage: activetotalspercentage,
-        profits: activeprofits,
-        profitsPercentage: activeprofitspercentage,
-        quantities: activequantities,
-        unitPrices: activeunitPrices,
-      },
-      sold: {
-        total: soldtotal,
-        totalPercentage: soldtotalpercentage,
-        totals: soldtotals,
-        totalsPercentage: soldtotalspercentage,
-        profits: soldprofits,
-        profitsPercentage: soldprofitspercentage,
-        quantities: soldquantities,
-        unitPrices: soldunitPrices,
-      },
-    };
-  }
-
   confirmRemoval(e, symbol, index) {
     e.preventDefault();
     confirmAlert({
@@ -663,7 +523,7 @@ class PortfolioComponent extends Component {
   }
 
   render() {
-    const { data, theme, activePortfolio } = this.props;
+    const { data, theme, activePortfolio, quotes } = this.props;
     const {
       modalIsOpen,
       transactionSymbol,
@@ -682,9 +542,13 @@ class PortfolioComponent extends Component {
     const tabs = [];
 
     if (data && data.length > 0) {
+      const totalObject = calculatePortfolioQuotes(
+        data,
+        quotes,
+        activePortfolio,
+      );
       data.forEach((element, index) => {
         let allActiveItemRows = [];
-        const totalObject = this.calculatePortfolioQuotes();
         Object.keys(element.portfolio).forEach(symbol => {
           const record = element.portfolio[symbol];
           let hasBuy = false;
