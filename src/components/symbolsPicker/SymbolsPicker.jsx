@@ -9,7 +9,7 @@ const SymbolsPicker = ({ symbols, filtered, dispatch }) => (
     <Form inline>
       <FormControl
         type="text"
-        placeholder="symbol"
+        placeholder="Add Symbol"
         className="mr-sm-2"
         onChange={evt => dispatch(filterSymbols(evt.target.value))}
       />

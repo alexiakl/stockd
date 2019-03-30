@@ -94,6 +94,10 @@ thead {
   }
 }
 
+.nav-tabs {
+  padding-left: 10px;
+}
+
 .nav-link,
 .nav-tabs {
   border-bottom: 1px solid $separator;
@@ -169,9 +173,8 @@ thead {
 
 .div-title {
   width: 100%;
-  text-align: center;
   font-size: 30px;
-  padding: 20px 0px;
+  padding: 20px 20px;
 }
 
 .low-importance {
@@ -254,6 +257,7 @@ thead {
   .form-control {
     background: $darkbackgroud;
     color: $darkfont;
+    border: 1px solid $darkseparator;
   }
 
   .mr-sm-2 {
@@ -337,6 +341,9 @@ thead {
     margin-left: 0px;
     margin-top: 10px;
   }
+}
+.form-control {
+  border: 1px solid $separator;
 }
 
 .navbar {

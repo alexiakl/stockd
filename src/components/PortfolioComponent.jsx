@@ -701,6 +701,7 @@ class PortfolioComponent extends Component {
                 </Table>
               </React.Fragment>
             )}
+            <div className="div-title">SETTINGS</div>
             <Form className="settings-container">
               <InputGroup size="sm" className="mb-3 small-settings">
                 <InputGroup.Prepend>
