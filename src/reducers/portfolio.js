@@ -14,9 +14,13 @@ import { PORTFOLIO } from '../constants';
 const portfolio = (state = [], action) => {
   switch (action.type) {
     case PORTFOLIO_QUOTES: {
+      const newQuotes = cloneDeep(state.quotes);
+      Object.keys(action.quotes).forEach(symbol => {
+        newQuotes[symbol] = action.quotes[symbol];
+      });
       return {
         ...state,
-        quotes: action.quotes,
+        quotes: newQuotes,
       };
     }
 

@@ -17,7 +17,7 @@ const runQuery = (symbols, dispatch) => {
       .get(url)
       .then(res => {
         dispatch(setIsFetchingData(false));
-        dispatch(setPortfolioQuotes(res));
+        dispatch(setPortfolioQuotes(res.data));
       })
       .catch(() => {
         dispatch(setIsFetchingData(false));
@@ -264,7 +264,7 @@ const calculatePortfolioQuotes = (data, quotes, activePortfolio) => {
       let soldbuyitems = 0;
       if (item.records) {
         item.records.forEach((record, index) => {
-          if (quotes.data && quotes.data[symbol]) {
+          if (quotes && quotes[symbol]) {
             if (!record.buy) {
               const transactionbuy =
                 record.squantity * record.unitPrice + record.fees;
@@ -286,7 +286,7 @@ const calculatePortfolioQuotes = (data, quotes, activePortfolio) => {
               const transactionbuy =
                 record.quantity * record.unitPrice + record.fees;
               const transactionsell =
-                record.quantity * quotes.data[symbol].quote.latestPrice -
+                record.quantity * quotes[symbol].quote.latestPrice -
                 record.fees;
               activesymbolquantity += record.quantity;
               activesymbolunitprices += record.unitPrice;

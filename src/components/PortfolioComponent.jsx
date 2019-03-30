@@ -67,22 +67,9 @@ class PortfolioComponent extends Component {
   }
 
   componentDidMount() {
-    const { data, activePortfolio, quotes, dispatch } = this.props;
+    const { dispatch } = this.props;
     getPortfolio(dispatch);
     Modal.setAppElement('body');
-
-    const symbols = [];
-    if (data && data.length > 0) {
-      if (
-        !quotes ||
-        (Object.entries(quotes).length === 0 && quotes.constructor === Object)
-      ) {
-        Object.keys(data[activePortfolio].portfolio).forEach(symbol => {
-          symbols.push(symbol);
-        });
-        runQuery(symbols, dispatch);
-      }
-    }
     calibrateTimer(this.props, false);
   }
 
@@ -93,6 +80,7 @@ class PortfolioComponent extends Component {
       fireTimer: nextFireTimer,
       timerInterval: nextTimerInterval,
       activePortfolio: nextActivePortfolio,
+      quotes: nextQuotes,
     } = nextProps;
     const { modalIsOpen } = this.state;
     const {
@@ -108,10 +96,14 @@ class PortfolioComponent extends Component {
       calibrateTimer(this.props);
     }
 
+    let shouldRunQuery = false;
     const symbols = [];
     if (nextData && nextData.length > 0) {
       Object.keys(nextData[nextActivePortfolio].portfolio).forEach(symbol => {
         symbols.push(symbol);
+        if (!nextQuotes[symbol]) {
+          shouldRunQuery = true;
+        }
       });
     }
 
@@ -122,7 +114,7 @@ class PortfolioComponent extends Component {
         JSON.stringify(nextData[activePortfolio].portfolio) !==
           JSON.stringify(data[activePortfolio].portfolio) ||
         fireTimer !== nextFireTimer ||
-        activePortfolio !== nextActivePortfolio
+        shouldRunQuery
       ) {
         runQuery(symbols, dispatch);
       }
