@@ -242,7 +242,22 @@ class PortfolioComponent extends Component {
     e.preventDefault();
     const { dispatch, data, activePortfolio } = this.props;
 
-    deletePortfolio(data[activePortfolio].id, dispatch);
+    confirmAlert({
+      title: 'Are you sure?',
+      message: 'You cannot undo this action.',
+      buttons: [
+        {
+          label: 'Yes',
+          onClick: () => {
+            deletePortfolio(data[activePortfolio].id, dispatch);
+          },
+        },
+        {
+          label: 'No',
+          onClick: () => {},
+        },
+      ],
+    });
   }
 
   addTransactionRecord(e) {
