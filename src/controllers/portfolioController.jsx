@@ -1,7 +1,12 @@
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import { cloneDeep } from 'lodash';
 import { setIsFetchingData, setLoggedin } from '../actions/appStatus';
-import { setPortfolioQuotes, setPortfolio } from '../actions/portfolio';
+import {
+  setPortfolioQuotes,
+  setPortfolio,
+  setPortfolioData,
+} from '../actions/portfolio';
 import { PORTFOLIO, API, TOKEN, IEXAPI } from '../constants';
 import { log } from '../utils/utils';
 
@@ -103,7 +108,7 @@ const addPortfolio = (name, dispatch) => {
     });
 };
 
-const deletePortfolio = (id, dispatch) => {
+const deletePortfolio = (data, activePortfolio, dispatch) => {
   const url = `${API}user/portfolio/delete`;
   const token = localStorage.getItem(TOKEN);
   if (!token) {
@@ -111,6 +116,7 @@ const deletePortfolio = (id, dispatch) => {
   }
 
   log(`STOCKD: Delete Portfolio ${url}`);
+  const { id } = data[activePortfolio];
   const AuthStr = `Bearer ${token}`;
   axios
     .put(
@@ -126,6 +132,11 @@ const deletePortfolio = (id, dispatch) => {
     )
     .then(res => {
       if (res.data.success === 1) {
+        const newData = [
+          ...data.slice(0, activePortfolio),
+          ...data.slice(activePortfolio + 1),
+        ];
+        dispatch(setPortfolioData(newData));
       } else {
         toast.warn('Could not delete portfolio', {
           position: toast.POSITION.BOTTOM_CENTER,
@@ -145,7 +156,7 @@ const deletePortfolio = (id, dispatch) => {
     });
 };
 
-const updatePortfolioName = (id, name, dispatch) => {
+const updatePortfolioName = (data, activePortfolio, name, dispatch) => {
   const url = `${API}user/portfolio/name`;
   const token = localStorage.getItem(TOKEN);
   if (!token) {
@@ -153,6 +164,7 @@ const updatePortfolioName = (id, name, dispatch) => {
   }
 
   log(`STOCKD: Update Portfolio Name ${url}`);
+  const { id } = data[activePortfolio];
   const AuthStr = `Bearer ${token}`;
   axios
     .put(
@@ -169,6 +181,9 @@ const updatePortfolioName = (id, name, dispatch) => {
     )
     .then(res => {
       if (res.data.success === 1) {
+        const newData = cloneDeep(data);
+        newData[activePortfolio].name = name;
+        dispatch(setPortfolioData(newData));
       } else {
         toast.warn('Could not save portfolio', {
           position: toast.POSITION.BOTTOM_CENTER,

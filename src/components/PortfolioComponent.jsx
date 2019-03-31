@@ -98,7 +98,7 @@ class PortfolioComponent extends Component {
 
     let shouldRunQuery = false;
     const symbols = [];
-    if (nextData && nextData.length > 0) {
+    if (nextData && nextData.length > 0 && nextData[nextActivePortfolio]) {
       Object.keys(nextData[nextActivePortfolio].portfolio).forEach(symbol => {
         symbols.push(symbol);
         if (!nextQuotes[symbol]) {
@@ -107,7 +107,7 @@ class PortfolioComponent extends Component {
       });
     }
 
-    if (nextData) {
+    if (nextData && symbols.length > 0) {
       if (
         !data ||
         !data[activePortfolio] ||
@@ -235,7 +235,7 @@ class PortfolioComponent extends Component {
     const { newPortfolioName } = this.state;
     const { dispatch, data, activePortfolio } = this.props;
 
-    updatePortfolioName(data[activePortfolio].id, newPortfolioName, dispatch);
+    updatePortfolioName(data, activePortfolio, newPortfolioName, dispatch);
   }
 
   deletePortfolio(e) {
@@ -249,7 +249,7 @@ class PortfolioComponent extends Component {
         {
           label: 'Yes',
           onClick: () => {
-            deletePortfolio(data[activePortfolio].id, dispatch);
+            deletePortfolio(data, activePortfolio, dispatch);
           },
         },
         {

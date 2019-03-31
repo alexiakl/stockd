@@ -4,10 +4,15 @@ export const UPDATE_SYMBOL_RECORD = 'UPDATE_SYMBOL_RECORD';
 export const REMOVE_SYMBOL_RECORD = 'REMOVE_SYMBOL_RECORD';
 export const PORTFOLIO_QUOTES = 'PORTFOLIO_QUOTES';
 export const SET_PORTFOLIO = 'SET_PORTFOLIO';
+export const SET_PORTFOLIO_DATA = 'SET_PORTFOLIO_DATA';
 export const SET_ACTIVE_PORTFOLIO = 'SET_ACTIVE_PORTFOLIO';
 
 export function setPortfolio(portfolio) {
   return { type: SET_PORTFOLIO, portfolio };
+}
+
+export function setPortfolioData(data) {
+  return { type: SET_PORTFOLIO_DATA, data };
 }
 
 export function setActivePortfolio(activePortfolio) {

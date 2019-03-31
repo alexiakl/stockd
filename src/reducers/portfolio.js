@@ -7,6 +7,7 @@ import {
   REMOVE_SYMBOL_RECORD,
   PORTFOLIO_QUOTES,
   SET_PORTFOLIO,
+  SET_PORTFOLIO_DATA,
   SET_ACTIVE_PORTFOLIO,
 } from '../actions/portfolio';
 import { PORTFOLIO } from '../constants';
@@ -39,6 +40,14 @@ const portfolio = (state = [], action) => {
       return {
         ...state,
         data: map,
+      };
+    }
+
+    case SET_PORTFOLIO_DATA: {
+      localStorage.setItem(PORTFOLIO, JSON.stringify(action.data));
+      return {
+        ...state,
+        data: action.data,
       };
     }
 
