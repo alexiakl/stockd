@@ -73,7 +73,10 @@ const processResult = props => {
           startingPoint = entry.close;
         }
         let value = 0;
-        if (entry.close > 0) {
+        if (entry.marketClose > 0) {
+          previousAverage = entry.marketClose;
+          value = previousAverage;
+        } else if (entry.close > 0) {
           previousAverage = entry.close;
           value = previousAverage;
         } else {

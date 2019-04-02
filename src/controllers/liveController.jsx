@@ -89,11 +89,11 @@ const processResult = props => {
     }
     chart.forEach((entry, entryindex) => {
       let value = 0;
-      if (entry.close > 0) {
-        previousValue = entry.close;
-        value = previousValue;
-      } else if (entry.marketClose > 0) {
+      if (entry.marketClose > 0) {
         previousValue = entry.marketClose;
+        value = previousValue;
+      } else if (entry.close > 0) {
+        previousValue = entry.close;
         value = previousValue;
       } else {
         value = previousValue;
