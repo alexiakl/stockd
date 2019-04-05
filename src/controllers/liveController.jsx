@@ -172,7 +172,14 @@ const processResult = props => {
   data.options.tooltips.callbacks = {
     label(tooltipItem, cdata) {
       let { label } = cdata.datasets[tooltipItem.datasetIndex];
-      label += `: ${tooltipItem.yLabel}$`;
+      const { previousClose } = queryResult.data[label].quote;
+      let percString = '';
+      if (period === '1d') {
+        const perc =
+          (100 * (tooltipItem.yLabel - previousClose)) / previousClose;
+        percString = ` ${perc.toFixed(2)}%`;
+      }
+      label += `: ${tooltipItem.yLabel}$${percString}`;
       return label;
     },
   };
