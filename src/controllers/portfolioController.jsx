@@ -281,10 +281,8 @@ const calculatePortfolioQuotes = (data, quotes, activePortfolio) => {
         item.records.forEach((record, index) => {
           if (quotes && quotes[symbol]) {
             if (!record.buy) {
-              const transactionbuy =
-                record.squantity * record.unitPrice + record.fees;
-              const transactionsell =
-                record.squantity * record.sunitPrice - record.sfees;
+              const transactionbuy = record.squantity * record.unitPrice;
+              const transactionsell = record.squantity * record.sunitPrice;
               soldprofits[symbol][index] = (
                 transactionsell - transactionbuy
               ).toFixed(2);
@@ -298,11 +296,13 @@ const calculatePortfolioQuotes = (data, quotes, activePortfolio) => {
               soldsymbolbuy += transactionbuy;
               soldsymbolsell += transactionsell;
             } else {
-              const transactionbuy =
-                record.quantity * record.unitPrice + record.fees;
+              const feesPerShare = Math.abs(
+                record.originalUnitPrice - record.unitPrice,
+              );
+              const transactionbuy = record.quantity * record.unitPrice;
               const transactionsell =
-                record.quantity * quotes[symbol].quote.latestPrice -
-                record.fees;
+                record.quantity *
+                (quotes[symbol].quote.latestPrice - feesPerShare);
               activesymbolquantity += record.quantity;
               activesymbolunitprices += record.unitPrice;
               activebuyitems += 1;

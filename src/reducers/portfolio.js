@@ -63,18 +63,18 @@ const portfolio = (state = [], action) => {
       const { activePortfolio } = state;
       let {
         unitPrice,
-        fees,
+        originalUnitPrice,
         quantity,
         squantity,
-        sfees,
+        soriginalUnitPrice,
         sunitPrice,
       } = action.record;
       const { symbol, buy, date, sdate } = action.record;
       unitPrice = parseFloat(unitPrice);
-      fees = parseFloat(fees);
+      originalUnitPrice = parseFloat(originalUnitPrice);
       quantity = parseFloat(quantity);
       sunitPrice = parseFloat(sunitPrice);
-      sfees = parseFloat(sfees);
+      soriginalUnitPrice = parseFloat(soriginalUnitPrice);
       squantity = parseFloat(squantity);
 
       let object = newPortfolio[activePortfolio].portfolio[symbol];
@@ -84,8 +84,8 @@ const portfolio = (state = [], action) => {
         object.records = [];
         newPortfolio[activePortfolio].portfolio[symbol] = object;
       }
-      const total = (unitPrice * quantity + fees).toFixed(2);
-      const stotal = (sunitPrice * squantity + sfees).toFixed(2);
+      const total = (unitPrice * quantity).toFixed(2);
+      const stotal = (sunitPrice * squantity).toFixed(2);
       const transaction = {
         action: 'add',
         symbol,
@@ -94,8 +94,8 @@ const portfolio = (state = [], action) => {
         squantity,
         unitPrice,
         sunitPrice,
-        fees,
-        sfees,
+        originalUnitPrice,
+        soriginalUnitPrice,
         total,
         stotal,
         date,

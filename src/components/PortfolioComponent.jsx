@@ -57,11 +57,11 @@ class PortfolioComponent extends Component {
       isBuy: true,
       addQuantity: undefined,
       addUnitPrice: undefined,
-      addFees: undefined,
+      addOriginalUnitPrice: undefined,
       addDate: undefined,
       sellQuantity: undefined,
       sellUnitPrice: undefined,
-      sellFees: undefined,
+      sellOriginalUnitPrice: undefined,
       sellDate: undefined,
     };
   }
@@ -167,11 +167,11 @@ class PortfolioComponent extends Component {
       symbol,
       quantity,
       unitPrice,
-      fees,
+      originalUnitPrice,
       date,
       squantity,
       sunitPrice,
-      sfees,
+      soriginalUnitPrice,
       sdate,
     } = item;
     if (ref) {
@@ -190,11 +190,11 @@ class PortfolioComponent extends Component {
       isBuy,
       addQuantity: quantity,
       addUnitPrice: unitPrice,
-      addFees: fees,
+      addOriginalUnitPrice: originalUnitPrice,
       addDate: date,
       sellQuantity: squantity,
       sellUnitPrice: sunitPrice,
-      sellFees: sfees,
+      sellOriginalUnitPrice: soriginalUnitPrice,
       sellDate: sdate,
     });
   }
@@ -265,9 +265,9 @@ class PortfolioComponent extends Component {
     const { dispatch } = this.props;
     let {
       addDate: date,
-      addFees: fees,
+      addOriginalUnitPrice: originalUnitPrice,
       sellDate: sdate,
-      sellFees: sfees,
+      sellOriginalUnitPrice: soriginalUnitPrice,
     } = this.state;
     const {
       transactionSymbol: symbol,
@@ -299,11 +299,11 @@ class PortfolioComponent extends Component {
       });
       return;
     }
-    if (!fees) {
-      fees = 0;
+    if (!originalUnitPrice) {
+      originalUnitPrice = 0;
     }
-    if (!sfees) {
-      sfees = 0;
+    if (!soriginalUnitPrice) {
+      soriginalUnitPrice = 0;
     }
     if (!unitPrice || !quantity) {
       toast.warn('Please provide unit price and quantity', {
@@ -325,11 +325,11 @@ class PortfolioComponent extends Component {
     const record = {
       symbol,
       buy,
-      fees,
+      originalUnitPrice,
       unitPrice,
       quantity,
       date,
-      sfees,
+      soriginalUnitPrice,
       sunitPrice,
       squantity,
       sdate,
@@ -445,7 +445,11 @@ class PortfolioComponent extends Component {
           <Badge variant={variant}>{transaction}</Badge>
         </td>
         <td>{quantity}</td>
-        <td>{unitPrice.toFixed(2)}</td>
+        <td>
+          {item.unitPrice.toFixed(2)}
+          <br />
+          <span className={totalClassName}>{unitPrice.toFixed(2)}</span>
+        </td>
         <td className={totalClassName}>
           {itemProfit}
           <span className="profit-percentage">{itemProfitPercentage}%</span>
@@ -469,7 +473,7 @@ class PortfolioComponent extends Component {
 
   renderItem(item, totalObject, isBuy) {
     const { quotes } = this.props;
-    const latestPrice = quotes[item.symbol]
+    let latestPrice = quotes[item.symbol]
       ? quotes[item.symbol].quote.latestPrice
       : '';
     let symbolTotal = totalObject.active.totals[item.symbol];
@@ -478,6 +482,7 @@ class PortfolioComponent extends Component {
     let symbolQuantities = totalObject.active.quantities[item.symbol];
     let symbolUnitPrices = totalObject.active.unitPrices[item.symbol];
     if (!isBuy) {
+      latestPrice = '';
       symbolTotal = totalObject.sold.totals[item.symbol];
       symbolTotalPercentage = totalObject.sold.totalsPercentage[item.symbol];
       symbolQuantities = totalObject.sold.quantities[item.symbol];
@@ -546,12 +551,12 @@ class PortfolioComponent extends Component {
       modalIsOpen,
       transactionSymbol,
       addQuantity,
-      addFees,
+      addOriginalUnitPrice,
       addUnitPrice,
       addDate,
       sellQuantity,
       sellUnitPrice,
-      sellFees,
+      sellOriginalUnitPrice,
       sellDate,
       isBuy,
       readOnly,
@@ -685,18 +690,18 @@ class PortfolioComponent extends Component {
     let unitPrice = addUnitPrice;
     let date = addDate;
     let quantity = addQuantity;
-    let fees = addFees;
+    let originalUnitPrice = addOriginalUnitPrice;
     let unitPriceDesc = '';
-    let feesDesc = '';
+    let originalUnitPriceDesc = '';
     let dateDesc = '';
     if (!isBuy) {
       transactionType = 'Sell';
       unitPrice = sellUnitPrice;
       date = sellDate;
       quantity = sellQuantity;
-      fees = sellFees;
+      originalUnitPrice = sellOriginalUnitPrice;
       unitPriceDesc = ` (on purchase: ${addUnitPrice})`;
-      feesDesc = ` (Purchase fees: ${addFees})`;
+      originalUnitPriceDesc = ` (on purchase: ${addOriginalUnitPrice})`;
       dateDesc = ` (Purchased: ${addDate})`;
     }
     if (!date) {
@@ -733,12 +738,12 @@ class PortfolioComponent extends Component {
             </Form.Group>
 
             <Form.Group controlId="formUnitPrice">
-              <Form.Label>Unit Price{unitPriceDesc}</Form.Label>
+              <Form.Label>Unit Price After Fees{unitPriceDesc}</Form.Label>
               <Form.Control
                 defaultValue={unitPrice}
                 disabled={readOnly}
                 type="number"
-                placeholder="Price per share"
+                placeholder="Price per share after fees"
                 onChange={evt => {
                   if (isBuy) {
                     this.setState({ addUnitPrice: evt.target.value });
@@ -750,17 +755,19 @@ class PortfolioComponent extends Component {
             </Form.Group>
 
             <Form.Group controlId="formFees">
-              <Form.Label>Fees{feesDesc}</Form.Label>
+              <Form.Label>
+                Unit Price Without Fees{originalUnitPriceDesc}
+              </Form.Label>
               <Form.Control
-                defaultValue={fees}
+                defaultValue={originalUnitPrice}
                 disabled={readOnly}
                 type="number"
-                placeholder="Commission, fees or other costs"
+                placeholder="Price per share without fees"
                 onChange={evt => {
                   if (isBuy) {
-                    this.setState({ addFees: evt.target.value });
+                    this.setState({ addOriginalUnitPrice: evt.target.value });
                   } else {
-                    this.setState({ sellFees: evt.target.value });
+                    this.setState({ sellOriginalUnitPrice: evt.target.value });
                   }
                 }}
               />
