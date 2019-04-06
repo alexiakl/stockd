@@ -350,8 +350,9 @@ class PortfolioComponent extends Component {
     }
   }
 
-  confirmRemoval(e, symbol, index) {
+  confirmRemoval(e, symbol, index, ref) {
     e.preventDefault();
+    ref.current.hide();
     confirmAlert({
       title: 'Are you sure?',
       message: 'You cannot undo this action.',
@@ -429,7 +430,9 @@ class PortfolioComponent extends Component {
           <Badge
             variant="danger"
             className="action"
-            onClick={e => this.confirmRemoval(e, item.symbol, index)}
+            onClick={e =>
+              this.confirmRemoval(e, item.symbol, index, actionsOverlayRef)
+            }
           >
             DELETE
           </Badge>
@@ -465,6 +468,10 @@ class PortfolioComponent extends Component {
   }
 
   renderItem(item, totalObject, isBuy) {
+    const { quotes } = this.props;
+    const latestPrice = quotes[item.symbol]
+      ? quotes[item.symbol].quote.latestPrice
+      : '';
     let symbolTotal = totalObject.active.totals[item.symbol];
     let symbolTotalPercentage =
       totalObject.active.totalsPercentage[item.symbol];
@@ -491,7 +498,11 @@ class PortfolioComponent extends Component {
           </Button>
         </td>
         <td>{symbolQuantities}</td>
-        <td>{symbolUnitPrices}</td>
+        <td>
+          {symbolUnitPrices}
+          <br />
+          <span className={totalClassName}>{latestPrice}</span>
+        </td>
         <td className={totalClassName}>
           {symbolTotal}
           <span className="profit-percentage">{symbolTotalPercentage}%</span>
