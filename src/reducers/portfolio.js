@@ -66,16 +66,16 @@ const portfolio = (state = [], action) => {
         originalUnitPrice,
         quantity,
         squantity,
-        soriginalUnitPrice,
         sunitPrice,
+        fees,
       } = action.record;
       const { symbol, buy, date, sdate } = action.record;
       unitPrice = parseFloat(unitPrice);
       originalUnitPrice = parseFloat(originalUnitPrice);
       quantity = parseFloat(quantity);
       sunitPrice = parseFloat(sunitPrice);
-      soriginalUnitPrice = parseFloat(soriginalUnitPrice);
       squantity = parseFloat(squantity);
+      fees = parseFloat(fees);
 
       let object = newPortfolio[activePortfolio].portfolio[symbol];
       if (!object) {
@@ -95,11 +95,11 @@ const portfolio = (state = [], action) => {
         unitPrice,
         sunitPrice,
         originalUnitPrice,
-        soriginalUnitPrice,
         total,
         stotal,
         date,
         sdate,
+        fees,
       };
       object.records.push(transaction);
 

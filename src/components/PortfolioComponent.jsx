@@ -61,7 +61,7 @@ class PortfolioComponent extends Component {
       addDate: undefined,
       sellQuantity: undefined,
       sellUnitPrice: undefined,
-      sellOriginalUnitPrice: undefined,
+      fees: undefined,
       sellDate: undefined,
     };
   }
@@ -171,7 +171,7 @@ class PortfolioComponent extends Component {
       date,
       squantity,
       sunitPrice,
-      soriginalUnitPrice,
+      fees,
       sdate,
     } = item;
     if (ref) {
@@ -194,7 +194,7 @@ class PortfolioComponent extends Component {
       addDate: date,
       sellQuantity: squantity,
       sellUnitPrice: sunitPrice,
-      sellOriginalUnitPrice: soriginalUnitPrice,
+      fees,
       sellDate: sdate,
     });
   }
@@ -267,7 +267,7 @@ class PortfolioComponent extends Component {
       addDate: date,
       addOriginalUnitPrice: originalUnitPrice,
       sellDate: sdate,
-      sellOriginalUnitPrice: soriginalUnitPrice,
+      fees,
     } = this.state;
     const {
       transactionSymbol: symbol,
@@ -302,8 +302,8 @@ class PortfolioComponent extends Component {
     if (!originalUnitPrice) {
       originalUnitPrice = 0;
     }
-    if (!soriginalUnitPrice) {
-      soriginalUnitPrice = 0;
+    if (!fees) {
+      fees = 0;
     }
     if (!unitPrice || !quantity) {
       toast.warn('Please provide unit price and quantity', {
@@ -329,7 +329,7 @@ class PortfolioComponent extends Component {
       unitPrice,
       quantity,
       date,
-      soriginalUnitPrice,
+      fees,
       sunitPrice,
       squantity,
       sdate,
@@ -396,7 +396,7 @@ class PortfolioComponent extends Component {
     let transaction = 'SOLD';
     let variant = 'info';
     let quantity = item.squantity;
-    let unitPrice = item.sunitPrice;
+    let unitPrice = item.sunitPrice - item.fees / item.squantity;
     if (item.buy) {
       transaction = 'ACTIVE';
       variant = 'warning';
@@ -509,14 +509,16 @@ class PortfolioComponent extends Component {
           <span className="profit-percentage">{symbolTotalPercentage}%</span>
         </td>
         <td className="center">
-          <Badge
-            key={item.symbol}
-            variant="info"
-            className="action"
-            onClick={() => this.openModal(item)}
-          >
-            +
-          </Badge>
+          {isBuy && (
+            <Badge
+              key={item.symbol}
+              variant="info"
+              className="action"
+              onClick={() => this.openModal(item)}
+            >
+              +
+            </Badge>
+          )}
         </td>
       </tr>,
     ];
@@ -552,7 +554,7 @@ class PortfolioComponent extends Component {
       addDate,
       sellQuantity,
       sellUnitPrice,
-      sellOriginalUnitPrice,
+      fees,
       sellDate,
       isBuy,
       readOnly,
@@ -688,16 +690,20 @@ class PortfolioComponent extends Component {
     let quantity = addQuantity;
     let originalUnitPrice = addOriginalUnitPrice;
     let unitPriceDesc = '';
-    let originalUnitPriceDesc = '';
+    let unitPriceTitle = 'Unit Price After Fees';
+    let opriceOrFeesTitle = 'Unit Price Without Fees';
+    let opriceOrFeesPlaceholder = 'Price per share without fees';
     let dateDesc = '';
     if (!isBuy) {
       transactionType = 'Sell';
       unitPrice = sellUnitPrice;
       date = sellDate;
       quantity = sellQuantity;
-      originalUnitPrice = sellOriginalUnitPrice;
+      originalUnitPrice = fees;
       unitPriceDesc = ` (on purchase: ${addUnitPrice})`;
-      originalUnitPriceDesc = ` (on purchase: ${addOriginalUnitPrice})`;
+      unitPriceTitle = 'Unit Price';
+      opriceOrFeesTitle = 'Fees';
+      opriceOrFeesPlaceholder = 'Transaction Fees';
       dateDesc = ` (Purchased: ${addDate})`;
     }
     if (!date) {
@@ -734,12 +740,15 @@ class PortfolioComponent extends Component {
             </Form.Group>
 
             <Form.Group controlId="formUnitPrice">
-              <Form.Label>Unit Price After Fees{unitPriceDesc}</Form.Label>
+              <Form.Label>
+                {unitPriceTitle}
+                {unitPriceDesc}
+              </Form.Label>
               <Form.Control
                 defaultValue={unitPrice}
                 disabled={readOnly}
                 type="number"
-                placeholder="Price per share after fees"
+                placeholder="Price per share"
                 onChange={evt => {
                   if (isBuy) {
                     this.setState({ addUnitPrice: evt.target.value });
@@ -751,19 +760,17 @@ class PortfolioComponent extends Component {
             </Form.Group>
 
             <Form.Group controlId="formFees">
-              <Form.Label>
-                Unit Price Without Fees{originalUnitPriceDesc}
-              </Form.Label>
+              <Form.Label>{opriceOrFeesTitle}</Form.Label>
               <Form.Control
                 defaultValue={originalUnitPrice}
                 disabled={readOnly}
                 type="number"
-                placeholder="Price per share without fees"
+                placeholder={opriceOrFeesPlaceholder}
                 onChange={evt => {
                   if (isBuy) {
                     this.setState({ addOriginalUnitPrice: evt.target.value });
                   } else {
-                    this.setState({ sellOriginalUnitPrice: evt.target.value });
+                    this.setState({ fees: evt.target.value });
                   }
                 }}
               />

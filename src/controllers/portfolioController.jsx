@@ -282,7 +282,8 @@ const calculatePortfolioQuotes = (data, quotes, activePortfolio) => {
           if (quotes && quotes[symbol]) {
             if (!record.buy) {
               const transactionbuy = record.squantity * record.unitPrice;
-              const transactionsell = record.squantity * record.sunitPrice;
+              const transactionsell =
+                record.squantity * record.sunitPrice - record.fees;
               soldprofits[symbol][index] = (
                 transactionsell - transactionbuy
               ).toFixed(2);
