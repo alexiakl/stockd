@@ -270,13 +270,9 @@ const calculatePortfolioQuotes = (data, quotes, activePortfolio) => {
       let activesymbolbuy = 0;
       let activesymbolsell = 0;
       let activesymbolquantity = 0;
-      let activesymbolunitprices = 0;
-      let activebuyitems = 0;
       let soldsymbolbuy = 0;
       let soldsymbolsell = 0;
       let soldsymbolquantity = 0;
-      let soldsymbolunitprices = 0;
-      let soldbuyitems = 0;
       if (item.records) {
         item.records.forEach((record, index) => {
           if (quotes && quotes[symbol]) {
@@ -292,8 +288,6 @@ const calculatePortfolioQuotes = (data, quotes, activePortfolio) => {
                 transactionbuy
               ).toFixed(2);
               soldsymbolquantity += record.squantity;
-              soldsymbolunitprices += record.sunitPrice;
-              soldbuyitems += 1;
               soldsymbolbuy += transactionbuy;
               soldsymbolsell += transactionsell;
             } else {
@@ -305,8 +299,6 @@ const calculatePortfolioQuotes = (data, quotes, activePortfolio) => {
                 record.quantity *
                 (quotes[symbol].quote.latestPrice - feesPerShare);
               activesymbolquantity += record.quantity;
-              activesymbolunitprices += record.unitPrice;
-              activebuyitems += 1;
               activeprofits[symbol][index] = (
                 transactionsell - transactionbuy
               ).toFixed(2);
@@ -326,7 +318,7 @@ const calculatePortfolioQuotes = (data, quotes, activePortfolio) => {
         ).toFixed(2);
         activequantities[symbol] = activesymbolquantity;
         activeunitPrices[symbol] = (
-          activesymbolunitprices / activebuyitems
+          activesymbolbuy / activesymbolquantity
         ).toFixed(2);
         activetotal += parseFloat(
           (activesymbolsell - activesymbolbuy).toFixed(2),
@@ -344,7 +336,7 @@ const calculatePortfolioQuotes = (data, quotes, activePortfolio) => {
           soldsymbolbuy
         ).toFixed(2);
         soldquantities[symbol] = soldsymbolquantity;
-        soldunitPrices[symbol] = (soldsymbolunitprices / soldbuyitems).toFixed(
+        soldunitPrices[symbol] = (soldsymbolsell / soldsymbolquantity).toFixed(
           2,
         );
         soldtotal += parseFloat((soldsymbolsell - soldsymbolbuy).toFixed(2));
