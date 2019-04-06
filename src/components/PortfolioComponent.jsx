@@ -445,11 +445,7 @@ class PortfolioComponent extends Component {
           <Badge variant={variant}>{transaction}</Badge>
         </td>
         <td>{quantity}</td>
-        <td>
-          {item.unitPrice.toFixed(2)}
-          <br />
-          <span className={totalClassName}>{unitPrice.toFixed(2)}</span>
-        </td>
+        <td>{unitPrice.toFixed(2)}</td>
         <td className={totalClassName}>
           {itemProfit}
           <span className="profit-percentage">{itemProfitPercentage}%</span>
