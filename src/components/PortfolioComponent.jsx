@@ -199,16 +199,17 @@ class PortfolioComponent extends Component {
     });
   }
 
-  handleRowClick(rowId, expand = false) {
+  handleRowClick(prefix, rowId, expand = false) {
     const { expandedRows } = this.state;
-    const isRowCurrentlyExpanded = expandedRows.includes(rowId);
+    const key = `${prefix}${rowId}`;
+    const isRowCurrentlyExpanded = expandedRows.includes(key);
     if (expand && isRowCurrentlyExpanded) {
       return;
     }
 
     const newExpandedRows = isRowCurrentlyExpanded
-      ? expandedRows.filter(id => id !== rowId)
-      : expandedRows.concat(rowId);
+      ? expandedRows.filter(id => id !== key)
+      : expandedRows.concat(key);
 
     this.setState({ expandedRows: newExpandedRows });
   }
@@ -338,7 +339,7 @@ class PortfolioComponent extends Component {
     this.setState({ modalIsOpen: false });
     if (buy) {
       dispatch(addSymbolRecord(record));
-      this.handleRowClick(symbol, true);
+      this.handleRowClick('buy', symbol, true);
     } else {
       const newQuantity = quantity - squantity;
       if (newQuantity < 0) {
@@ -469,6 +470,17 @@ class PortfolioComponent extends Component {
 
   renderItem(item, totalObject, isBuy) {
     const { quotes } = this.props;
+
+    let countBuy = 0;
+    let countSell = 0;
+    item.records.forEach(record => {
+      if (record.buy === isBuy) {
+        countBuy += 1;
+      } else {
+        countSell += 1;
+      }
+    });
+
     let latestPrice = quotes[item.symbol]
       ? quotes[item.symbol].quote.latestPrice
       : '';
@@ -477,7 +489,11 @@ class PortfolioComponent extends Component {
       totalObject.active.totalsPercentage[item.symbol];
     let symbolQuantities = totalObject.active.quantities[item.symbol];
     let symbolUnitPrices = totalObject.active.unitPrices[item.symbol];
+    let prefix = 'sell';
+    let count = countBuy;
     if (!isBuy) {
+      prefix = 'buy';
+      count = countSell;
       latestPrice = '';
       symbolTotal = totalObject.sold.totals[item.symbol];
       symbolTotalPercentage = totalObject.sold.totalsPercentage[item.symbol];
@@ -490,12 +506,12 @@ class PortfolioComponent extends Component {
       totalClassName = 'red';
     }
     const { expandedRows } = this.state;
-    const clickCallback = () => this.handleRowClick(item.symbol);
+    const clickCallback = () => this.handleRowClick(prefix, item.symbol);
     const itemRows = [
       <tr key={`row-data-${item.symbol}`}>
         <td>
           <Button size="sm" onClick={clickCallback} variant="secondary">
-            {item.symbol}
+            {item.symbol} <Badge variant="light">{count}</Badge>
           </Button>
         </td>
         <td>{symbolQuantities}</td>
@@ -536,7 +552,7 @@ class PortfolioComponent extends Component {
       }
     });
 
-    if (expandedRows.includes(item.symbol)) {
+    if (expandedRows.includes(`${prefix}${item.symbol}`)) {
       itemRows.push(allSubItemRows);
     }
 
