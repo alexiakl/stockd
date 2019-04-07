@@ -734,11 +734,14 @@ class PortfolioComponent extends Component {
     let opriceOrFeesPlaceholder = 'Price per share without fees';
     let dateDesc = '';
     const feesPerUnit = parseFloat(unitPrice) - parseFloat(originalUnitPrice);
+    let transactionTotalDesc = `Transaction Total: ${parseFloat(unitPrice) *
+      parseFloat(quantity)}`;
     let profitDesc = `Estimated Profit = ( Current Price - ${unitPrice} - ${feesPerUnit} ) * ${quantity}`;
     let feesDesc = `Fees Per Unit = ${feesPerUnit}`;
     if (!readOnly) {
       feesDesc = '';
       profitDesc = '';
+      transactionTotalDesc = '';
     }
     if (!isBuy) {
       transactionType = 'Sell';
@@ -754,6 +757,9 @@ class PortfolioComponent extends Component {
       feesDesc = '';
       profitDesc = `Profit = ( Unit Price - ${addUnitPrice} ) * Quantity - Fees`;
       if (readOnly) {
+        transactionTotalDesc = `Transaction Total: ${parseFloat(unitPrice) *
+          parseFloat(quantity) -
+          parseFloat(fees)}`;
         profitDesc = `Profit = ( ${unitPrice} - ${addUnitPrice} ) * ${quantity} - ${fees}`;
       }
     }
@@ -849,6 +855,8 @@ class PortfolioComponent extends Component {
                 {feesDesc.length > 0 && feesDesc}
                 {feesDesc.length > 0 && <br />}
                 {profitDesc}
+                <br />
+                {transactionTotalDesc.length > 0 && transactionTotalDesc}
               </p>
             )}
 
