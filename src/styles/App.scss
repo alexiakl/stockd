@@ -11,6 +11,7 @@ body {
 }
 
 tr {
+  cursor: pointer;
   border-bottom: 2px solid $separator;
 }
 thead {
@@ -48,6 +49,12 @@ thead {
 .ReactModal__Overlay,
 .react-confirm-alert-overlay {
   background: #00000099 !important;
+}
+
+.small-description {
+  font-size: 12px;
+  border-top: 2px solid $separator;
+  padding-top: 10px;
 }
 
 .table {
@@ -296,6 +303,10 @@ thead {
     .active {
       color: $darkactive !important;
     }
+  }
+
+  .small-description {
+    border-top: 2px solid $darkseparator;
   }
 }
 

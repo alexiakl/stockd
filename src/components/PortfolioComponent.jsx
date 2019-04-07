@@ -1,3 +1,5 @@
+/* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
+/* eslint-disable jsx-a11y/click-events-have-key-events */
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { toast } from 'react-toastify';
@@ -442,12 +444,33 @@ class PortfolioComponent extends Component {
     );
     return (
       <tr key={`row-expanded-${item.symbol}-${index}`}>
-        <td>
+        <td
+          onClick={() => {
+            this.openModal(item, true, !item.buy, index, actionsOverlayRef);
+          }}
+        >
           <Badge variant={variant}>{transaction}</Badge>
         </td>
-        <td>{quantity}</td>
-        <td>{unitPrice.toFixed(2)}</td>
-        <td className={totalClassName}>
+        <td
+          onClick={() => {
+            this.openModal(item, true, !item.buy, index, actionsOverlayRef);
+          }}
+        >
+          {quantity}
+        </td>
+        <td
+          onClick={() => {
+            this.openModal(item, true, !item.buy, index, actionsOverlayRef);
+          }}
+        >
+          {unitPrice.toFixed(2)}
+        </td>
+        <td
+          onClick={() => {
+            this.openModal(item, true, !item.buy, index, actionsOverlayRef);
+          }}
+          className={totalClassName}
+        >
           {itemProfit}
           <span className="profit-percentage">{itemProfitPercentage}%</span>
         </td>
@@ -508,7 +531,7 @@ class PortfolioComponent extends Component {
     const { expandedRows } = this.state;
     const clickCallback = () => this.handleRowClick(prefix, item.symbol);
     const itemRows = [
-      <tr key={`row-data-${item.symbol}`}>
+      <tr key={`row-data-${item.symbol}`} onClick={clickCallback}>
         <td>
           <Button size="sm" onClick={clickCallback} variant="secondary">
             {item.symbol} <Badge variant="light">{count}</Badge>
@@ -710,6 +733,13 @@ class PortfolioComponent extends Component {
     let opriceOrFeesTitle = 'Unit Price Without Fees';
     let opriceOrFeesPlaceholder = 'Price per share without fees';
     let dateDesc = '';
+    const feesPerUnit = parseFloat(unitPrice) - parseFloat(originalUnitPrice);
+    let profitDesc = `Estimated Profit = ( Current Price - ${unitPrice} - ${feesPerUnit} ) * ${quantity}`;
+    let feesDesc = `Fees Per Unit = ${feesPerUnit}`;
+    if (!readOnly) {
+      feesDesc = '';
+      profitDesc = '';
+    }
     if (!isBuy) {
       transactionType = 'Sell';
       unitPrice = sellUnitPrice;
@@ -721,6 +751,11 @@ class PortfolioComponent extends Component {
       opriceOrFeesTitle = 'Fees';
       opriceOrFeesPlaceholder = 'Transaction Fees';
       dateDesc = ` (Purchased: ${addDate})`;
+      feesDesc = '';
+      profitDesc = `Profit = ( Unit Price - ${addUnitPrice} ) * Quantity - Fees`;
+      if (readOnly) {
+        profitDesc = `Profit = ( ${unitPrice} - ${addUnitPrice} ) * ${quantity} - ${fees}`;
+      }
     }
     if (!date) {
       date = this.today();
@@ -808,6 +843,14 @@ class PortfolioComponent extends Component {
                 }}
               />
             </Form.Group>
+
+            {profitDesc.length > 0 && (
+              <p className="small-description">
+                {feesDesc.length > 0 && feesDesc}
+                {feesDesc.length > 0 && <br />}
+                {profitDesc}
+              </p>
+            )}
 
             {!readOnly && (
               <Button
