@@ -62,52 +62,53 @@ const processResult = props => {
     };
     let previousAverage = 0;
     let skip = 0;
-    if (chart.length > 50) {
+    if (chart && chart.length > 50) {
       skip = parseInt(chart.length / 50, 10);
     }
     let startingPoint = -1;
 
-    chart.forEach((entry, entryindex) => {
-      if (finalLabels[entry.label] === 1) {
-        if (startingPoint < 0 || !startingPoint) {
-          startingPoint = entry.close;
-        }
-        let value = 0;
-        if (entry.marketClose > 0) {
-          previousAverage = entry.marketClose;
-          value = previousAverage;
-        } else if (entry.close > 0) {
-          previousAverage = entry.close;
-          value = previousAverage;
-        } else {
-          value = previousAverage;
-        }
-        if (
-          skip === 0 ||
-          entryindex % skip === 0 ||
-          entryindex === chart.length - 1
-        ) {
-          dataset.data.push(((value * 1000) / startingPoint).toFixed(3));
-          if (index === 0) {
-            options.scales.xAxes[0].labels.push(entry.label);
+    if (chart) {
+      chart.forEach((entry, entryindex) => {
+        if (finalLabels[entry.label] === 1) {
+          if (startingPoint < 0 || !startingPoint) {
+            startingPoint = entry.close;
           }
-
+          let value = 0;
+          if (entry.marketClose > 0) {
+            previousAverage = entry.marketClose;
+            value = previousAverage;
+          } else if (entry.close > 0) {
+            previousAverage = entry.close;
+            value = previousAverage;
+          } else {
+            value = previousAverage;
+          }
           if (
-            entryindex === chart.length - 1 &&
-            marketState === OPEN &&
-            period !== '1d'
+            skip === 0 ||
+            entryindex % skip === 0 ||
+            entryindex === chart.length - 1
           ) {
+            dataset.data.push(((value * 1000) / startingPoint).toFixed(3));
             if (index === 0) {
-              options.scales.xAxes[0].labels.push('Today');
+              options.scales.xAxes[0].labels.push(entry.label);
             }
-            dataset.data.push(
-              ((latestPrice * 1000) / startingPoint).toFixed(3),
-            );
+
+            if (
+              entryindex === chart.length - 1 &&
+              marketState === OPEN &&
+              period !== '1d'
+            ) {
+              if (index === 0) {
+                options.scales.xAxes[0].labels.push('Today');
+              }
+              dataset.data.push(
+                ((latestPrice * 1000) / startingPoint).toFixed(3),
+              );
+            }
           }
         }
-      }
-    });
-
+      });
+    }
     data.datasets.push(dataset);
 
     data.options.scales.yAxes[0].gridLines.color = '';

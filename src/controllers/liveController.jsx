@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { IEXAPI, IEXTOKEN, OPEN, PRE_OPEN } from '../constants';
+import { OPEN, PRE_OPEN, TOKEN } from '../constants';
 import { setIsFetchingData, setTimerId } from '../actions/appStatus';
 import {
   setQueryResult,
@@ -31,17 +31,30 @@ const calibrateTimer = (props, fire = true) => {
 const runQuery = props => {
   const { symbols, period, dispatch } = props;
   if (symbols && symbols.length > 0) {
+    const token = localStorage.getItem(TOKEN);
+    if (!token) {
+      return;
+    }
+    const AuthStr = `Bearer ${token}`;
     const allsymbols = encodeURIComponent(symbols.join(','));
-    const url = `${IEXAPI}stock/market/batch?symbols=${allsymbols}&types=quote,chart&range=${period}${IEXTOKEN}`;
+    const query = `stock/market/batch?symbols=${allsymbols}&types=quote,chart&range=${period}`;
+    const b64 = btoa(unescape(encodeURIComponent(query)));
+    const url = `${process.env.REACT_APP_API}iex${
+      process.env.REACT_APP_SANDBOX
+    }/${b64}`;
     log(`IEX: Live ${url}`);
 
     dispatch(setIsFetchingData(true));
 
     axios
-      .get(url)
+      .get(url, {
+        headers: {
+          Authorization: AuthStr,
+        },
+      })
       .then(res => {
         dispatch(setIsFetchingData(false));
-        dispatch(setQueryResult(res));
+        dispatch(setQueryResult(res.data));
       })
       .catch(() => {
         dispatch(setIsFetchingData(false));
@@ -81,46 +94,48 @@ const processResult = props => {
     let previousValue = 0;
     let latestValue = 0;
     let skip = 0;
-    if (chart.length > 50) {
+    if (chart && chart.length > 50) {
       skip = parseInt(chart.length / 50, 10);
     }
     if (!data.labels[symbol]) {
       data.labels[symbol] = [];
     }
-    chart.forEach((entry, entryindex) => {
-      let value = 0;
-      if (entry.marketClose > 0) {
-        previousValue = entry.marketClose;
-        value = previousValue;
-      } else if (entry.close > 0) {
-        previousValue = entry.close;
-        value = previousValue;
-      } else {
-        value = previousValue;
-      }
-      if (
-        skip === 0 ||
-        entryindex % skip === 0 ||
-        entryindex === chart.length - 1
-      ) {
-        if (value) {
-          dataset.data.push(value.toFixed(3));
-          data.labels[symbol].push(entry.label);
+    if (chart) {
+      chart.forEach((entry, entryindex) => {
+        let value = 0;
+        if (entry.marketClose > 0) {
+          previousValue = entry.marketClose;
+          value = previousValue;
+        } else if (entry.close > 0) {
+          previousValue = entry.close;
+          value = previousValue;
+        } else {
+          value = previousValue;
         }
-        if (entryindex === chart.length - 1) {
-          value = latestPrice;
-          if (marketState === OPEN) {
-            latestValue = value;
+        if (
+          skip === 0 ||
+          entryindex % skip === 0 ||
+          entryindex === chart.length - 1
+        ) {
+          if (value) {
             dataset.data.push(value.toFixed(3));
-            if (period === '1d') {
-              data.labels[symbol].push(entry.label);
-            } else {
-              data.labels[symbol].push('Today');
+            data.labels[symbol].push(entry.label);
+          }
+          if (entryindex === chart.length - 1) {
+            value = latestPrice;
+            if (marketState === OPEN) {
+              latestValue = value;
+              dataset.data.push(value.toFixed(3));
+              if (period === '1d') {
+                data.labels[symbol].push(entry.label);
+              } else {
+                data.labels[symbol].push('Today');
+              }
             }
           }
         }
-      }
-    });
+      });
+    }
 
     if (marketState === PRE_OPEN && period === '1d') {
       const dupLabels = data.labels[symbol];

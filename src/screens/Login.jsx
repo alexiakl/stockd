@@ -6,7 +6,7 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import { Redirect } from 'react-router-dom';
 import Footer from '../components/layout/Footer';
-import { API, EMAIL, NAME, TOKEN } from '../constants';
+import { EMAIL, NAME, TOKEN } from '../constants';
 import { setLoggedin } from '../actions/appStatus';
 import { log } from '../utils/utils';
 
@@ -38,7 +38,7 @@ class Login extends Component {
   login() {
     const { login, password } = this.state;
     const { dispatch } = this.props;
-    const url = `${API}login`;
+    const url = `${process.env.REACT_APP_API}login`;
 
     log(`STOCKD: Login ${url}`);
     axios({

@@ -6,13 +6,7 @@ import Helmet from 'react-helmet';
 import axios from 'axios';
 import { setTheme, setLoggedin } from '../../actions/appStatus';
 import logo from '../../static/images/logo/Stockd_1024.png';
-import {
-  SYMBOLS_MAP,
-  SYMBOLS_EXPIRY,
-  IEXAPI,
-  IEXTOKEN,
-  TOKEN,
-} from '../../constants';
+import { SYMBOLS_MAP, SYMBOLS_EXPIRY, TOKEN } from '../../constants';
 import { logoutEverywhere, log } from '../../utils/utils';
 import { setMap, addSymbol } from '../../actions/symbolsPicker';
 
@@ -29,21 +23,36 @@ const runQuery = dispatch => {
     !expiry ||
     now.getTime() > expiry
   ) {
+    const token = localStorage.getItem(TOKEN);
+    if (!token) {
+      return;
+    }
+    const AuthStr = `Bearer ${token}`;
     const map = [];
-    const url = `${IEXAPI}ref-data/symbols?filter=symbol,name${IEXTOKEN}`;
+    const query = 'ref-data/symbols?filter=symbol,name';
+    const b64 = btoa(unescape(encodeURIComponent(query)));
+    const url = `${process.env.REACT_APP_API}iex${
+      process.env.REACT_APP_SANDBOX
+    }/${b64}`;
     log(`IEX: Header ${url}`);
-    axios.get(url).then(res => {
-      res.data.forEach(symbol => {
-        map.push(`${symbol.symbol} ${symbol.name}`);
+    axios
+      .get(url, {
+        headers: {
+          Authorization: AuthStr,
+        },
+      })
+      .then(res => {
+        res.data.forEach(symbol => {
+          map.push(`${symbol.symbol} ${symbol.name}`);
+        });
+        localStorage.setItem(SYMBOLS_MAP, JSON.stringify(map));
+
+        let time = now.getTime();
+        time += 12 * 3600 * 1000;
+        localStorage.setItem(SYMBOLS_EXPIRY, time);
+
+        dispatch(setMap(map));
       });
-      localStorage.setItem(SYMBOLS_MAP, JSON.stringify(map));
-
-      let time = now.getTime();
-      time += 12 * 3600 * 1000;
-      localStorage.setItem(SYMBOLS_EXPIRY, time);
-
-      dispatch(setMap(map));
-    });
   }
 };
 

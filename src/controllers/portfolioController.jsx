@@ -7,19 +7,31 @@ import {
   setPortfolio,
   setPortfolioData,
 } from '../actions/portfolio';
-import { PORTFOLIO, API, TOKEN, IEXAPI } from '../constants';
+import { PORTFOLIO, TOKEN } from '../constants';
 import { log } from '../utils/utils';
 
 const runQuery = (symbols, dispatch) => {
   if (symbols && symbols.length > 0) {
+    const token = localStorage.getItem(TOKEN);
+    if (!token) {
+      return;
+    }
+    const AuthStr = `Bearer ${token}`;
     const allsymbols = encodeURIComponent(symbols.join(','));
-    const url = `${IEXAPI}stock/market/batch?symbols=${allsymbols}&types=quote`;
+    const query = `stock/market/batch?symbols=${allsymbols}&types=quote`;
+    const b64 = btoa(unescape(encodeURIComponent(query)));
+    const url = `${process.env.REACT_APP_API}iex${
+      process.env.REACT_APP_SANDBOX
+    }/${b64}`;
     log(`IEX: Portfolio ${url}`);
 
     dispatch(setIsFetchingData(true));
-
     axios
-      .get(url)
+      .get(url, {
+        headers: {
+          Authorization: AuthStr,
+        },
+      })
       .then(res => {
         dispatch(setIsFetchingData(false));
         dispatch(setPortfolioQuotes(res.data));
@@ -31,7 +43,7 @@ const runQuery = (symbols, dispatch) => {
 };
 
 const getPortfolio = dispatch => {
-  const url = `${API}user/portfolio`;
+  const url = `${process.env.REACT_APP_API}user/portfolio`;
   const token = localStorage.getItem(TOKEN);
   if (!token) {
     return;
@@ -69,7 +81,7 @@ const getPortfolio = dispatch => {
 };
 
 const addPortfolio = (name, dispatch) => {
-  const url = `${API}user/portfolio`;
+  const url = `${process.env.REACT_APP_API}user/portfolio`;
   const token = localStorage.getItem(TOKEN);
   if (!token) {
     return;
@@ -109,7 +121,7 @@ const addPortfolio = (name, dispatch) => {
 };
 
 const deletePortfolio = (data, activePortfolio, dispatch) => {
-  const url = `${API}user/portfolio/delete`;
+  const url = `${process.env.REACT_APP_API}user/portfolio/delete`;
   const token = localStorage.getItem(TOKEN);
   if (!token) {
     return;
@@ -157,7 +169,7 @@ const deletePortfolio = (data, activePortfolio, dispatch) => {
 };
 
 const updatePortfolioName = (data, activePortfolio, name, dispatch) => {
-  const url = `${API}user/portfolio/name`;
+  const url = `${process.env.REACT_APP_API}user/portfolio/name`;
   const token = localStorage.getItem(TOKEN);
   if (!token) {
     return;
@@ -206,7 +218,7 @@ const updatePortfolioName = (data, activePortfolio, name, dispatch) => {
 const savePortfolio = (portfolio, activePortfolio) => {
   localStorage.setItem(PORTFOLIO, JSON.stringify(portfolio));
 
-  const url = `${API}user/portfolio`;
+  const url = `${process.env.REACT_APP_API}user/portfolio`;
   const token = localStorage.getItem(TOKEN);
   if (!token) {
     return;

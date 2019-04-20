@@ -1,14 +1,6 @@
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import {
-  OPEN,
-  CLOSED,
-  PRE_OPEN,
-  UNDEFINED,
-  API,
-  TOKEN,
-  EMAIL,
-} from '../constants';
+import { OPEN, CLOSED, PRE_OPEN, UNDEFINED, TOKEN, EMAIL } from '../constants';
 import { setLoggedin } from '../actions/appStatus';
 
 const getMarketStateDescription = (value, quote) => {
@@ -68,7 +60,7 @@ const getChartDimensions = value => {
 };
 
 const logoutEverywhere = dispatch => {
-  const url = `${API}user/logout`;
+  const url = `${process.env.REACT_APP_API}user/logout`;
   const token = localStorage.getItem(TOKEN);
   if (!token) {
     return;
