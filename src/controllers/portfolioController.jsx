@@ -34,7 +34,7 @@ const runQuery = (symbols, dispatch) => {
       })
       .then(res => {
         dispatch(setIsFetchingData(false));
-        dispatch(setPortfolioQuotes(res.data));
+        dispatch(setPortfolioQuotes(res.data.data));
       })
       .catch(() => {
         dispatch(setIsFetchingData(false));
