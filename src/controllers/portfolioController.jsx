@@ -7,15 +7,20 @@ import {
   setPortfolio,
   setPortfolioData,
 } from '../actions/portfolio';
-import { PORTFOLIO, TOKEN } from '../constants';
+import { PORTFOLIO, TOKEN, LAST_QUERY } from '../constants';
 import { log } from '../utils/utils';
 
 const runQuery = (symbols, dispatch) => {
   if (symbols && symbols.length > 0) {
     const token = localStorage.getItem(TOKEN);
+    const lastQuery = localStorage.getItem(LAST_QUERY);
+    if (lastQuery && Date.now() - lastQuery < 1000) {
+      return;
+    }
     if (!token) {
       return;
     }
+    localStorage.setItem(LAST_QUERY, Date.now());
     const AuthStr = `Bearer ${token}`;
     const allsymbols = encodeURIComponent(symbols.join(','));
     const query = `stock/market/batch?symbols=${allsymbols}&types=quote`;

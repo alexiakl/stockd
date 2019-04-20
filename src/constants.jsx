@@ -1,4 +1,5 @@
 export const TOKEN = 'USER_JWT_TOKEN';
+export const LAST_QUERY = 'LAST_QUERY';
 export const NAME = 'NAME';
 export const EMAIL = 'EMAIL';
 export const PORTFOLIO = 'PORTFOLIO';
