@@ -42,7 +42,7 @@ const runQuery = dispatch => {
         },
       })
       .then(res => {
-        res.data.forEach(symbol => {
+        res.data.data.forEach(symbol => {
           map.push(`${symbol.symbol} ${symbol.name}`);
         });
         localStorage.setItem(SYMBOLS_MAP, JSON.stringify(map));

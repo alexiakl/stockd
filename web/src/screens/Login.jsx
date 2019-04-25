@@ -53,6 +53,7 @@ class Login extends Component {
       },
     })
       .then(res => {
+        console.log(res);
         if (res.data.success === 1) {
           const { jwtToken, firstname, email } = res.data.data;
           localStorage.setItem(TOKEN, jwtToken);
