@@ -11,7 +11,13 @@ Currently only US stocks are supported
 
 ## Install
 
-To quickly spin up Stockd on your localhost, make sure you have Docker installed and then run:
+Stockd uses [IEX Cloud](https://iexcloud.io/) API to get Stocks data.
+To spin up this project:
+
+- Sign up for an account at [IEX Cloud](https://iexcloud.io/) and generate production and test API tokens
+- Under `api/src/` directory, rename `configs-sample.php` to `configs.php`
+- Provide DEV_TOKEN and PROD_TOKEN that you generated earlier, and make sure to provide a proper JWT_SECRET_KEY
+- Make sure you have docker installed, and then from project root run:
 
 ```
 docker-compose up -d
@@ -25,8 +31,6 @@ The following containers will spin up:
 
 Once done, you can check it out at: http://localhost:8080
 Login credentials: sherlock@holmes.com / doctorwatson
-
-Stocks data is powered by [IEX Cloud](https://iexcloud.io/) API.
 
 ## TODO
 
