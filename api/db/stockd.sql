@@ -94,7 +94,7 @@ CREATE TABLE `sd_users` (
 
 LOCK TABLES `sd_users` WRITE;
 /*!40000 ALTER TABLE `sd_users` DISABLE KEYS */;
-INSERT INTO `sd_users` VALUES (1,'Alexi',NULL,'Akl','+96170489784','f3f4b42f-6272-4ca9-b101-d2ca9b582f29',NULL,NULL,NULL,'alexiakl@gmail.com',1,1,'2019-04-05 15:19:51','2019-03-09 10:24:29','$2y$12$Ezp.9u5voKfZEbMv81uSF.tKEaxdIc5.eTFedqowwZgiYYmDJktp6',28,NULL,'2019-04-05 18:19:51',0,NULL);
+INSERT INTO `sd_users` VALUES (1,'Sherlock',NULL,'Holmes','+96100000000','f3f4b42f-6272-4ca9-b101-d2ca9b582f29',NULL,NULL,NULL,'sherlock@holmes.com',1,1,'2019-04-05 15:19:51','2019-03-09 10:24:29','$1$zNM80cyL$TqfOeLRlFlag5nNxHIbwX1',28,NULL,'2019-04-05 18:19:51',0,NULL);
 /*!40000 ALTER TABLE `sd_users` ENABLE KEYS */;
 UNLOCK TABLES;
 

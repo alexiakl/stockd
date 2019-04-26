@@ -24,8 +24,9 @@ The following containers will spin up:
 - MariaDB - Database to store user data
 
 Once done, you can check it out at: http://localhost:8080
+Login credentials: sherlock@holmes.com / doctorwatson
 
-Stocks data comes from the [IEX Cloud](https://iexcloud.io/) API.
+Stocks data is powered by [IEX Cloud](https://iexcloud.io/) API.
 
 ## TODO
 
