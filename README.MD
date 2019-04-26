@@ -24,6 +24,7 @@ docker-compose up -d
 ```
 
 That's it! Once done, check the app out: http://localhost:8080
+
 Login credentials:
 
 - user: `sherlock@holmes.com`
