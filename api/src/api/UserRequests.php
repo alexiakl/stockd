@@ -23,10 +23,10 @@ class UserRequests
         $param = $args['query'];
         $query = base64_decode($param);
         $api = 'https://cloud.iexapis.com/stable/';
-        $token = '&token=pk_73701265c8104ddcbf104b65e04a48bd';
+        $token = '&token=' . $app->token['prod'];
         if ($sandbox) {
             $api = 'https://sandbox.iexapis.com/stable/';
-            $token = '&token=Tpk_de4e688d30a611e9958142010a80043c';
+            $token = '&token=' . $app->token['dev'];
         }
 
         $ch = curl_init();

@@ -38,6 +38,11 @@ $container['roles'] = function ($c) {
     return $roles;
 };
 
+$container['token'] = function ($c) {
+    $token = $c['settings']['token'];
+    return $token;
+};
+
 $container['notifications'] = function ($c) {
     $notifications = $c['settings']['notifications'];
     return $notifications;

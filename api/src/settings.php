@@ -1,11 +1,5 @@
 <?php
-
-$server = $_SERVER["REMOTE_ADDR"];
-$host = 'db-stockd';
-$pass = 'stockd';
-$dbname = 'stockd';
-$writeuser = 'stockd';
-$readuser = 'stockd';
+require 'configs.php';
 
 return [
     'settings' => [
@@ -17,16 +11,20 @@ return [
         ],
 
         'firebasekey' => '',
-        'JWTsecretkey' => 'Th1s. %4Qd-9mKEy 1809a fRar JwtT11 T00.0Kn',
+        'JWTsecretkey' => JWT_SECRET_KEY,
         'GoogleApiKey' => '',
-        'GoogleProjectID' => 'xxxxx-170718',
-        'bucketurl' => "https://storage.googleapis.com/stockd/",
+        'GoogleProjectID' => '',
+        'bucketurl' => '',
 
         'roles' => [
             'DEV_ADMIN' => 0,
             'ADMIN' => 1,
             'MODERATOR' => 5,
             'USER' => 15,
+        ],
+        'token' => [
+            'dev' => DEV_TOKEN,
+            'prod' => PROD_TOKEN,
         ],
         'notifications' => [
             'SMALLTALK' => 1,
@@ -38,17 +36,17 @@ return [
         ],
         // DB read settings
         'dbread' => [
-            'host' => $host,
-            'user' => $readuser,
-            'pass' => $pass,
-            'dbname' => $dbname,
+            'host' => HOST,
+            'user' => READ_DB,
+            'pass' => DB_PASS,
+            'dbname' => DB_NAME,
         ],
         // DB write settings
         'dbwrite' => [
-            'host' => $host,
-            'user' => $writeuser,
-            'pass' => $pass,
-            'dbname' => $dbname,
+            'host' => HOST,
+            'user' => WRITE_DB,
+            'pass' => DB_PASS,
+            'dbname' => DB_NAME,
         ],
         // Monolog settings
         'logger' => [
