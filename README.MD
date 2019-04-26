@@ -41,8 +41,8 @@ To connect to the database, use the following configs:
 - db name: `stockd`
 - user: `stockd`
 - pass: `stockd`
-- host: 127.0.0.1
-- port: 3308
+- host: `127.0.0.1`
+- port: `3308`
 
 # TODO
 
