@@ -6,7 +6,6 @@ import { Provider } from 'react-redux';
 import App from './components/App';
 import rootReducer from './reducers';
 import {
-  SYMBOLS_ADDED,
   SYMBOLS_MAP,
   THEME,
   EMAIL,
@@ -19,7 +18,7 @@ import {
 const initialState = {
   symbolsPicker: {
     map: JSON.parse(localStorage.getItem(SYMBOLS_MAP)),
-    symbols: JSON.parse(localStorage.getItem(SYMBOLS_ADDED)),
+    symbols: [],
     filtered: [],
   },
   periodController: {

@@ -11,40 +11,19 @@ import {
   runQuery,
   processResult,
   calibrateTimer,
-} from '../controllers/liveController';
+} from '../controllers/chartsController';
 import 'chartjs-plugin-annotation';
 
-// import testData from '../data/pre_open.json';
-
-class Live extends Component {
+class Charts extends Component {
   componentDidMount() {
-    const { queryResult } = this.props;
-    if (
-      !queryResult ||
-      (Object.entries(queryResult).length === 0 &&
-        queryResult.constructor === Object)
-    ) {
-      runQuery(this.props);
-    } else {
-      processResult(this.props);
-    }
+    runQuery(this.props);
     calibrateTimer(this.props, false);
   }
 
   componentWillReceiveProps(nextProps) {
+    const { period, fireTimer, timerInterval } = this.props;
     const {
-      symbols,
-      period,
-      queryResult,
-      theme,
-      fireTimer,
-      timerInterval,
-    } = this.props;
-    const {
-      symbols: nextSymbols,
       period: nextPeriod,
-      queryResult: nextQueryResult,
-      theme: nextTheme,
       fireTimer: nextFireTimer,
       timerInterval: nextTimerInterval,
     } = nextProps;
@@ -54,18 +33,10 @@ class Live extends Component {
       calibrateTimer(this.props);
     }
 
-    if (
-      nextSymbols.length > symbols.length ||
-      period !== nextPeriod ||
-      fireTimer !== nextFireTimer
-    ) {
+    if (period !== nextPeriod || fireTimer !== nextFireTimer) {
       this.props = nextProps;
       runQuery(this.props);
-    } else if (
-      JSON.stringify(nextQueryResult) !== JSON.stringify(queryResult) ||
-      theme !== nextTheme ||
-      nextSymbols.join(',') !== symbols.join(',')
-    ) {
+    } else {
       this.props = nextProps;
       processResult(this.props);
     }
@@ -103,4 +74,4 @@ const mapStateToProps = state => ({
   loggedin: state.appStatus.loggedin,
 });
 
-export default connect(mapStateToProps)(Live);
+export default connect(mapStateToProps)(Charts);

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { OPEN, PRE_OPEN, TOKEN } from '../constants';
+import { OPEN, PRE_OPEN, TOKEN, SYMBOLS_ADDED } from '../constants';
 import { setIsFetchingData, setTimerId } from '../actions/appStatus';
 import {
   setQueryResult,
@@ -29,7 +29,8 @@ const calibrateTimer = (props, fire = true) => {
 };
 
 const runQuery = props => {
-  const { symbols, period, dispatch } = props;
+  const { period, dispatch } = props;
+  const symbols = JSON.parse(localStorage.getItem(SYMBOLS_ADDED));
   if (symbols && symbols.length > 0) {
     const token = localStorage.getItem(TOKEN);
     if (!token) {
@@ -42,7 +43,7 @@ const runQuery = props => {
     const url = `${process.env.REACT_APP_API}iex${
       process.env.REACT_APP_SANDBOX
     }/${b64}`;
-    log(`IEX: Live ${url}`);
+    log(`IEX: Charts ${url}`);
 
     dispatch(setIsFetchingData(true));
 
@@ -63,7 +64,7 @@ const runQuery = props => {
 };
 
 const processResult = props => {
-  const { symbols, period, theme, queryResult, dispatch } = props;
+  const { period, theme, queryResult, dispatch } = props;
   if (
     Object.entries(queryResult).length === 0 &&
     queryResult.constructor === Object
@@ -79,7 +80,11 @@ const processResult = props => {
     options,
   };
 
+  const symbols = JSON.parse(localStorage.getItem(SYMBOLS_ADDED));
   symbols.forEach(symbol => {
+    if (!queryResult.data[symbol]) {
+      return;
+    }
     data.symbols.push(symbol);
     const { chart, quote } = queryResult.data[symbol];
     const { previousClose, latestPrice, latestSource } = quote;

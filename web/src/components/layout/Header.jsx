@@ -130,8 +130,8 @@ const Header = ({ theme, dispatch }) => {
           <LinkContainer to="/portfolio">
             <Nav.Link className="menu-item">PORTFOLIO</Nav.Link>
           </LinkContainer>
-          <LinkContainer to="/live">
-            <Nav.Link className={`menu-item ${addClass}`}>LIVE</Nav.Link>
+          <LinkContainer to="/charts">
+            <Nav.Link className={`menu-item ${addClass}`}>CHARTS</Nav.Link>
           </LinkContainer>
           <LinkContainer to="/compare">
             <Nav.Link className="menu-item">COMPARE</Nav.Link>

@@ -6,7 +6,7 @@ import Footer from '../components/layout/Footer';
 import SymbolsPicker from '../components/symbolsPicker/SymbolsPicker';
 import PeriodController from '../components/PeriodController';
 import { processResult } from '../controllers/compareController';
-import { runQuery } from '../controllers/liveController';
+import { runQuery } from '../controllers/chartsController';
 import CompareChart from '../components/charts/CompareChart';
 
 class Compare extends Component {

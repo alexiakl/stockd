@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { OPEN, CLOSED, PRE_OPEN, UNDEFINED, TOKEN, EMAIL } from '../constants';
+import { OPEN, CLOSED, PRE_OPEN, UNDEFINED, TOKEN } from '../constants';
 import { setLoggedin } from '../actions/appStatus';
 
 const getMarketStateDescription = (value, quote) => {
@@ -46,11 +46,8 @@ const getMarketState = value => {
 };
 
 const log = text => {
-  const email = localStorage.getItem(EMAIL);
-  if (email === 'alexiakl@gmail.com') {
-    // eslint-disable-next-line no-console
-    console.log(text);
-  }
+  // eslint-disable-next-line no-console
+  console.log(text);
 };
 
 const getChartDimensions = value => {

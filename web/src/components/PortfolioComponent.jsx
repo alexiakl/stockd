@@ -23,6 +23,7 @@ import {
   addPortfolioRecord,
   setActivePortfolio,
 } from '../actions/portfolio';
+import { updateOrder } from '../actions/symbolsPicker';
 import {
   runQuery,
   getPortfolio,
@@ -31,7 +32,7 @@ import {
   addPortfolio,
   calculatePortfolioQuotes,
 } from '../controllers/portfolioController';
-import { resetTimer, calibrateTimer } from '../controllers/liveController';
+import { resetTimer, calibrateTimer } from '../controllers/chartsController';
 import 'react-confirm-alert/src/react-confirm-alert.css';
 
 const modalStyles = {
@@ -103,6 +104,7 @@ class PortfolioComponent extends Component {
     if (nextData && nextData.length > 0 && nextData[nextActivePortfolio]) {
       Object.keys(nextData[nextActivePortfolio].portfolio).forEach(symbol => {
         symbols.push(symbol);
+        dispatch(updateOrder(symbols));
         if (!nextQuotes[symbol]) {
           shouldRunQuery = true;
         }
@@ -217,10 +219,18 @@ class PortfolioComponent extends Component {
   }
 
   tabSelected(e) {
-    const { dispatch } = this.props;
+    const { data, dispatch } = this.props;
     this.setState({ newPortfolioName: '' });
     if (e !== 'new-portfolio') {
       const activePortfolio = e.split('-')[1];
+
+      const symbols = [];
+      if (data && data.length > 0 && data[activePortfolio]) {
+        Object.keys(data[activePortfolio].portfolio).forEach(symbol => {
+          symbols.push(symbol);
+        });
+      }
+      dispatch(updateOrder(symbols));
       dispatch(setActivePortfolio(activePortfolio));
     }
   }
