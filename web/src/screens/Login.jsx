@@ -78,7 +78,7 @@ class Login extends Component {
     const { login, password } = this.state;
     const { theme, loggedin } = this.props;
     if (loggedin) {
-      return <Redirect to="/live" />;
+      return <Redirect to="/portfolio" />;
     }
     return (
       <div className={`${theme} login`}>
