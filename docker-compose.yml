@@ -34,4 +34,7 @@ services:
     ports:
       - '8080:3000'
     volumes:
-      - ./api/:/var/www/html/
+      - ./web/:/usr/src/app
+    environment:
+      - NODE_ENV=development
+      - CHOKIDAR_USEPOLLING=true

@@ -1,4 +1,4 @@
-FROM node:8
+FROM node:10.15.3
 
 WORKDIR /usr/src/app
 
@@ -7,6 +7,5 @@ RUN npm install
 ADD . .
 
 EXPOSE 3000
-EXPOSE 35729
 
 CMD [ "npm", "start" ]

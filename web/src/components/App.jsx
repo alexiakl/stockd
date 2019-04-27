@@ -17,11 +17,11 @@ const App = () => {
       <ToastContainer />
       <Header />
       <Switch>
-        <Route exact path="/" render={() => <Redirect to="/live" />} />
+        <Route exact path="/" render={() => <Redirect to="/portfolio" />} />
         <Route exact path="/login" component={Login} />
+        <Route exact path="/portfolio" component={Portfolio} />
         <Route exact path="/live" component={Live} />
         <Route exact path="/compare" component={Compare} />
-        <Route exact path="/portfolio" component={Portfolio} />
         <Route exact path="/404" component={PageNotFound} />
         <Redirect to="/404" />
       </Switch>

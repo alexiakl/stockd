@@ -127,14 +127,14 @@ const Header = ({ theme, dispatch }) => {
       <Navbar.Toggle aria-controls="basic-navbar-nav" />
       <Navbar.Collapse id="basic-navbar-nav">
         <Nav className="mr-auto">
+          <LinkContainer to="/portfolio">
+            <Nav.Link className="menu-item">PORTFOLIO</Nav.Link>
+          </LinkContainer>
           <LinkContainer to="/live">
             <Nav.Link className={`menu-item ${addClass}`}>LIVE</Nav.Link>
           </LinkContainer>
           <LinkContainer to="/compare">
             <Nav.Link className="menu-item">COMPARE</Nav.Link>
-          </LinkContainer>
-          <LinkContainer to="/portfolio">
-            <Nav.Link className="menu-item">PORTFOLIO</Nav.Link>
           </LinkContainer>
         </Nav>
         {dropdown}
