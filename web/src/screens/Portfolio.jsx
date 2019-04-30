@@ -1,7 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
-import PortfolioSymbolsPicker from '../components/symbolsPicker/PortfolioSymbolsPicker';
 import PortfolioComponent from '../components/PortfolioComponent';
 import Footer from '../components/layout/Footer';
 
@@ -11,7 +10,6 @@ const Portfolio = ({ theme, loggedin }) => {
   }
   return (
     <div className={`${theme} `}>
-      <PortfolioSymbolsPicker />
       <PortfolioComponent />
       <Footer />
     </div>

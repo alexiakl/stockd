@@ -38,7 +38,7 @@ const runQuery = props => {
     }
     const AuthStr = `Bearer ${token}`;
     const allsymbols = encodeURIComponent(symbols.join(','));
-    const query = `stock/market/batch?symbols=${allsymbols}&types=quote,chart&range=${period}`;
+    const query = `stock/market/batch?symbols=${allsymbols}&types=quote&range=${period}`;
     const b64 = btoa(unescape(encodeURIComponent(query)));
     const url = `${process.env.REACT_APP_API}iex${
       process.env.REACT_APP_SANDBOX
@@ -82,7 +82,7 @@ const processResult = props => {
 
   const symbols = JSON.parse(localStorage.getItem(SYMBOLS_ADDED));
   symbols.forEach(symbol => {
-    if (!queryResult.data[symbol]) {
+    if (!queryResult.data || !queryResult.data[symbol]) {
       return;
     }
     data.symbols.push(symbol);

@@ -34,6 +34,7 @@ import {
 } from '../controllers/portfolioController';
 import { resetTimer, calibrateTimer } from '../controllers/chartsController';
 import 'react-confirm-alert/src/react-confirm-alert.css';
+import PortfolioSymbolsPicker from './symbolsPicker/PortfolioSymbolsPicker';
 
 const modalStyles = {
   content: {
@@ -386,7 +387,15 @@ class PortfolioComponent extends Component {
   }
 
   renderSubItem(item, totalObject, index, isBuy) {
-    let totalClassName = 'green';
+    const { quotes } = this.props;
+
+    const latestPrice = quotes[item.symbol]
+      ? quotes[item.symbol].quote.latestPrice
+      : '';
+    const previousClose = quotes[item.symbol]
+      ? quotes[item.symbol].quote.previousClose
+      : '';
+
     let profit = totalObject.active.profits[item.symbol];
     if (!isBuy) {
       profit = totalObject.sold.profits[item.symbol];
@@ -402,17 +411,11 @@ class PortfolioComponent extends Component {
       itemProfitPercentage =
         totalObject.sold.profitsPercentage[item.symbol][index];
     }
-    if (itemProfit < 0) {
-      totalClassName = 'red';
-    }
+    const totalClassName = itemProfit < 0 ? 'red' : 'green';
 
-    let transaction = 'SOLD';
-    let variant = 'info';
     let quantity = item.squantity;
     let unitPrice = item.sunitPrice - item.fees / item.squantity;
     if (item.buy) {
-      transaction = 'ACTIVE';
-      variant = 'warning';
       ({ quantity, unitPrice } = item);
     }
 
@@ -459,13 +462,6 @@ class PortfolioComponent extends Component {
             this.openModal(item, true, !item.buy, index, actionsOverlayRef);
           }}
         >
-          <Badge variant={variant}>{transaction}</Badge>
-        </td>
-        <td
-          onClick={() => {
-            this.openModal(item, true, !item.buy, index, actionsOverlayRef);
-          }}
-        >
           {quantity}
         </td>
         <td
@@ -479,11 +475,17 @@ class PortfolioComponent extends Component {
           onClick={() => {
             this.openModal(item, true, !item.buy, index, actionsOverlayRef);
           }}
+        />
+        <td
+          onClick={() => {
+            this.openModal(item, true, !item.buy, index, actionsOverlayRef);
+          }}
           className={totalClassName}
         >
           {itemProfit}
           <span className="profit-percentage">{itemProfitPercentage}%</span>
         </td>
+        <td>wtf</td>
         <td className="center">
           <OverlayTrigger
             trigger="click"
@@ -504,29 +506,27 @@ class PortfolioComponent extends Component {
   renderItem(item, totalObject, isBuy) {
     const { quotes } = this.props;
 
-    let countBuy = 0;
-    let countSell = 0;
-    item.records.forEach(record => {
-      if (record.buy === isBuy) {
-        countBuy += 1;
-      } else {
-        countSell += 1;
-      }
-    });
-
     let latestPrice = quotes[item.symbol]
       ? quotes[item.symbol].quote.latestPrice
       : '';
+    const previousClose = quotes[item.symbol]
+      ? quotes[item.symbol].quote.previousClose
+      : '';
+
+    let todaysGain = 0;
+    let todaysGainPercentage = 0;
+    if (latestPrice > 0) {
+      todaysGain = latestPrice - previousClose;
+      todaysGainPercentage = (100 * todaysGain) / latestPrice;
+    }
     let symbolTotal = totalObject.active.totals[item.symbol];
     let symbolTotalPercentage =
       totalObject.active.totalsPercentage[item.symbol];
     let symbolQuantities = totalObject.active.quantities[item.symbol];
     let symbolUnitPrices = totalObject.active.unitPrices[item.symbol];
     let prefix = 'sell';
-    let count = countBuy;
     if (!isBuy) {
       prefix = 'buy';
-      count = countSell;
       latestPrice = '';
       symbolTotal = totalObject.sold.totals[item.symbol];
       symbolTotalPercentage = totalObject.sold.totalsPercentage[item.symbol];
@@ -534,29 +534,29 @@ class PortfolioComponent extends Component {
       symbolUnitPrices = totalObject.sold.unitPrices[item.symbol];
     }
 
-    let totalClassName = 'green';
-    if (symbolTotal < 0) {
-      totalClassName = 'red';
-    }
+    const todayClassName = todaysGain < 0 ? 'red' : 'green';
+    const totalClassName = symbolTotal < 0 ? 'red' : 'green';
     const { expandedRows } = this.state;
     const clickCallback = () => this.handleRowClick(prefix, item.symbol);
     const itemRows = [
       <tr key={`row-data-${item.symbol}`} onClick={clickCallback}>
         <td>
           <Button size="sm" onClick={clickCallback} variant="secondary">
-            {item.symbol} <Badge variant="light">{count}</Badge>
+            {item.symbol} <Badge variant="light">{symbolQuantities}</Badge>
           </Button>
         </td>
-        <td>{symbolQuantities}</td>
-        <td>
-          {symbolUnitPrices}
-          <br />
-          <span className={totalClassName}>{latestPrice}</span>
+        <td>{latestPrice}</td>
+        <td className={todayClassName}>
+          {todaysGain.toFixed(2)}
+          <span className="profit-percentage">
+            {todaysGainPercentage.toFixed(2)}%
+          </span>
         </td>
         <td className={totalClassName}>
           {symbolTotal}
           <span className="profit-percentage">{symbolTotalPercentage}%</span>
         </td>
+        <td>wtf</td>
         <td className="center">
           {isBuy && (
             <Badge
@@ -654,6 +654,7 @@ class PortfolioComponent extends Component {
 
         tabs.push(
           <Tab key={key} eventKey={key} title={title}>
+            <PortfolioSymbolsPicker />
             <div className="div-title">ACTIVE</div>
             <div className="div-sub-title">
               {allActiveItemRows.length > 0
@@ -665,9 +666,10 @@ class PortfolioComponent extends Component {
                 <thead>
                   <tr>
                     <th />
-                    <th>Quantity</th>
                     <th>Unit Price</th>
-                    <th>Profit</th>
+                    <th>Today</th>
+                    <th>Overall</th>
+                    <th>Total</th>
                     <th className="th-small" />
                   </tr>
                 </thead>

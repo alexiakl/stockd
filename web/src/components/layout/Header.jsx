@@ -1,6 +1,5 @@
 import React from 'react';
 import { Nav, Navbar, NavItem, Dropdown } from 'react-bootstrap';
-import { LinkContainer } from 'react-router-bootstrap';
 import { connect } from 'react-redux';
 import Helmet from 'react-helmet';
 import axios from 'axios';
@@ -89,11 +88,6 @@ const Header = ({ theme, dispatch }) => {
     bg = 'dark';
   }
 
-  let addClass = '';
-  if (window.location.pathname === '/') {
-    addClass = 'active';
-  }
-
   const settings = (
     <React.Fragment>
       <Dropdown.Toggle size="sm" variant="outline-info" id="dropdown-settings">
@@ -126,17 +120,7 @@ const Header = ({ theme, dispatch }) => {
       </NavItem>
       <Navbar.Toggle aria-controls="basic-navbar-nav" />
       <Navbar.Collapse id="basic-navbar-nav">
-        <Nav className="mr-auto">
-          <LinkContainer to="/portfolio">
-            <Nav.Link className="menu-item">PORTFOLIO</Nav.Link>
-          </LinkContainer>
-          <LinkContainer to="/charts">
-            <Nav.Link className={`menu-item ${addClass}`}>CHARTS</Nav.Link>
-          </LinkContainer>
-          <LinkContainer to="/compare">
-            <Nav.Link className="menu-item">COMPARE</Nav.Link>
-          </LinkContainer>
-        </Nav>
+        <Nav className="mr-auto" />
         {dropdown}
       </Navbar.Collapse>
     </Navbar>
