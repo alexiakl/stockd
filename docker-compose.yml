@@ -1,0 +1,45 @@
+version: '3.3'
+
+services:
+  db-stockd:
+    container_name: db-stockd
+    environment:
+      - MYSQL_RANDOM_ROOT_PASSWORD=yes
+      - MYSQL_DATABASE=stockd
+      - MYSQL_PASSWORD=stockd
+      - MYSQL_USER=stockd
+    image: mariadb
+    ports:
+      - '3308:3306'
+    volumes:
+      - ./api/db:/tmp/db
+    command: mysqld --init-file="/tmp/db/stockd.sql"
+
+  api-stockd:
+    build: ./api
+    container_name: api-stockd
+    depends_on:
+      - db-stockd
+    ports:
+      - '8000:8080'
+    user: www-data
+    volumes:
+      - ./api/src:/var/www/html/src
+      - ./api/public:/var/www/html/public
+      - ./api/templates:/var/www/html/templates
+      - ./api/db:/var/www/html/db
+      - ./api/tests:/var/www/html/tests
+
+  web-stockd:
+    build: ./web
+    container_name: web-stockd
+    depends_on:
+      - api-stockd
+    ports:
+      - '8080:3000'
+    volumes:
+      - ./web/src:/usr/src/app/src
+      - ./web/public:/usr/src/app/public
+    environment:
+      - NODE_ENV=development
+      - CHOKIDAR_USEPOLLING=true

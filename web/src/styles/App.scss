@@ -1,0 +1,396 @@
+@import 'Variables';
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: $backgroud;
+  font-family: Helvetica, Times, Georgia, 'Times New Roman', serif;
+  color: $font;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+tr {
+  cursor: pointer;
+  border-bottom: 2px solid $separator;
+}
+thead {
+  border-bottom: 3px solid $separator;
+}
+
+.login {
+  padding: 60px 0;
+  form {
+    margin: 0 auto;
+    max-width: 320px;
+  }
+}
+
+.sdcontainer {
+  flex-wrap: wrap;
+  padding: 20px 10px;
+  border-bottom: 1px solid $separator;
+}
+
+.container {
+  padding: 20px 0px;
+}
+
+.badge {
+  cursor: pointer;
+}
+
+.ReactModal__Content,
+.react-confirm-alert-body {
+  background: $darkbackgroud !important;
+  color: $darkfont;
+}
+
+.ReactModal__Overlay,
+.react-confirm-alert-overlay {
+  background: #00000099 !important;
+}
+
+.small-description {
+  font-size: 12px;
+  border-top: 2px solid $separator;
+  padding-top: 10px;
+}
+
+.table {
+  border-top: 2px solid transparent;
+  font-weight: bold;
+  .th-small {
+    padding: 0px 0px;
+    max-width: 90%;
+    min-width: 90%;
+  }
+  .btn-sm {
+    padding: 1px 1px;
+  }
+  @include lg {
+    .btn-sm {
+      padding: 3px 5px;
+    }
+    .th-small {
+      width: 37px;
+    }
+  }
+  th {
+    font-size: 12px;
+    vertical-align: middle !important;
+  }
+  td {
+    .action {
+      max-width: 90%;
+      min-width: 90%;
+    }
+    .center {
+      text-align: center;
+    }
+    font-size: 14px;
+    padding-left: 10px;
+    padding-right: 0px;
+    vertical-align: middle;
+    padding-top: 0px;
+    padding-bottom: 0px;
+  }
+  input {
+    font-weight: bold;
+    border: 0;
+    padding-left: 3px;
+    padding-right: 3px;
+  }
+}
+
+.nav-tabs {
+  padding-left: 10px;
+}
+
+.nav-link,
+.nav-tabs {
+  border-bottom: 1px solid $separator;
+  margin-top: 10px;
+  color: $font;
+  :hover {
+    color: $font;
+  }
+}
+
+.popover-actions {
+  display: flex;
+  flex-direction: column;
+  .badge + .badge {
+    margin-top: 5px;
+  }
+}
+
+.chart {
+  max-width: 100%;
+  max-height: 100%;
+  margin: 0 auto;
+}
+
+.refresh-button {
+  margin-top: 20px;
+  display: block;
+  @include lg {
+    display: inline-block;
+    margin-left: 10px;
+    margin-top: 0px;
+  }
+}
+
+.settings-container {
+  padding: 10px 10px;
+}
+
+.small-settings {
+  width: 300px;
+  button {
+    margin-left: 10px;
+  }
+}
+
+.chart-container {
+  box-shadow: 0 2px 8px 0 $shadow;
+  border-radius: 5px;
+  max-width: 800px;
+  margin: 0 auto;
+  margin-left: 0px;
+  margin-right: 0px;
+  margin-top: 20px;
+  padding-top: 15px;
+
+  @include lg {
+    margin-left: 10px;
+    margin-right: 10px;
+  }
+
+  .chart-header {
+    margin-left: 28px;
+    margin-top: 20px;
+    margin-right: 20px;
+    font-size: 25px;
+    line-height: 22px;
+  }
+
+  .chart-info {
+    font-size: 15px;
+  }
+}
+
+.div-title {
+  width: 100%;
+  font-size: 20px;
+  padding-left: 10px;
+  padding-top: 30px;
+}
+
+.div-sub-title {
+  font-size: 12px;
+  padding-left: 10px;
+}
+
+.low-importance {
+  color: $active;
+  font-size: 12px !important;
+}
+
+.red {
+  color: $red;
+}
+
+.green {
+  color: $green;
+}
+
+.flex {
+  display: flex;
+}
+
+.wrap {
+  flex-wrap: wrap;
+}
+
+.standard-charts {
+  padding-bottom: 20px;
+}
+
+.horizontal-separator {
+  display: block;
+  @include lg {
+    display: inline-block;
+    border-left: 1px solid $separator;
+    margin-left: 10px;
+    padding-left: 10px;
+  }
+}
+.horizontal-break {
+  display: block;
+}
+
+.dark-mode {
+  background: $darkbackgroud;
+  color: $darkfont;
+
+  tr {
+    border-bottom: 2px solid $darkseparator;
+  }
+  thead {
+    border-bottom: 3px solid $darkseparator;
+  }
+  .nav-link,
+  .nav-tabs {
+    border-bottom: 1px solid $darkseparator;
+    color: $darkfont;
+    .active {
+      color: $darkactive;
+      background: unset;
+      border-color: $darkseparator;
+      border-bottom: 1px $darkbackgroud solid;
+    }
+    :hover {
+      color: $darkfont;
+      border-color: $darkseparator;
+    }
+  }
+  .dropdown-item {
+    color: $darkfont;
+    background: $darkbackgroud;
+  }
+  .dropdown-menu {
+    background: $darkbackgroud;
+  }
+
+  .stock-button,
+  .period-button {
+    color: $darkfont;
+    border: 1px solid $darkseparator;
+  }
+
+  .form-control {
+    background: $darkbackgroud;
+    color: $darkfont;
+    border: 1px solid $darkseparator;
+  }
+
+  .mr-sm-2 {
+    background: $darkbackgroud;
+    color: $darkfont;
+  }
+  .chart-container {
+    box-shadow: 0 2px 8px 0 $darkshadow;
+  }
+  .sdcontainer,
+  .period-buttons {
+    border-bottom: 1px solid $darkseparator;
+  }
+
+  .alert-dark {
+    background: #888888;
+    color: $darkfont;
+    border-color: #00000000;
+  }
+
+  .horizontal-separator {
+    @include lg {
+      border-left: 1px solid $darkseparator;
+    }
+  }
+
+  .navbar-collapse {
+    .active {
+      color: $darkactive !important;
+    }
+  }
+
+  .small-description {
+    border-top: 2px solid $darkseparator;
+  }
+}
+
+.mr-sm-2 {
+  width: 100% !important;
+  @include lg {
+    width: 250px !important;
+  }
+}
+
+.cols {
+  flex: 100%;
+  max-width: 100%;
+  @include lg {
+    max-width: 50%;
+  }
+  @include xl {
+    max-width: 33%;
+  }
+}
+
+.stock-buttons {
+  display: flex;
+  overflow-y: hidden;
+  overflow-x: auto;
+}
+
+.period-buttons {
+  text-align: center;
+  padding: 20px 20px;
+  border-bottom: 1px solid $separator;
+}
+
+.stock-button {
+  margin-top: 20px;
+  margin-right: 10px;
+  border: 1px solid $separator;
+  border-radius: 5px;
+  padding: 3px 6px;
+  @include lg {
+    margin-top: 0px;
+    margin-left: 10px;
+    margin-right: 0px;
+  }
+}
+
+.results {
+  width: 100%;
+  .stock-button {
+    margin-right: 10px;
+    margin-left: 0px;
+    margin-top: 10px;
+  }
+}
+.form-control {
+  border: 1px solid $separator;
+}
+
+.navbar {
+  .menu-item {
+    border-bottom: 0 !important;
+    font-size: 15px;
+    cursor: pointer;
+    @include lg {
+      margin-left: 20px;
+    }
+  }
+}
+
+.sync-badge {
+  font-size: 12px;
+}
+
+.navbar-collapse {
+  .active {
+    font-weight: bold;
+    color: $active !important;
+  }
+}
+
+.footer {
+  min-height: 40px;
+}
+
+.profit-percentage {
+  display: block;
+}
